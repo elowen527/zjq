@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>张钧乔 flex 四种布局</title>
+    <style>
+        .zhang_flex{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            width: 410px;
+            height: 410px;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            border: 1px solid #999;
+            align-content: center;
+            justify-content: center;
+            list-style: none;
+            margin: 10px;
+            float:left;
+        }
+        .zhang_flex li{
+            height: 110px;
+            box-sizing: border-box;
+            border: 2px solid #222;
+            background-color: #ddd;
+        }
+
+        /* 布局1：1个方块 */
+        .zhang_box1 li {
+            width:175px;
+        }
+
+        /* 布局2：上下2个方块 */
+        .zhang_box2 li {
+            width:175px;
+        }
+
+        /* 布局3：2行2列4个方块 */
+        .zhang_box3 li {
+            width:175px;
+        }
+
+        /* 布局4：顶部通栏1个，下面并排2个 */
+        .zhang_box4 li:nth-child(1){
+            width: 100%;
+        }
+        .zhang_box4 li:nth-child(2),
+        .zhang_box4 li:nth-child(3){
+            width:175px;
+        }
+    </style>
+</head>
+<body>
+    <h2>张钧乔 flex 4种效果</h2>
+    <!-- 图1第1个：1个盒子 -->
+    <ul class="zhang_flex zhang_box1">
+        <li>1</li>
+    </ul>
+
+    <!-- 图1第2个：上下2个盒子 -->
+    <ul class="zhang_flex zhang_box2">
+        <li>1</li>
+        <li>2</li>
+    </ul>
+
+    <!-- 图1第3个：2×2，4个盒子 -->
+    <ul class="zhang_flex zhang_box3">
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+    </ul>
+
+    <!-- 图1第4个：上面1通栏，下面2个并排 -->
+    <ul class="zhang_flex zhang_box4">
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+    </ul>
+</body>
+</html>

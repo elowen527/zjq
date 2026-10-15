@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>盒子模型，框模型</title>
+    <style>
+        #zhang_a{
+            width: 200px;
+            height: 200px;
+            border: 10px solid rgb(0, 255, 170);
+            padding: 50px 40px 30px 20px;
+            margin:40px auto;
+        }
+        #zhang_b{
+            width: 200px;
+            height: 200px;
+            border: 10px solid rgb(0, 255, 170);
+            padding: 50px 40px 30px 20px;
+            margin:40px auto;
+            box-sizing: border-box;
+        }
+        /* 扩展：完成c和d，边框用dotted,宽度位3px */
+        #zhang_c{
+            width: 200px;
+            height: 200px;
+            border: 3px dotted rgb(0, 255, 170);
+            padding: 50px 40px 30px 20px;
+            margin:40px auto;
+        }
+        #zhang_d{
+            width: 200px;
+            height: 200px;
+            border: 3px dotted rgb(0, 255, 170);
+            padding: 50px 40px 30px 20px;
+            margin:40px auto;
+            box-sizing: border-box;
+        }
+        /*  */
+    </style>
+</head>
+<body>
+    <h2>盒子模型，框模型,box model</h2>
+    <div id="zhang_a">213张钧乔</div>
+    <div id="zhang_b">213张钧乔</div>
+    <div id="zhang_c">213张钧乔</div>
+    <div id="zhang_d">213张钧乔</div>
+</body>
+</html>

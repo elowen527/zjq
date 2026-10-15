@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS 长度单位</title>
+  <style>
+    body {
+      font-family: "Microsoft YaHei", sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    section {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      margin: 16px 0;
+      padding: 16px 20px;
+    }
+    h2 {
+      color: #2c3e50;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 8px;
+    }
+    .zhang_demo-box {
+      margin: 12px 0;
+      padding: 12px;
+      background: #f9f9f9;
+      border-left: 4px solid #3498db;
+    }
+    /* 绝对单位 */
+    .px-box {
+      width: 200px;
+      height: 100px;
+      background: #e74c3c;
+    }
+    .pt-box {
+      width: 150pt;
+      height: 80pt;
+      background: #2ecc71;
+    }
+    .cm-box {
+      width: 5cm;
+      height: 2cm;
+      background: #9b59b6;
+    }
+    .mm-box {
+      width: 50mm;
+      height: 20mm;
+      background: #f39c12;
+    }
+    .in-box {
+      width: 2in;
+      height: 1in;
+      background: #1abc9c;
+    }
+    /* 相对单位 */
+    .zhang_em-text {
+      font-size: 20px;
+    }
+    .zhang_em-text span {
+      font-size: 1.5em;
+      color: #e74c3c;
+    }
+    .zhang_rem-text {
+      font-size: 1.25rem;
+      color: #2980b9;
+    }
+    .zhang_percent-box {
+      width: 50%;
+      height: 60px;
+      background: #3498db;
+    }
+    .zhang_vw-box {
+      width: 50vw;
+      height: 60px;
+      background: #e67e22;
+    }
+    .zhang_vh-box {
+      width: 100%;
+      height: 30vh;
+      background: #16a085;
+    }
+    code {
+      background: #eee;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: Consolas, monospace;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>CSS 长度单位</h1>
+
+  <!-- 绝对单位 -->
+  <section>
+    <h2>绝对单位</h2>
+    <p>绝对单位是固定的物理尺寸，不随其他因素变化。</p>
+
+    <div class="zhang_demo-box">
+      <strong>px（像素）</strong>：<code>width: 200px; height: 100px;</code><br>
+      最常用的单位，1px 对应屏幕上的一个像素点。
+    </div>
+
+    <div class="zhang_demo-box" style="background: #2ecc71; width: 150pt; height: 80pt;">
+      <strong>pt（点）</strong>：<code>width: 150pt; height: 80pt;</code><br>
+      常用于打印，1pt = 1/72 英寸。
+    </div>
+
+    <div class="zhang_demo-box" style="background: #9b59b6; width: 5cm; height: 2cm;">
+      <strong>cm（厘米）</strong>：<code>width: 5cm; height: 2cm;</code><br>
+      物理厘米单位，主要用于打印样式。
+    </div>
+
+    <div class="zhang_demo-box" style="background: #f39c12; width: 50mm; height: 20mm;">
+      <strong>mm（毫米）</strong>：<code>width: 50mm; height: 20mm;</code><br>
+      物理毫米单位，1cm = 10mm。
+    </div>
+
+    <div class="zhang_demo-box" style="background: #1abc9c; width: 2in; height: 1in;">
+      <strong>in（英寸）</strong>：<code>width: 2in; height: 1in;</code><br>
+      1in = 2.54cm = 96px，主要用于打印。
+    </div>
+  </section>
+
+  <!-- 相对单位 -->
+  <section>
+    <h2>相对单位</h2>
+    <p>相对单位基于其他元素或视口大小动态计算，更适合响应式设计。</p>
+
+    <div class="zhang_demo-box" style="background: #e74c3c; width: auto; height: auto;">
+      <strong>em</strong>：相对于父元素的字体大小。<br>
+      <span class="zhang_em-text">父元素 font-size: 20px → <span>1.5em = 30px</span></span>
+    </div>
+
+    <div class="zhang_demo-box" style="background: #2980b9; width: auto; height: auto;">
+      <strong>rem</strong>：相对于根元素（html）的字体大小。<br>
+      <span class="zhang_rem-text">根元素 font-size: 16px → 1.25rem = 20px</span>
+    </div>
+
+    <div class="zhang_percent-box">
+      <strong>%（百分比）</strong>：相对于父元素的比例。<code>width: 50%;</code>
+    </div>
+
+    <div class="zhang_vw-box">
+      <strong>vw（视口宽度）</strong>：相对于视口宽度。<code>width: 50vw;</code> = 视口宽度的 50%
+    </div>
+
+    <div class="zhang_vh-box">
+      <strong>vh（视口高度）</strong>：相对于视口高度。<code>height: 30vh;</code> = 视口高度的 30%
+    </div>
+  </section>
+
+  <!-- 其他单位 -->
+  <section>
+    <h2>其他单位</h2>
+
+    <div class="zhang_demo-box" style="background: #8e44ad; width: auto; height: auto;">
+      <strong>ch</strong>：相对于字符 "0" 的宽度。<br>
+      <code>width: 40ch;</code> — 常用于限制文本行宽。
+    </div>
+
+    <div class="zhang_demo-box" style="background: #2c3e50; width: auto; height: auto;">
+      <strong>ex</strong>：相对于字体 x-height 的高度。<br>
+      <code>font-size: 2ex;</code> — 较少使用。
+    </div>
+
+    <div class="zhang_demo-box" style="background: #c0392b; width: auto; height: auto;">
+      <strong>vmin / vmax</strong>：<br>
+      <code>width: 50vmin;</code> = 视口较小边的 50%<br>
+      <code>width: 50vmax;</code> = 视口较大边的 50%
+    </div>
+  </section>
+
+  <!-- 总结表格 -->
+  <section>
+    <h2>单位对比总结</h2>
+    <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr style="background: #34495e; color: #fff;">
+          <th>单位</th>
+          <th>类型</th>
+          <th>说明</th>
+          <th>常见用途</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>px</td><td>绝对</td><td>屏幕像素点</td><td>最常用，边框、定位等</td></tr>
+        <tr><td>pt</td><td>绝对</td><td>1/72 英寸</td><td>打印样式</td></tr>
+        <tr><td>in</td><td>绝对</td><td>1in = 96px</td><td>打印样式</td></tr>
+        <tr><td>cm / mm</td><td>绝对</td><td>物理长度</td><td>打印样式</td></tr>
+        <tr><td>em</td><td>相对</td><td>相对于父元素 font-size</td><td>字体、内边距等</td></tr>
+        <tr><td>rem</td><td>相对</td><td>相对于根元素 font-size</td><td>响应式字体、间距</td></tr>
+        <tr><td>%</td><td>相对</td><td>相对于父元素</td><td>宽度、高度、定位</td></tr>
+        <tr><td>vw / vh</td><td>相对</td><td>相对于视口尺寸</td><td>全屏布局、响应式设计</td></tr>
+        <tr><td>vmin / vmax</td><td>相对</td><td>视口的较小/较大边</td><td>响应式设计</td></tr>
+        <tr><td>ch</td><td>相对</td><td>字符 "0" 的宽度</td><td>文本宽度限制</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</body>
+</html>

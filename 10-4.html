@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>媒体查询盒子布局</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		html {
+			min-width: 320px;
+		}
+
+		body {
+			min-width: 320px;
+			min-height: 100vh;
+			margin: 0;
+			padding: 24px;
+			font-family: "Microsoft YaHei", sans-serif;
+			background-color: #f3f4f6;
+		}
+
+		.zhang_page-title {
+			width: min(100%, 1200px);
+			margin: 0 auto 24px;
+			color: #20242a;
+			font-size: 32px;
+			text-align: center;
+		}
+
+		.zhang_box-grid {
+			width: min(100%, 1200px);
+			margin: 0 auto;
+			display: grid;
+			grid-template-columns: repeat(1, minmax(0, 1fr));
+			gap: 16px;
+		}
+
+		.zhang_box {
+			min-height: 140px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			border-radius: 8px;
+			background-color: #ef476f;
+			color: #fff;
+			font-size: 20px;
+			font-weight: bold;
+		}
+
+		@media (min-width: 600px) {
+			.zhang_box-grid {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+			}
+
+			.zhang_box {
+				background-color: #06a77d;
+			}
+		}
+
+		@media (min-width: 900px) {
+			.zhang_box-grid {
+				grid-template-columns: repeat(4, minmax(0, 1fr));
+			}
+
+			.zhang_box {
+				background-color: #118ab2;
+			}
+		}
+
+		@media (min-width: 1200px) {
+			.zhang_box-grid {
+				grid-template-columns: repeat(8, minmax(0, 1fr));
+			}
+		}
+	</style>
+</head>
+<body>
+	<main>
+		<h1 class="zhang_page-title">213张钧乔</h1>
+		<div class="zhang_box-grid">
+			<div class="zhang_box">213张钧乔</div>
+			<div class="zhang_box">213张钧乔</div>
+			<div class="zhang_box">213张钧乔</div>
+			<div class="zhang_box">213张钧乔</div>
+			<div class="zhang_box">213张钧乔</div>
+			<div class="zhang_box">213张钧乔</div>
+			<div class="zhang_box">213张钧乔</div>
+			<div class="zhang_box">213张钧乔</div>
+		</div>
+	</main>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10-2</title>
+    <style>
+        /* 基础重置与页面样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* 幻灯片容器 */
+        .zhang_slideshow-container {
+            position: relative;
+            width: 600px;
+            height: 450px;
+            background-color: #000;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        /* 每一张幻灯片 */
+        .zhang_slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            animation: slideLoop 8.1s infinite both;
+        }
+
+        /* 三张图片每隔2.7秒依次进入 */
+        .zhang_slide:nth-child(1) {
+            animation-delay: 0s;
+        }
+        .zhang_slide:nth-child(2) {
+            animation-delay: 2.7s;
+        }
+        .zhang_slide:nth-child(3) {
+            animation-delay: 5.4s;
+        }
+
+        /* 图片区域 */
+        .zhang_slide-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.72;
+        }
+
+        /* 图片上的黑底白字 */
+        .zhang_slide-text {
+            position: absolute;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%);
+            height: auto;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #000;
+            white-space: nowrap;
+        }
+
+        /* 图片水平滑入、停留，再向左滑出 */
+        @keyframes slideLoop {
+            0% { transform: translateX(100%); z-index: 1; }
+            11.11% { transform: translateX(0); z-index: 1; }
+            22.22% { transform: translateX(0); z-index: 1; }
+            33.33% { transform: translateX(-100%); z-index: 0; }
+            100% { transform: translateX(-100%); z-index: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="zhang_slideshow-container">
+        <!-- 幻灯片 1 -->
+        <div class="zhang_slide">
+            <img src="img/1.jpg" alt="幻灯片1" class="zhang_slide-image">
+            <div class="zhang_slide-text">213张钧乔</div>
+        </div>
+        
+        <!-- 幻灯片 2 -->
+        <div class="zhang_slide">
+            <img src="img/2.jpg" alt="幻灯片2" class="zhang_slide-image">
+            <div class="zhang_slide-text">213张钧乔</div>
+        </div>
+        
+        <!-- 幻灯片 3 -->
+        <div class="zhang_slide">
+            <img src="img/3.jpg" alt="幻灯片3" class="zhang_slide-image">
+            <div class="zhang_slide-text">213张钧乔</div>
+        </div>
+    </div>
+
+</body>
+</html>

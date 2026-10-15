@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>背景颜色动画</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			min-height: 100vh;
+			margin: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: #f3f4f6;
+		}
+
+		.zhang_color-box {
+			width: 240px;
+			height: 180px;
+			border-radius: 12px;
+			animation: change-color 8s infinite, float-turn 3s ease-in-out infinite alternate;
+		}
+
+		@keyframes change-color {
+			0%, 100% { background-color: #ef476f; }
+			25% { background-color: #ffd166; }
+			50% { background-color: #06d6a0; }
+			75% { background-color: #118ab2; }
+		}
+
+		@keyframes float-turn {
+			from { transform: translateY(0) rotate(-3deg); }
+			to { transform: translateY(-18px) rotate(3deg); }
+		}
+	</style>
+</head>
+<body>
+	<div class="zhang_color-box"></div>
+</body>
+</html>

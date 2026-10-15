@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .zhang_title{
+            width: 400px;
+            height: 60px;
+            border: 1px solid #999;
+            margin: 20px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+        .zhang_title h2{
+            font-size: 20px;
+        }
+        .zhang_title a{
+            text-decoration: none;
+            color: #333;
+        }
+        .zhang_title:first-child{
+            display: block;
+            justify-content: space-between;
+            background-color: #f00;
+        }
+        .zhang_title:nth-child(2){
+            display: flex;
+            justify-content: space-between;
+            border-top: #333 1px solid;
+        }
+        .zhang_title:nth-child(2) h2{
+            /* 占盒子中间的所有空间，可以把文字和更多进行分开 */
+            flex-grow: 1;
+        }
+        .zhang_title:nth-child(3){
+            /* position是绝对定位，可以把图片和文字重合放在一起 */
+            position: relative;
+            border-bottom: #333 1px solid;
+        }
+        .zhang_title:nth-child(3) a{
+            /* position中的relative和absolute一定要一起使用，一个是父元素，一个是子元素 */
+            position: absolute;
+            right: 20px;
+            top:0;
+        }
+    </style>
+</head>
+<body>
+    <div class="zhang_title">
+        <h2>张钧乔的标题</h2>
+        <a href="#">更多</a>
+    </div>
+    <div class="zhang_title">
+        <h2>张钧乔的标题</h2>
+        <a href="#">更多</a>
+    </div>
+    <div class="zhang_title">
+        <h2>张钧乔的标题</h2>
+        <a href="#">更多</a>
+    </div>
+    <div class="zhang_title">
+        <h2>张钧乔的标题</h2>
+        <a href="#">更多</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        h2,h3,p{
+            padding:0;
+            margin:0;
+        }
+        #zhang_box{
+            width: 400px;
+            border: 1px solid #706e6e;
+            padding: 8px;
+            font-size: 12px;
+            margin: 20px;
+        }
+        #zhang_box h3{
+            font-size:16px;
+            /* 居中 */
+            text-align: center;
+            line-height: 33px;
+            /* 字间距 */
+            letter-spacing: 3px;
+            color: #297bed;
+        }
+        #zhang_box p{
+            line-height: 150%;
+            color: #eb9742;
+            /* 首行缩进 */
+            text-indent: 2em;
+        }
+        #zhang_box a{
+            color: rgb(0, 17, 255);
+            text-decoration: none;
+            /* 加粗 */
+            font-weight: bold;
+        }
+        .zhang_yname{
+            color: #333;
+            font-weight: bold;
+        }
+        .zhang_student-id{
+            color: #297bed;
+            font-weight: bold;
+        }
+        .zhang_difficulty{
+            color: #e53935;
+            font-weight: bold;
+        }
+        .zhang_knowledge-points{
+            border: 1px solid #ba2bf7;
+        }
+    </style>
+</head>
+<body>
+    <h2>css进阶</h2>
+    <div id="zhang_box">
+        <h3>css那些事</h3>
+        <p>
+            学号：<span class="zhang_student-id">0213</span>，姓名：<span class="zhang_yname">张钧乔</span>，班级：计算机24005，对于《高级网页设计》课程的按年度认知：<span class="zhang_difficulty">中等</span>。
+            这个例子对应的知识点是：<span class="zhang_knowledge-points">群组选择器、后代选择器、层叠与继承</span>。
+            <a href="#">更多>></a>
+        </p>
+    </div>
+    <!-- 学号：蓝色加粗；姓名:深色加粗；难度的值：红色加粗；知识点：紫色边框，边框为额外内容，使用内部css -->
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body{
+            background: #f5f7fa;
+            padding: 20px;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        .zhang_box{
+            /* 所有选择器的名称 */
+            width: 430px;
+            margin: 0 auto;
+        }
+        .zhang_zitem{
+            width: 100%;
+            height: 190px;
+            border: 1px solid #ececec;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            /* 显示左图右文的关键代码 */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            margin-bottom: 18px;
+        }
+        .zhang_zitem img{
+            width: 150px;
+            height: 150px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+        .zhang_ytext{
+            flex-grow: 1;
+            width: 200px;
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            margin-left: 22px;
+            flex-wrap: wrap;
+        }
+        .zhang_ytext h3{
+            font-size: 20px;
+            width: 100%;
+            line-height: 1.4;
+            color: #333;
+            margin-top: 6px;
+        }
+        .zhang_meta{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        .zhang_author{
+            font-size: 12px;
+            color: #999;
+            padding-left: 3px;
+        }
+        .zhang_time{
+            font-size: 12px;
+            color: #999;
+            margin-left: auto;
+            margin-right: 8px;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="zhang_box">
+        <div class="zhang_zitem">
+            <img src="./img/4.jpg" alt="图片">
+        <div class="zhang_ytext">
+            <h3>标题</h3>
+            <div class="zhang_meta">
+                <span class="zhang_author">张钧乔</span>
+                <span class="zhang_time">2026-9-21</span>
+            </div>
+         </div>
+        </div>
+
+        <div class="zhang_zitem">
+            <img src="./img/7.jpg" alt="图片">
+        <div class="zhang_ytext">
+            <h3>标题</h3>
+            <div class="zhang_meta">
+                <span class="zhang_author">张钧乔</span>
+                <span class="zhang_time">2026-9-21</span>
+            </div>
+         </div>
+        </div>
+
+        <div class="zhang_zitem">
+            <img src="./img/6.jpg" alt="图片">
+        <div class="zhang_ytext">
+            <h3>标题</h3>
+            <div class="zhang_meta">
+                <span class="zhang_author">张钧乔</span>
+                <span class="zhang_time">2026-9-21</span>
+            </div>
+         </div>
+        </div>
+
+    </div>
+</body>
+</html>

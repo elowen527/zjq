@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>张钧乔 CSS 长度单位</title>
+    <style>
+        :root {
+            --zhang_ink: #182230;
+            --zhang_muted: #667085;
+            --zhang_paper: #f4f0e8;
+            --zhang_white: #ffffff;
+            --zhang_blue: #e9693f;
+            --zhang_blue-dark: #b8472d;
+            --zhang_violet: #277b78;
+            --zhang_line: #d9d5cb;
+            --zhang_shadow: 0 18px 50px rgba(31, 48, 36, 0.14);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--zhang_ink);
+            background: var(--zhang_paper);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            line-height: 1.7;
+            padding: 40px 20px;
+        }
+
+        .zhang_page-shell {
+            width: min(1120px, calc(100% - 40px));
+            margin: 0 auto;
+        }
+
+        .zhang_site-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 0;
+        }
+
+        .zhang_brand {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            text-decoration: none;
+            font-weight: 700;
+            color: var(--zhang_ink);
+        }
+
+        .zhang_brand-mark {
+            display: grid;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            color: var(--zhang_white);
+            background: var(--zhang_blue);
+            border-radius: 12px 12px 12px 3px;
+            font-size: 20px;
+        }
+
+        .zhang_brand-text small {
+            display: block;
+            color: var(--zhang_muted);
+            font-size: 11px;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        .zhang_nav-link {
+            color: var(--zhang_muted);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .zhang_nav-link:hover {
+            color: var(--zhang_blue);
+        }
+
+        .zhang_hero {
+            padding: 54px 0 78px;
+        }
+
+        .zhang_eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 20px;
+            color: var(--zhang_blue);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .zhang_eyebrow::before {
+            width: 24px;
+            height: 2px;
+            background: var(--zhang_blue);
+            content: "";
+        }
+
+        .zhang_hero h1 {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(36px, 5vw, 64px);
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .zhang_hero h1 span {
+            display: block;
+            color: var(--zhang_blue);
+        }
+
+        .zhang_hero-copy {
+            max-width: 610px;
+            margin: 24px 0 0;
+            color: var(--zhang_muted);
+            font-size: 17px;
+        }
+
+        .zhang_section {
+            padding: 36px 0 84px;
+        }
+
+        .zhang_section-heading {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .zhang_section-heading h2 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .zhang_section-heading p {
+            margin: 0;
+            color: var(--zhang_muted);
+            font-size: 14px;
+        }
+
+        .zhang_card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .zhang_card {
+            padding: 26px;
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid var(--zhang_line);
+            border-radius: 4px;
+            box-shadow: 0 8px 24px rgba(31, 48, 89, 0.05);
+        }
+
+        .zhang_card h3 {
+            margin: 0 0 6px;
+            font-size: 18px;
+            color: var(--zhang_violet);
+        }
+
+        .zhang_card .zhang_unit-name {
+            display: inline-block;
+            padding: 2px 10px;
+            background: var(--zhang_violet);
+            color: var(--zhang_white);
+            border-radius: 4px;
+            font-family: "Courier New", monospace;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .zhang_card p {
+            margin: 0 0 16px;
+            color: var(--zhang_muted);
+            font-size: 14px;
+        }
+
+        .zhang_demo-box {
+            display: grid;
+            place-items: center;
+            min-height: 80px;
+            padding: 16px;
+            background: var(--zhang_paper);
+            border-radius: 4px;
+            border: 1px dashed var(--zhang_line);
+        }
+
+        .zhang_demo-inner {
+            background: var(--zhang_blue);
+            color: var(--zhang_white);
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 4px;
+        }
+
+        /* Length unit demos */
+        .zhang_demo-px .zhang_demo-inner {
+            width: 150px;
+            height: 50px;
+        }
+
+        .zhang_demo-em .zhang_demo-inner {
+            width: 10em;
+            font-size: 14px;
+        }
+
+        .zhang_demo-rem .zhang_demo-inner {
+            width: 10rem;
+        }
+
+        .zhang_demo-percent .zhang_demo-inner {
+            width: 50%;
+            min-width: 120px;
+        }
+
+        .zhang_demo-vh .zhang_demo-inner {
+            height: 15vh;
+        }
+
+        .zhang_demo-vw .zhang_demo-inner {
+            width: 20vw;
+            min-width: 120px;
+        }
+
+        .zhang_demo-vmin .zhang_demo-inner {
+            width: 15vmin;
+            height: 15vmin;
+        }
+
+        .zhang_demo-vmax .zhang_demo-inner {
+            width: 10vmax;
+            height: 10vmax;
+        }
+
+        .zhang_demo-ch .zhang_demo-inner {
+            width: 20ch;
+        }
+
+        .zhang_demo-ex .zhang_demo-inner {
+            height: 10ex;
+        }
+
+        .zhang_demo-pt .zhang_demo-inner {
+            width: 100pt;
+        }
+
+        .zhang_demo-pc .zhang_demo-inner {
+            width: 10pc;
+        }
+
+        .zhang_demo-cm .zhang_demo-inner {
+            width: 5cm;
+        }
+
+        .zhang_demo-mm .zhang_demo-inner {
+            width: 50mm;
+        }
+
+        .zhang_demo-in .zhang_demo-inner {
+            width: 2in;
+        }
+
+        .zhang_demo-container {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .zhang_demo-relative {
+            font-size: 20px;
+        }
+
+        .zhang_demo-relative .zhang_demo-inner {
+            width: 5em;
+            font-size: 14px;
+        }
+
+        .zhang_demo-responsive {
+            width: 50%;
+            min-width: 150px;
+        }
+
+        .zhang_demo-responsive .zhang_demo-inner {
+            width: 100%;
+        }
+
+        .zhang_footer {
+            padding: 26px 0 34px;
+            color: var(--zhang_muted);
+            border-top: 1px solid var(--zhang_line);
+            font-size: 13px;
+        }
+
+        @media (max-width: 720px) {
+            .zhang_hero {
+                padding: 48px 0 58px;
+            }
+
+            .zhang_section-heading {
+                display: block;
+            }
+
+            .zhang_section-heading p {
+                margin-top: 6px;
+            }
+
+            .zhang_card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="zhang_page-shell">
+        <header class="zhang_site-header">
+            <a class="zhang_brand" href="index.html">
+                <span class="zhang_brand-mark">张</span>
+                <span class="zhang_brand-text">张钧乔<small>ADVANCED WEB DESIGN</small></span>
+            </a>
+            <a class="zhang_nav-link" href="index.html">返回目录</a>
+        </header>
+
+        <main>
+            <section class="zhang_hero">
+                <p class="zhang_eyebrow">CSS LENGTH UNITS</p>
+                <h1>CSS 长度<span>单位</span></h1>
+                <p class="zhang_hero-copy">从绝对单位到相对单位，从视口单位到容器查询单位——理解 CSS 中各种长度单位的用途与差异。</p>
+            </section>
+
+            <section class="zhang_section">
+                <div class="zhang_section-heading">
+                    <h2>绝对单位</h2>
+                    <p>固定物理尺寸，不随环境变化</p>
+                </div>
+                <div class="zhang_card-grid">
+                    <div class="zhang_card zhang_demo-px">
+                        <h3>px — 像素</h3>
+                        <span class="zhang_unit-name">150px × 50px</span>
+                        <p>最常用单位。1px 等于设备的一个物理像素（在高 DPI 屏幕上可能对应多个物理像素）。</p>
+                        <div class="zhang_demo-box">
+                            <div class="zhang_demo-inner">150px × 50px</div>
+                        </div>
+                    </div>
+
+                    <div class="zhang_card zhang_demo-pt">
+                        <h3>pt — 点</h3>
+                        <span class="zhang_unit-name">100pt</span>
+                        <p>印刷单位，1pt = 1/72 英寸。常用于打印样式表。</p>
+                        <div class="zhang_demo-box">
+                            <div class="zhang_demo-inner">100pt</div>
+                        </div>
+                    </div>
+
+                    <div class="zhang_card zhang_demo-pc">
+                        <h3>pc — 派卡</h3>
+                        <span class="zhang_unit-name">10pc</span>
+                        <p>印刷单位，1pc = 12pt = 1/6 英寸。</p>
+                        <div class="zhang_demo-box">
+                            <div class="zhang_demo-inner">10pc</div>
+                        </div>
+                    </div>
+
+                    <div class="zhang_card zhang_demo-cm">
+                        <h3>cm — 厘米</h3>
+                        <span class="zhang_unit-name">5cm</span>
+                        <p>物理厘米，1cm = 37.8px。适合打印布局。</p>
+                        <div class="zhang_demo-box">
+                            <div class="zhang_demo-inner">5cm</div>
+                        </div>
+                    </div>
+
+                    <div class="zhang_card zhang_demo-mm">
+                        <h3>mm — 毫米</h3>
+                        <span class="zhang_unit-name">50mm</span>
+                        <p>物理毫米，1mm = 3.78px。</p>
+                        <div class="zhang_demo-box">
+                            <div class="zhang_demo-inner">50mm</div>
+                        </div>
+                    </div>
+
+                    <div class="zhang_card zhang_demo-in">
+                        <h3>in — 英寸</h3>
+                        <span class="zhang_unit-name">2in</span>
+                        <p>物理英寸，1in = 96px = 2.54cm。</p>
+                        <div class="zhang_demo-box">
+                            <div class="zhang_demo-inner">2in</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="zhang_section">
+                <div class="zhang_section-heading">
+                    <h2>相对单位</h2>
+                    <p>相对于父元素或根元素计算</p>
+                </div>
+                <div class="zhang_card-grid">
+                    <div class="zhang_card zhang_demo-em">
+                        <h3>em — 相对父元素</h3>
+                        <span class="zhang_unit-name">10em (父元素 14px)</span>
+                        <p>相对于父元素的 font-size。此处父元素为 14px，所以 10em = 140px。</p>
+                        <div class="zhang_demo-box">
+                            <div class="zhang_demo-inner" style="font-size:14px;">10em = 140px</div>
+                        </div>
+                    </div>
+
+                    <div class="zhang_card zhang_demo-rem">
+                        <h3>rem — 相对根元素</h3>
+                        <span class="zhang_unit-name">10rem</span>
+                        <p>相对于根元素（html）的 font-size。默认 1rem = 16px，不受嵌套影响。</p>
+                        <div class="zhang_demo-box">
+                            <div class="zhang_demo-inner">10rem = 160px</div>
+                        </div>
+                    </div>
+
+                    <div class="zhang_card zhang_demo-relative" style="padding:26px;background:rgba(255,255,255,0.82);border:1px solid var(--zhang_line);border-radius:4px;box-shadow:0 8px 24px rgba(31,48,89,0.05);">
+                        <h3 style="margin:0 0 6px;font-size:18px;color:var(--zhang_violet);">em 嵌套特性</h3>
+                        <span class="zhang_unit-name" style="display:inline-block;padding:2px 10px;background:var(--zhang_violet);color:var(--zhang_white);border-radius:4px;font-family:'Courier New',monospace;font-size:16px;margin-bottom:10px;">父 20px → 子 5em</span>
+                        <p style="margin:0 0 16px;color:var(--zhang_muted);font-size:14px;">em 在嵌套时会累积：父元素 20px，子元素 5em = 100px。</p>
+                        <div class="zhang_demo-box" style="display:grid;place-items:center;min-height:80px;padding:16px;background:var(--zhang_paper);border-radius:4px;border:1px dashed var(--zhang_line);">
+                            <div class="zhang_demo-inner" style="width:5em;font-size:14px;background:var(--zhang_blue);color:var(--zhang_white);padding:8px 16px;border-radius:4px;text-align:center;">5em = 100px</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="zhang_section">
+                <div class="zhang_section-heading">
+                    <h2>视口单位</h2>
+                    <p>相对于浏览器视口大小</p>
+                </div>
+                <div class="zhang_card-grid">
+                    <div class="zhang_card zhang_demo-vw">
+                        <h3>vw — 视口宽度</h3>
+                        <span class="zhang_unit-name">20vw</span>
+                        <p>1vw = 视口宽度的 1%。随窗口宽度变化。</p>
+                        <div class="zhang_demo-box">
+                            <div class="zhang_demo-inner">20vw</div>
+                        </div>
+                    </div>
+
+                    <div class="zhang_card zhang_demo-vh">
+                        <h3>vh — 视口高度</h3>
+                        <span class="zhang_unit-name">15vh</span>
+                        <p>1vh = 视口高度的 1%。随窗口高度变化。</p>
+                        <div class="zhang_demo-box">
+                            <div class="zhang_demo-inner">15vh</div>
+                        </div>
+                    </div>
+
+                    <div class="zhang_card zhang_demo-vmin">
+                        <h3>vmin — 视口较小边</h3>
+                        <span class="zhang_unit-name">15vmin</span>
+                        <p>取 vw 和 vh 中较小值的 1%。</p>
+                        <div class="zhang_demo-box">
+                            <div class="zhang_demo-inner">15vmin</div>
+                        </div>
+                    </div>
+
+                    <div class="zhang_card zhang_demo-vmax">
+                        <h3>vmax — 视口较大边</h3>
+                        <span class="zhang_unit-name">10vmax</span>
+                        <p>取 vw 和 vh 中较大值的 1%。</p>
+                        <div class="zhang_demo-box">
+                            <div class="zhang_demo-inner">10vmax</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="zhang_section">
+                <div class="zhang_section-heading">
+                    <h2>其他单位</h2>
+                    <p>特殊场景使用</p>
+                </div>
+                <div class="zhang_card-grid">
+                    <div class="zhang_card zhang_demo-percent">
+                        <h3>% — 百分比</h3>
+                        <span class="zhang_unit-name">50%</span>
+                        <p>相对于父元素的对应属性值。</p>
+                        <div class="zhang_demo-box">
+                            <div class="zhang_demo-inner">50%</div>
+                        </div>
+                    </div>
+
+                    <div class="zhang_card zhang_demo-ch">
+                        <h3>ch — 字符宽度</h3>
+                        <span class="zhang_unit-name">20ch</span>
+                        <p>相对于当前字体中 "0" 字符的宽度。</p>
+                        <div class="zhang_demo-box">
+                            <div class="zhang_demo-inner">20ch</div>
+                        </div>
+                    </div>
+
+                    <div class="zhang_card zhang_demo-ex">
+                        <h3>ex — 字符高度</h3>
+                        <span class="zhang_unit-name">10ex</span>
+                        <p>相对于当前字体中 "x" 字符的高度。</p>
+                        <div class="zhang_demo-box">
+                            <div class="zhang_demo-inner">10ex</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="zhang_footer">
+            张钧乔 · 《高级网页设计》课堂实践 — CSS 长度单位
+        </footer>
+    </div>
+</body>
+</html>
