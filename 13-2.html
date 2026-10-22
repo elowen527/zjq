@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>张钧乔 Lucide SVG 图标</title>
+    <script src="cdn/lucide.min.js"></script>
+    <style>
+        :root {
+            --zhang_ink: #182230;
+            --zhang_muted: #667085;
+            --zhang_paper: #f4f0e8;
+            --zhang_white: #ffffff;
+            --zhang_blue: #e9693f;
+            --zhang_blue-dark: #b8472d;
+            --zhang_violet: #277b78;
+            --zhang_line: #d9d5cb;
+            --zhang_shadow: 0 18px 50px rgba(31, 48, 36, 0.14);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--zhang_ink);
+            background: var(--zhang_paper);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            line-height: 1.7;
+            padding: 40px 20px;
+        }
+
+        .zhang_page-shell {
+            width: min(1120px, calc(100% - 40px));
+            margin: 0 auto;
+        }
+
+        .zhang_site-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 0;
+        }
+
+        .zhang_brand {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            text-decoration: none;
+            font-weight: 700;
+            color: var(--zhang_ink);
+        }
+
+        .zhang_brand-mark {
+            display: grid;
+            width: 42px;
+            height: 42px;
+            place-items: center;
+            color: var(--zhang_white);
+            background: var(--zhang_blue);
+            border-radius: 12px 12px 12px 3px;
+            font-size: 20px;
+        }
+
+        .zhang_brand-text small {
+            display: block;
+            color: var(--zhang_muted);
+            font-size: 11px;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        .zhang_nav-link {
+            color: var(--zhang_muted);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .zhang_nav-link:hover {
+            color: var(--zhang_blue);
+        }
+
+        .zhang_hero {
+            text-align: center;
+            padding: 60px 0 40px;
+        }
+
+        .zhang_hero h1 {
+            margin: 0;
+            font-size: clamp(32px, 5vw, 52px);
+        }
+
+        .zhang_hero p {
+            max-width: 640px;
+            margin: 16px auto 0;
+            color: var(--zhang_muted);
+            font-size: 17px;
+        }
+
+        .zhang_section-title {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 22px;
+        }
+
+        .zhang_section-title h2 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .zhang_section-title p {
+            margin: 0;
+            color: var(--zhang_muted);
+            font-size: 14px;
+        }
+
+        .zhang_icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 18px;
+            margin-bottom: 56px;
+        }
+
+        .zhang_icon-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 28px 16px;
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid var(--zhang_line);
+            border-radius: 4px;
+            box-shadow: 0 8px 24px rgba(31, 48, 89, 0.05);
+            text-align: center;
+            transition: transform 180ms ease, box-shadow 180ms ease;
+        }
+
+        .zhang_icon-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--zhang_shadow);
+        }
+
+        .zhang_icon-card svg {
+            width: 36px;
+            height: 36px;
+            color: var(--zhang_blue);
+            stroke-width: 2;
+            line-height: 1;
+        }
+
+        .zhang_icon-card span {
+            font-size: 13px;
+            color: var(--zhang_muted);
+            font-family: "Consolas", "Monaco", monospace;
+        }
+
+        .zhang-size-demo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            padding: 36px;
+            background: var(--zhang_white);
+            border: 1px solid var(--zhang_line);
+            border-radius: 4px;
+            margin-bottom: 56px;
+            flex-wrap: wrap;
+        }
+
+        .zhang-size-demo svg {
+            color: var(--zhang_violet);
+            stroke-width: 2;
+            line-height: 1;
+        }
+
+        .zhang-size-demo .zhang_size-xs { width: 16px; height: 16px; }
+        .zhang-size-demo .zhang_size-sm { width: 24px; height: 24px; }
+        .zhang-size-demo .zhang_size-md { width: 32px; height: 32px; }
+        .zhang-size-demo .zhang_size-lg { width: 48px; height: 48px; }
+        .zhang-size-demo .zhang_size-xl { width: 64px; height: 64px; }
+
+        .zhang-color-demo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            padding: 36px;
+            background: var(--zhang_white);
+            border: 1px solid var(--zhang_line);
+            border-radius: 4px;
+            margin-bottom: 56px;
+            flex-wrap: wrap;
+        }
+
+        .zhang-color-demo svg {
+            width: 36px;
+            height: 36px;
+            stroke-width: 2;
+            line-height: 1;
+        }
+
+        .zhang-color-demo .zhang_color-blue { color: var(--zhang_blue); }
+        .zhang-color-demo .zhang_color-violet { color: var(--zhang_violet); }
+        .zhang-color-demo .zhang_color-gold { color: #d4a017; }
+        .zhang-color-demo .zhang_color-green { color: #2d8a4e; }
+        .zhang-color-demo .zhang_color-red { color: #c0392b; }
+
+        .zhang-stroke-demo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 28px;
+            padding: 36px;
+            background: var(--zhang_white);
+            border: 1px solid var(--zhang_line);
+            border-radius: 4px;
+            margin-bottom: 56px;
+            flex-wrap: wrap;
+        }
+
+        .zhang-stroke-demo svg {
+            width: 40px;
+            height: 40px;
+            color: var(--zhang_blue);
+            line-height: 1;
+        }
+
+        .zhang-stroke-demo .zhang_stroke-thin { stroke-width: 1; }
+        .zhang-stroke-demo .zhang_stroke-normal { stroke-width: 2; }
+        .zhang-stroke-demo .zhang_stroke-thick { stroke-width: 3; }
+
+        .zhang-compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 56px;
+        }
+
+        .zhang-compare-card {
+            padding: 28px;
+            background: rgba(255, 255, 255, 0.82);
+            border: 1px solid var(--zhang_line);
+            border-radius: 4px;
+        }
+
+        .zhang-compare-card h3 {
+            margin: 0 0 8px;
+            font-size: 18px;
+            color: var(--zhang_blue);
+        }
+
+        .zhang-compare-card p {
+            margin: 0 0 20px;
+            color: var(--zhang_muted);
+            font-size: 14px;
+        }
+
+        .zhang-compare-icons {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .zhang-compare-icons svg {
+            width: 32px;
+            height: 32px;
+            color: var(--zhang_ink);
+            stroke-width: 2;
+        }
+
+        @media (max-width: 720px) {
+            .zhang_page-shell {
+                width: min(100% - 28px, 560px);
+            }
+
+            .zhang_icon-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+
+            .zhang-site-header {
+                padding: 18px 0;
+            }
+
+            .zhang_hero {
+                padding: 40px 0 28px;
+            }
+
+            .zhang-compare {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="zhang_page-shell">
+        <header class="zhang_site-header">
+            <a class="zhang_brand" href="index.html">
+                <span class="zhang_brand-mark">张</span>
+                <span class="zhang_brand-text">张钧乔<small>LUCIDE SVG ICONS</small></span>
+            </a>
+            <a class="zhang_nav-link" href="index.html">返回首页</a>
+        </header>
+
+        <main>
+            <section class="zhang_hero">
+                <h1>Lucide SVG 图标</h1>
+                <p>Lucide 是基于 Ionicons 开源图标库构建的 SVG 图标集。每个图标都是独立的 SVG 矢量图形，通过 lucide.js 的 createIcons() 方法将带有 data-lucide 属性的元素替换为内联 SVG。SVG 图标可通过 CSS 的 width、height、color、stroke-width 等属性灵活控制样式。</p>
+            </section>
+
+            <section>
+                <div class="zhang_section-title">
+                    <h2>常用图标展示</h2>
+                    <p>SVG 矢量图标 · Lucide</p>
+                </div>
+                <div class="zhang_icon-grid">
+                    <div class="zhang_icon-card"><i data-lucide="house"></i><span>house</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="user"></i><span>user</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="heart"></i><span>heart</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="star"></i><span>star</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="search"></i><span>search</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="mail"></i><span>mail</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="camera"></i><span>camera</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="music"></i><span>music</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="shopping-cart"></i><span>shopping-cart</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="book"></i><span>book</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="settings"></i><span>settings</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="bell"></i><span>bell</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="cloud"></i><span>cloud</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="flame"></i><span>flame</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="flag"></i><span>flag</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="gift"></i><span>gift</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="pen"></i><span>pen</span></div>
+                    <div class="zhang_icon-card"><i data-lucide="plane"></i><span>plane</span></div>
+                </div>
+            </section>
+
+            <section>
+                <div class="zhang_section-title">
+                    <h2>尺寸控制</h2>
+                    <p>通过 CSS width / height 控制 SVG 图标大小</p>
+                </div>
+                <div class="zhang-size-demo">
+                    <i data-lucide="star" class="zhang_size-xs"></i>
+                    <i data-lucide="star" class="zhang_size-sm"></i>
+                    <i data-lucide="star" class="zhang_size-md"></i>
+                    <i data-lucide="star" class="zhang_size-lg"></i>
+                    <i data-lucide="star" class="zhang_size-xl"></i>
+                </div>
+            </section>
+
+            <section>
+                <div class="zhang_section-title">
+                    <h2>颜色控制</h2>
+                    <p>通过 CSS color 控制 SVG 图标颜色</p>
+                </div>
+                <div class="zhang-color-demo">
+                    <i data-lucide="heart" class="zhang_color-blue"></i>
+                    <i data-lucide="heart" class="zhang_color-violet"></i>
+                    <i data-lucide="heart" class="zhang_color-gold"></i>
+                    <i data-lucide="heart" class="zhang_color-green"></i>
+                    <i data-lucide="heart" class="zhang_color-red"></i>
+                </div>
+            </section>
+
+            <section>
+                <div class="zhang_section-title">
+                    <h2>描边粗细</h2>
+                    <p>通过 stroke-width 控制 SVG 线条粗细</p>
+                </div>
+                <div class="zhang-stroke-demo">
+                    <i data-lucide="pen" class="zhang_stroke-thin"></i>
+                    <i data-lucide="pen" class="zhang_stroke-normal"></i>
+                    <i data-lucide="pen" class="zhang_stroke-thick"></i>
+                </div>
+            </section>
+
+            <section>
+                <div class="zhang_section-title">
+                    <h2>字体图标 vs SVG 图标</h2>
+                    <p>两种图标技术对比</p>
+                </div>
+                <div class="zhang-compare">
+                    <div class="zhang-compare-card">
+                        <h3>Font Awesome（字体图标）</h3>
+                        <p>通过 @font-face 加载字体文件，使用 CSS 伪元素映射 Unicode 字符。优点：兼容性好，一次加载全部图标。缺点：无法使用多色图标，伪元素可访问性较差。</p>
+                        <div class="zhang-compare-icons">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        </div>
+                    </div>
+                    <div class="zhang-compare-card">
+                        <h3>Lucide（SVG 图标）</h3>
+                        <p>每个图标都是独立的 SVG 矢量图形，通过 JS 动态插入内联 SVG。优点：支持多色、描边可控、CSS 样式灵活、可访问性好。缺点：需要 JS 支持，按需加载需额外配置。</p>
+                        <div class="zhang-compare-icons">
+                            <i data-lucide="house"></i>
+                            <i data-lucide="user"></i>
+                            <i data-lucide="heart"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            张钧乔 · Lucide SVG 图标实践 · SVG 矢量图形，CSS 控制样式
+        </footer>
+    </div>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

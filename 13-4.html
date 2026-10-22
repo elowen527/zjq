@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>张钧乔 移动端底部导航 - SVG 图标版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(180deg, #2193b0 0%, #6dd5ed 100%);
+            min-height: 100vh;
+            padding-bottom: 70px;
+        }
+
+        .zhang_demo-content {
+            padding: 40px 20px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .zhang_demo-content h1 {
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+
+        .zhang_demo-content p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* 底部导航 */
+        .zhang_bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            background: #ffffff;
+            border-top: 1px solid #e8e8e8;
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .zhang_nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 4px;
+            text-decoration: none;
+            color: #999999;
+            font-size: 10px;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .zhang_nav-item:active,
+        .zhang_nav-item.active {
+            color: #4a6cf7;
+        }
+
+        .zhang_nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 2px;
+            position: relative;
+        }
+
+        .zhang_nav-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .zhang_nav-text {
+            line-height: 1.2;
+        }
+
+        /* 数字徽章 */
+        .zhang_badge-num {
+            position: absolute;
+            top: -6px;
+            right: calc(50% - 22px);
+            min-width: 16px;
+            height: 16px;
+            padding: 0 4px;
+            border-radius: 8px;
+            background: #ff4757;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: bold;
+            line-height: 16px;
+            text-align: center;
+        }
+
+        /* 红点 */
+        .zhang_badge-dot {
+            position: absolute;
+            top: -2px;
+            right: calc(50% - 18px);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff4757;
+        }
+    </style>
+</head>
+<body>
+    <div class="zhang_demo-content">
+        <h1>移动端底部导航</h1>
+        <p>SVG 图标版本</p>
+        <p>13-4.html</p>
+    </div>
+
+    <nav class="zhang_bottom-nav">
+        <a href="#" class="zhang_nav-item active">
+            <span class="zhang_nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            </span>
+            <span class="zhang_nav-text">首页</span>
+        </a>
+        <a href="#" class="zhang_nav-item">
+            <span class="zhang_nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                <span class="zhang_badge-num">3</span>
+            </span>
+            <span class="zhang_nav-text">发现</span>
+        </a>
+        <a href="#" class="zhang_nav-item">
+            <span class="zhang_nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0 0 20 4H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                <span class="zhang_badge-num">8</span>
+            </span>
+            <span class="zhang_nav-text">购物车</span>
+        </a>
+        <a href="#" class="zhang_nav-item">
+            <span class="zhang_nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span class="zhang_badge-dot"></span>
+            </span>
+            <span class="zhang_nav-text">我的</span>
+        </a>
+    </nav>
+</body>
+</html>

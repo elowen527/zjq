@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>张钧乔 移动端底部导航 - 字体图标版</title>
+    <link rel="stylesheet" href="cdn/fontawesome-all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-bottom: 70px;
+        }
+
+        .zhang_demo-content {
+            padding: 40px 20px;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .zhang_demo-content h1 {
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+
+        .zhang_demo-content p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        /* 底部导航 */
+        .zhang_bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            background: #ffffff;
+            border-top: 1px solid #e8e8e8;
+            box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .zhang_nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 4px;
+            text-decoration: none;
+            color: #999999;
+            font-size: 10px;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .zhang_nav-item:active,
+        .zhang_nav-item.active {
+            color: #4a6cf7;
+        }
+
+        .zhang_nav-icon {
+            font-size: 22px;
+            margin-bottom: 2px;
+            position: relative;
+        }
+
+        .zhang_nav-text {
+            line-height: 1.2;
+        }
+
+        /* 数字徽章 */
+        .zhang_badge-num {
+            position: absolute;
+            top: -6px;
+            right: calc(50% - 20px);
+            min-width: 16px;
+            height: 16px;
+            padding: 0 4px;
+            border-radius: 8px;
+            background: #ff4757;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: bold;
+            line-height: 16px;
+            text-align: center;
+        }
+
+        /* 红点 */
+        .zhang_badge-dot {
+            position: absolute;
+            top: -2px;
+            right: calc(50% - 18px);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff4757;
+        }
+    </style>
+</head>
+<body>
+    <div class="zhang_demo-content">
+        <h1>移动端底部导航</h1>
+        <p>Font Awesome 字体图标版本</p>
+        <p>13-3.html</p>
+    </div>
+
+    <nav class="zhang_bottom-nav">
+        <a href="#" class="zhang_nav-item active">
+            <span class="zhang_nav-icon"><i class="fas fa-home"></i></span>
+            <span class="zhang_nav-text">首页</span>
+        </a>
+        <a href="#" class="zhang_nav-item">
+            <span class="zhang_nav-icon"><i class="fas fa-search"></i><span class="zhang_badge-num">3</span></span>
+            <span class="zhang_nav-text">发现</span>
+        </a>
+        <a href="#" class="zhang_nav-item">
+            <span class="zhang_nav-icon"><i class="fas fa-shopping-cart"></i><span class="zhang_badge-num">8</span></span>
+            <span class="zhang_nav-text">购物车</span>
+        </a>
+        <a href="#" class="zhang_nav-item">
+            <span class="zhang_nav-icon"><i class="fas fa-user"></i><span class="zhang_badge-dot"></span></span>
+            <span class="zhang_nav-text">我的</span>
+        </a>
+    </nav>
+</body>
+</html>

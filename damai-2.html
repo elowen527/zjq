@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>大麦网 移动端底部导航 - SVG 图标版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding-bottom: 70px;
+        }
+
+        /* 页面内容区 */
+        .zhang_page-banner {
+            padding: 50px 20px 30px;
+            background: linear-gradient(135deg, #ff4d4f 0%, #ff7849 100%);
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .zhang_page-banner h1 {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        .zhang_page-banner p {
+            font-size: 12px;
+            opacity: 0.85;
+            margin-top: 6px;
+        }
+
+        .zhang_content-section {
+            padding: 16px;
+        }
+
+        .zhang_card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        }
+
+        .zhang_card h3 {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .zhang_card p {
+            font-size: 13px;
+            color: #999;
+        }
+
+        /* ========== 大麦网风格底部导航 ========== */
+        .zhang_bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            background: #ffffff;
+            border-top: 0.5px solid #e5e5e5;
+            z-index: 1000;
+            padding: 4px 0;
+            padding-bottom: calc(4px + env(safe-area-inset-bottom));
+            height: 56px;
+        }
+
+        .zhang_nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #999999;
+            font-size: 10px;
+            transition: color 0.2s;
+            position: relative;
+            gap: 2px;
+        }
+
+        .zhang_nav-item.active {
+            color: #ff4d4f;
+        }
+
+        .zhang_nav-item:active {
+            opacity: 0.6;
+        }
+
+        .zhang_nav-icon {
+            width: 22px;
+            height: 22px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zhang_nav-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .zhang_nav-text {
+            line-height: 1;
+        }
+
+        /* 数字徽章 - 大麦风格：红色圆形小徽章 */
+        .zhang_badge-num {
+            position: absolute;
+            top: -5px;
+            right: calc(50% - 20px);
+            min-width: 15px;
+            height: 15px;
+            padding: 0 4px;
+            border-radius: 8px;
+            background: #ff4d4f;
+            color: #ffffff;
+            font-size: 9px;
+            font-weight: 600;
+            line-height: 15px;
+            text-align: center;
+            border: 1.5px solid #ffffff;
+        }
+
+        /* 红点 - 大麦风格：小圆点 */
+        .zhang_badge-dot {
+            position: absolute;
+            top: -1px;
+            right: calc(50% - 16px);
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #ff4d4f;
+            border: 1.5px solid #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="zhang_page-banner">
+        <h1>大麦网</h1>
+        <p>SVG 图标版底部导航</p>
+    </div>
+
+    <div class="zhang_content-section">
+        <div class="zhang_card">
+            <h3>热门演出</h3>
+            <p>数万场演出、音乐会、戏剧等你来发现</p>
+        </div>
+        <div class="zhang_card">
+            <h3>我的订单</h3>
+            <p>随时查看已购票订单和取票二维码</p>
+        </div>
+        <div class="zhang_card">
+            <h3>发现</h3>
+            <p>探索附近精彩演出和热门活动</p>
+        </div>
+    </div>
+
+    <!-- 大麦网风格底部导航 -->
+    <nav class="zhang_bottom-nav">
+        <a href="#" class="zhang_nav-item active">
+            <span class="zhang_nav-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            </span>
+            <span class="zhang_nav-text">首页</span>
+        </a>
+        <a href="#" class="zhang_nav-item">
+            <span class="zhang_nav-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="currentColor" stroke="none"/></svg>
+            </span>
+            <span class="zhang_nav-text">发现</span>
+        </a>
+        <a href="#" class="zhang_nav-item">
+            <span class="zhang_nav-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <span class="zhang_badge-num">2</span>
+            </span>
+            <span class="zhang_nav-text">票夹</span>
+        </a>
+        <a href="#" class="zhang_nav-item">
+            <span class="zhang_nav-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span class="zhang_badge-dot"></span>
+            </span>
+            <span class="zhang_nav-text">我的</span>
+        </a>
+    </nav>
+</body>
+</html>
