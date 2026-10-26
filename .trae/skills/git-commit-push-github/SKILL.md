@@ -56,6 +56,8 @@ git push -u github master
 ## 注意事项
 
 - 本环境为 PowerShell 5，不支持 `&&` 连接命令，必须逐步执行
-- 若 SSH 推送失败（如 22 端口被限制），先用 `ssh -T -p 443 git@ssh.github.com` 验证 443 端口，再把远程 URL 改为 `ssh://git@ssh.github.com:443/elowen527/zjq.git`
+- **必须先执行** `git config core.sshCommand "C:/Windows/System32/OpenSSH/ssh.exe"`（仓库级）：本机中文用户名导致 git 自带的 MSYS ssh 无法定位 `~/.ssh` 密钥（Permission denied），Windows OpenSSH 不受影响
+- 22 端口被网络限制：远程 URL 固定使用 `ssh://git@ssh.github.com:443/elowen527/zjq.git`（443 端口），已验证可用
+- 若 push 显示 `Everything up-to-date`，用 `git ls-remote github` 对照远程 HEAD 与本地 `git log --oneline -1` 确认真实状态（传输可能已成功、仅收尾报错）
 - 若 push 被拒绝且远程仓库非空，先 `git pull --rebase github <分支>` 再 push；确需覆盖远程历史时必须先征得用户明确同意
-- 推送成功以输出中出现 `<分支> -> <分支>` 为准，确认后再向用户报告
+- 推送成功以 `git ls-remote github` 中远程分支指向本地最新提交为准，确认后再向用户报告

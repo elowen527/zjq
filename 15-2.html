@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<!-- 姓名：张钧乔，建立时间：2026-10-26 14:39:17，使用的大模型：GLM-5.3，功能名称：JavaScript程序结构演示——条件与循环 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="JavaScript 程序结构演示：if/else、switch、三元运算符等条件结构与 for、while、do-while、for-of、for-in 等循环结构">
+    <title>循环与条件 | 张钧乔</title>
+    <style>
+        :root {
+            --zjq-ink: #182230;
+            --zjq-muted: #667085;
+            --zjq-white: #ffffff;
+            --zjq-orange: #e9693f;
+            --zjq-orange-dark: #b8472d;
+            --zjq-teal: #277b78;
+            --zjq-line: #d9d5cb;
+            --zjq-shadow: 0 14px 36px rgba(31, 48, 36, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--zjq-ink);
+            background:
+                radial-gradient(circle at 88% 4%, rgba(233, 105, 63, 0.10), transparent 24rem),
+                linear-gradient(135deg, #f4f0e8 0%, #edf3ee 55%, #fffaf2 100%);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            line-height: 1.7;
+        }
+
+        code, pre {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+        }
+
+        .zjq_shell {
+            width: min(1080px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 28px 0 44px;
+        }
+
+        .zjq_top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .zjq_back {
+            color: var(--zjq-muted);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .zjq_back:hover {
+            color: var(--zjq-orange);
+        }
+
+        .zjq_badge {
+            color: var(--zjq-orange);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .zjq_header {
+            padding: 40px 0 8px;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(34px, 5vw, 54px);
+            line-height: 1.15;
+        }
+
+        h1 span {
+            color: var(--zjq-teal);
+        }
+
+        .zjq_intro {
+            max-width: 740px;
+            margin: 14px 0 0;
+            color: var(--zjq-muted);
+            font-size: 16px;
+        }
+
+        h2 {
+            margin: 44px 0 6px;
+            font-size: 24px;
+        }
+
+        .zjq_section-desc {
+            margin: 0 0 18px;
+            color: var(--zjq-muted);
+            font-size: 14px;
+        }
+
+        /* ===== 条件结构 ===== */
+        .zjq_cond-wrap {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 18px;
+        }
+
+        .zjq_panel {
+            padding: 20px 22px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid var(--zjq-line);
+            border-radius: 6px;
+            box-shadow: 0 8px 22px rgba(31, 48, 36, 0.06);
+        }
+
+        .zjq_panel h3 {
+            margin: 0 0 4px;
+            font-size: 17px;
+        }
+
+        .zjq_panel p {
+            margin: 0 0 14px;
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .zjq_input {
+            flex: 1;
+            min-width: 120px;
+            padding: 9px 12px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 4px;
+            background: #faf8f3;
+            color: var(--zjq-ink);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 14px;
+        }
+
+        .zjq_input:focus {
+            outline: none;
+            border-color: var(--zjq-teal);
+        }
+
+        .zjq_btn {
+            padding: 9px 20px;
+            border: none;
+            border-radius: 4px;
+            background: var(--zjq-teal);
+            color: var(--zjq-white);
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .zjq_btn:hover {
+            background: #1d5f5c;
+        }
+
+        .zjq_btn.zjq_btn-orange {
+            background: var(--zjq-orange);
+        }
+
+        .zjq_btn.zjq_btn-orange:hover {
+            background: var(--zjq-orange-dark);
+        }
+
+        .zjq_ladder {
+            margin: 14px 0 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .zjq_ladder li {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 7px 12px;
+            border-left: 3px solid var(--zjq-line);
+            background: #faf8f3;
+            margin-bottom: 5px;
+            font-size: 13px;
+            transition: background 150ms ease, border-color 150ms ease;
+        }
+
+        .zjq_ladder li.zjq_hit {
+            border-left-color: var(--zjq-orange);
+            background: #fdeee7;
+            font-weight: 700;
+        }
+
+        .zjq_ladder code {
+            color: var(--zjq-muted);
+        }
+
+        .zjq_result {
+            margin-top: 12px;
+            padding: 10px 14px;
+            border: 1px dashed var(--zjq-line);
+            border-radius: 4px;
+            background: #faf8f3;
+            font-size: 13.5px;
+        }
+
+        .zjq_result strong {
+            color: var(--zjq-orange-dark);
+        }
+
+        .zjq_day-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .zjq_day-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 4px;
+            background: var(--zjq-white);
+            color: var(--zjq-ink);
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .zjq_day-btn:hover {
+            border-color: var(--zjq-teal);
+        }
+
+        .zjq_day-btn.zjq_day-on {
+            background: var(--zjq-teal);
+            border-color: var(--zjq-teal);
+            color: var(--zjq-white);
+            font-weight: 700;
+        }
+
+        /* ===== 循环结构 ===== */
+        .zjq_loop-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .zjq_loop-card {
+            display: flex;
+            flex-direction: column;
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid var(--zjq-line);
+            border-top: 4px solid var(--zjq-teal);
+            border-radius: 6px;
+            box-shadow: 0 8px 22px rgba(31, 48, 36, 0.06);
+        }
+
+        .zjq_loop-head {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .zjq_loop-name {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--zjq-teal);
+        }
+
+        .zjq_loop-cn {
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_loop-desc {
+            margin: 6px 0 10px;
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_loop-card pre {
+            margin: 0 0 12px;
+            padding: 12px 14px;
+            border-radius: 4px;
+            background: var(--zjq-ink);
+            color: #d5e3df;
+            font-size: 12.5px;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .zjq_loop-out {
+            flex: 1;
+            margin-top: 12px;
+            padding: 10px 14px;
+            min-height: 74px;
+            border-radius: 4px;
+            background: #eef5f3;
+            font-size: 12.5px;
+            line-height: 1.8;
+        }
+
+        .zjq_loop-out p {
+            margin: 0;
+        }
+
+        .zjq_loop-out .zjq_final {
+            color: var(--zjq-teal);
+            font-weight: 700;
+        }
+
+        /* ===== 组合实战 ===== */
+        .zjq_combo-wrap {
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+            gap: 18px;
+        }
+
+        .zjq_mul-grid {
+            display: grid;
+            grid-template-columns: repeat(9, minmax(0, 1fr));
+            gap: 4px;
+            margin-top: 12px;
+        }
+
+        .zjq_mul-cell {
+            display: grid;
+            place-items: center;
+            padding: 6px 2px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 4px;
+            background: var(--zjq-white);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: clamp(10px, 1.3vw, 12.5px);
+        }
+
+        .zjq_mul-cell.zjq_mul-diag {
+            background: var(--zjq-teal);
+            border-color: var(--zjq-teal);
+            color: var(--zjq-white);
+            font-weight: 700;
+        }
+
+        .zjq_footer {
+            margin-top: 44px;
+            padding: 22px 0 4px;
+            border-top: 1px solid var(--zjq-line);
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_footer a {
+            color: var(--zjq-teal);
+            text-decoration: none;
+        }
+
+        .zjq_footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 860px) {
+            .zjq_cond-wrap,
+            .zjq_loop-grid,
+            .zjq_combo-wrap {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="zjq_shell">
+        <nav class="zjq_top">
+            <a class="zjq_back" href="index.html">← 返回作品集首页</a>
+            <span class="zjq_badge">15-2 / STRUCTURE</span>
+        </nav>
+
+        <header class="zjq_header">
+            <h1>程序的两种<span>基本结构</span></h1>
+            <p class="zjq_intro">顺序、分支、循环是程序的三大流程结构。本页演示 JavaScript 的条件结构（if / else if / else、switch、三元运算符）与循环结构（for、while、do-while、for-of、for-in），全部示例可以点击运行。</p>
+        </header>
+
+        <!-- 条件结构 -->
+        <section aria-label="条件结构">
+            <h2>一、条件结构：让程序学会选择</h2>
+            <p class="zjq_section-desc">条件结构根据判断结果执行不同分支 —— if 适合区间判断，switch 适合离散匹配，三元运算符适合二选一赋值。</p>
+
+            <div class="zjq_cond-wrap">
+                <div class="zjq_panel">
+                    <h3>if / else if / else —— 成绩评价器</h3>
+                    <p>输入 0–100 的分数，程序从上到下依次判断，命中第一个满足的分支后不再往下走。</p>
+                    <div class="zjq_row">
+                        <input class="zjq_input" id="zjq_score_input" type="number" min="0" max="100" value="85" placeholder="输入 0-100 的分数">
+                        <button class="zjq_btn" id="zjq_score_btn" type="button">评 价</button>
+                    </div>
+                    <ul class="zjq_ladder" id="zjq_ladder">
+                        <li data-min="90" data-max="100"><span>score &gt;= 90</span><code>优秀</code></li>
+                        <li data-min="80" data-max="89"><span>score &gt;= 80</span><code>良好</code></li>
+                        <li data-min="70" data-max="79"><span>score &gt;= 70</span><code>中等</code></li>
+                        <li data-min="60" data-max="69"><span>score &gt;= 60</span><code>及格</code></li>
+                        <li data-min="0" data-max="59"><span>其他情况</span><code>不及格</code></li>
+                    </ul>
+                    <div class="zjq_result" id="zjq_score_result">输入分数后点击「评价」，看程序命中哪个分支。</div>
+                </div>
+
+                <div class="zjq_panel">
+                    <h3>switch —— 按星期安排课程</h3>
+                    <p>switch 把一个值与各个 case 逐一比对，命中后执行到 break 为止。</p>
+                    <div class="zjq_day-btns" id="zjq_day_btns"></div>
+                    <div class="zjq_result" id="zjq_day_result">点击星期按钮，查看 switch 匹配结果。</div>
+
+                    <h3 style="margin-top:20px">三元运算符 —— 一行搞定二选一</h3>
+                    <p>条件 ? 真值 : 假值，是 if/else 的简写形式。</p>
+                    <div class="zjq_row">
+                        <input class="zjq_input" id="zjq_parity_input" type="number" value="7" placeholder="输入一个整数">
+                        <button class="zjq_btn zjq_btn-orange" id="zjq_parity_btn" type="button">判 断</button>
+                    </div>
+                    <div class="zjq_result" id="zjq_parity_result">判断数字的奇偶。</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 循环结构 -->
+        <section aria-label="循环结构">
+            <h2>二、循环结构：让程序重复劳动</h2>
+            <p class="zjq_section-desc">循环由初始化、条件和步进三要素构成。点击每张卡片的「运行」按钮查看逐轮执行过程。</p>
+
+            <div class="zjq_loop-grid" id="zjq_loop_grid"></div>
+        </section>
+
+        <!-- 组合实战 -->
+        <section aria-label="循环与条件组合">
+            <h2>三、组合实战：循环 + 条件</h2>
+            <p class="zjq_section-desc">真实程序里两者总是搭配使用：循环负责重复，条件负责筛选。</p>
+
+            <div class="zjq_combo-wrap">
+                <div class="zjq_panel">
+                    <h3>break 与 continue —— 控制循环的走向</h3>
+                    <p>从 1 数到 10：遇到 3 的倍数跳过（continue），数到 8 直接停止（break）。</p>
+                    <button class="zjq_btn" id="zjq_bc_btn" type="button">运行示例</button>
+                    <div class="zjq_loop-out" id="zjq_bc_out"><p>点击按钮查看执行过程。</p></div>
+                </div>
+
+                <div class="zjq_panel">
+                    <h3>嵌套循环 —— 九九乘法表</h3>
+                    <p>外层循环控制行（i），内层循环控制列（j），共执行 9×9 = 81 次；对角线上的算式两数相同。</p>
+                    <div class="zjq_mul-grid" id="zjq_mul_grid"></div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="zjq_footer">
+            张钧乔 · 《高级网页设计》课堂实践 · <a href="index.html">返回首页</a>
+        </footer>
+    </div>
+
+    <script>
+        // 姓名：张钧乔 日期：2026-10-26 功能名称：JavaScript程序结构演示——条件与循环
+        function zjq_escapeHtml(zjq_text) {
+            return String(zjq_text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        /* ================= 条件结构 ================= */
+
+        // if / else if / else：成绩评价
+        function zjq_grade(zjq_score) {
+            if (zjq_score >= 90) {
+                return '优秀';
+            } else if (zjq_score >= 80) {
+                return '良好';
+            } else if (zjq_score >= 70) {
+                return '中等';
+            } else if (zjq_score >= 60) {
+                return '及格';
+            } else {
+                return '不及格';
+            }
+        }
+
+        document.getElementById('zjq_score_btn').addEventListener('click', function () {
+            var zjq_score = parseInt(document.getElementById('zjq_score_input').value, 10);
+            var zjq_resultEl = document.getElementById('zjq_score_result');
+            var zjq_items = document.querySelectorAll('#zjq_ladder li');
+
+            if (isNaN(zjq_score) || zjq_score < 0 || zjq_score > 100) {
+                zjq_resultEl.innerHTML = '请输入 0–100 之间的整数。';
+                return;
+            }
+
+            for (var zjq_i = 0; zjq_i < zjq_items.length; zjq_i++) {
+                var zjq_min = parseInt(zjq_items[zjq_i].getAttribute('data-min'), 10);
+                var zjq_max = parseInt(zjq_items[zjq_i].getAttribute('data-max'), 10);
+                if (zjq_score >= zjq_min && zjq_score <= zjq_max) {
+                    zjq_items[zjq_i].classList.add('zjq_hit');
+                } else {
+                    zjq_items[zjq_i].classList.remove('zjq_hit');
+                }
+            }
+
+            var zjq_gradeText = zjq_grade(zjq_score);
+            zjq_resultEl.innerHTML = '分数 <strong>' + zjq_score + '</strong> 命中分支 → 等级：<strong>' + zjq_gradeText + '</strong>（if 阶梯从上到下判断，命中即停止）';
+        });
+
+        // switch：按星期安排
+        function zjq_dayPlan(zjq_day) {
+            var zjq_plan;
+            switch (zjq_day) {
+                case 1: zjq_plan = '周一：高级网页设计课'; break;
+                case 2: zjq_plan = '周二：JavaScript 练习日'; break;
+                case 3: zjq_plan = '周三：CSS 布局专题'; break;
+                case 4: zjq_plan = '周四：前端框架预习'; break;
+                case 5: zjq_plan = '周五：作品集整理与提交'; break;
+                case 6: zjq_plan = '周六：自由练习 / 复习'; break;
+                case 7: zjq_plan = '周日：休息，劳逸结合'; break;
+                default: zjq_plan = '非法的星期值';
+            }
+            return zjq_plan;
+        }
+
+        (function () {
+            var zjq_names = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+            var zjq_wrap = document.getElementById('zjq_day_btns');
+            var zjq_html = '';
+            for (var zjq_d = 1; zjq_d <= 7; zjq_d++) {
+                zjq_html += '<button type="button" class="zjq_day-btn" data-day="' + zjq_d + '">' + zjq_names[zjq_d - 1] + '</button>';
+            }
+            zjq_wrap.innerHTML = zjq_html;
+        })();
+
+        document.getElementById('zjq_day_btns').addEventListener('click', function (zjq_event) {
+            var zjq_btn = zjq_event.target.closest('.zjq_day-btn');
+            if (!zjq_btn) { return; }
+
+            var zjq_all = document.querySelectorAll('.zjq_day-btn');
+            for (var zjq_i = 0; zjq_i < zjq_all.length; zjq_i++) {
+                zjq_all[zjq_i].classList.remove('zjq_day-on');
+            }
+            zjq_btn.classList.add('zjq_day-on');
+
+            var zjq_day = parseInt(zjq_btn.getAttribute('data-day'), 10);
+            document.getElementById('zjq_day_result').innerHTML =
+                'switch (' + zjq_day + ') 命中 case ' + zjq_day + ' → <strong>' + zjq_escapeHtml(zjq_dayPlan(zjq_day)) + '</strong>';
+        });
+
+        // 三元运算符：奇偶判断
+        document.getElementById('zjq_parity_btn').addEventListener('click', function () {
+            var zjq_n = parseInt(document.getElementById('zjq_parity_input').value, 10);
+            var zjq_resultEl = document.getElementById('zjq_parity_result');
+            if (isNaN(zjq_n)) {
+                zjq_resultEl.innerHTML = '请输入一个整数。';
+                return;
+            }
+            var zjq_parity = zjq_n % 2 === 0 ? '偶数' : '奇数';
+            zjq_resultEl.innerHTML =
+                '<code>' + zjq_n + ' % 2 === 0 ? \'偶数\' : \'奇数\'</code> → <strong>' + zjq_parity + '</strong>';
+        });
+
+        /* ================= 循环结构 ================= */
+
+        var zjq_loopDemos = [
+            {
+                name: 'for',
+                cn: '计数循环',
+                desc: '初始化、条件、步进写在一行，最适合已知次数的重复。',
+                code: 'var zjq_sum = 0;\nfor (var zjq_i = 1; zjq_i <= 10; zjq_i++) {\n    zjq_sum += zjq_i;\n}',
+                run: function () {
+                    var zjq_sum = 0, zjq_lines = [];
+                    for (var zjq_i = 1; zjq_i <= 10; zjq_i++) {
+                        zjq_sum += zjq_i;
+                        if (zjq_i <= 3 || zjq_i === 10) {
+                            zjq_lines.push('第 ' + zjq_i + ' 轮：sum = ' + zjq_sum);
+                        }
+                    }
+                    zjq_lines.push('……');
+                    zjq_lines.push('zjq_final|最终 sum = ' + zjq_sum + '（1 加到 10）');
+                    return zjq_lines;
+                }
+            },
+            {
+                name: 'while',
+                cn: '先判断后执行',
+                desc: '条件为真才进入循环体；条件一开始为假就一次都不执行。',
+                code: 'var zjq_n = 5;\nwhile (zjq_n >= 1) {\n    console.log(zjq_n);\n    zjq_n--;\n}',
+                run: function () {
+                    var zjq_n = 5, zjq_lines = [];
+                    while (zjq_n >= 1) {
+                        zjq_lines.push('n = ' + zjq_n + '，条件成立，执行循环体');
+                        zjq_n--;
+                    }
+                    zjq_lines.push('zjq_final|n = 0，条件 n >= 1 不成立 → 循环结束，起飞！');
+                    return zjq_lines;
+                }
+            },
+            {
+                name: 'do...while',
+                cn: '先执行后判断',
+                desc: '先执行一次循环体再判断条件，所以至少执行一次。',
+                code: 'var zjq_n = 10;\ndo {\n    console.log(zjq_n);\n    zjq_n++;\n} while (zjq_n < 3);',
+                run: function () {
+                    var zjq_n = 10, zjq_lines = [];
+                    zjq_lines.push('先执行循环体：输出 n = ' + zjq_n);
+                    zjq_n++;
+                    zjq_lines.push('再判断条件：n = ' + zjq_n + ' < 3 为 false → 退出');
+                    zjq_lines.push('zjq_final|即使条件一开始就不成立，do...while 仍执行了 1 次');
+                    return zjq_lines;
+                }
+            },
+            {
+                name: 'for...of',
+                cn: '遍历数组值',
+                desc: '按顺序直接取出数组（或可迭代对象）里的每个值。',
+                code: "var zjq_fruits = ['苹果', '香蕉', '橘子', '葡萄'];\nfor (var zjq_f of zjq_fruits) {\n    console.log(zjq_f);\n}",
+                run: function () {
+                    var zjq_fruits = ['苹果', '香蕉', '橘子', '葡萄'];
+                    var zjq_lines = [];
+                    for (var zjq_f of zjq_fruits) {
+                        zjq_lines.push('取到一个值：' + zjq_f);
+                    }
+                    zjq_lines.push('zjq_final|共取出 ' + zjq_fruits.length + ' 个值，数组遍历完毕');
+                    return zjq_lines;
+                }
+            },
+            {
+                name: 'for...in',
+                cn: '遍历对象键',
+                desc: '取出对象的每个属性名（键），再用 obj[key] 取值。',
+                code: "var zjq_dev = { name: '张钧乔', skill: 'JavaScript', year: 2026 };\nfor (var zjq_k in zjq_dev) {\n    console.log(zjq_k + ' = ' + zjq_dev[zjq_k]);\n}",
+                run: function () {
+                    var zjq_dev = { name: '张钧乔', skill: 'JavaScript', year: 2026 };
+                    var zjq_lines = [];
+                    for (var zjq_k in zjq_dev) {
+                        zjq_lines.push(zjq_k + ' = ' + zjq_dev[zjq_k]);
+                    }
+                    zjq_lines.push('zjq_final|for...in 拿到的是键名，再用中括号取值');
+                    return zjq_lines;
+                }
+            },
+            {
+                name: '嵌套 for',
+                cn: '循环套循环',
+                desc: '外层每走一轮，内层完整走一遍：外层 3 轮 × 内层 4 轮 = 12 次。',
+                code: 'for (var zjq_i = 1; zjq_i <= 3; zjq_i++) {\n    for (var zjq_j = 1; zjq_j <= 4; zjq_j++) {\n        console.log(zjq_i + "-" + zjq_j);\n    }\n}',
+                run: function () {
+                    var zjq_lines = [], zjq_count = 0;
+                    for (var zjq_i = 1; zjq_i <= 3; zjq_i++) {
+                        var zjq_row = [];
+                        for (var zjq_j = 1; zjq_j <= 4; zjq_j++) {
+                            zjq_row.push(zjq_i + '-' + zjq_j);
+                            zjq_count++;
+                        }
+                        zjq_lines.push('外层第 ' + zjq_i + ' 轮：内层输出 ' + zjq_row.join('、'));
+                    }
+                    zjq_lines.push('zjq_final|总共执行了 3 × 4 = ' + zjq_count + ' 次');
+                    return zjq_lines;
+                }
+            }
+        ];
+
+        (function () {
+            var zjq_grid = document.getElementById('zjq_loop_grid');
+            var zjq_html = '';
+            for (var zjq_i = 0; zjq_i < zjq_loopDemos.length; zjq_i++) {
+                var zjq_demo = zjq_loopDemos[zjq_i];
+                zjq_html += '<article class="zjq_loop-card">';
+                zjq_html += '<div class="zjq_loop-head"><span class="zjq_loop-name">' + zjq_demo.name + '</span><span class="zjq_loop-cn">' + zjq_demo.cn + '</span></div>';
+                zjq_html += '<p class="zjq_loop-desc">' + zjq_demo.desc + '</p>';
+                zjq_html += '<pre><code>' + zjq_escapeHtml(zjq_demo.code) + '</code></pre>';
+                zjq_html += '<div><button type="button" class="zjq_btn" data-loop="' + zjq_i + '">运 行</button></div>';
+                zjq_html += '<div class="zjq_loop-out" id="zjq_loop_out_' + zjq_i + '"><p>点击「运行」查看逐轮执行过程。</p></div>';
+                zjq_html += '</article>';
+            }
+            zjq_grid.innerHTML = zjq_html;
+        })();
+
+        document.getElementById('zjq_loop_grid').addEventListener('click', function (zjq_event) {
+            var zjq_btn = zjq_event.target.closest('[data-loop]');
+            if (!zjq_btn) { return; }
+
+            var zjq_index = parseInt(zjq_btn.getAttribute('data-loop'), 10);
+            var zjq_lines = zjq_loopDemos[zjq_index].run();
+            var zjq_html = '';
+            for (var zjq_i = 0; zjq_i < zjq_lines.length; zjq_i++) {
+                var zjq_line = zjq_lines[zjq_i];
+                if (zjq_line.indexOf('zjq_final|') === 0) {
+                    zjq_html += '<p class="zjq_final">' + zjq_escapeHtml(zjq_line.slice(10)) + '</p>';
+                } else {
+                    zjq_html += '<p>' + zjq_escapeHtml(zjq_line) + '</p>';
+                }
+            }
+            document.getElementById('zjq_loop_out_' + zjq_index).innerHTML = zjq_html;
+        });
+
+        /* ================= 组合实战 ================= */
+
+        // break 与 continue
+        document.getElementById('zjq_bc_btn').addEventListener('click', function () {
+            var zjq_lines = [];
+            for (var zjq_n = 1; zjq_n <= 10; zjq_n++) {
+                if (zjq_n % 3 === 0) {
+                    zjq_lines.push('n = ' + zjq_n + '：是 3 的倍数 → continue，跳过本轮');
+                    continue;
+                }
+                if (zjq_n === 8) {
+                    zjq_lines.push('n = 8：触发条件 → break，跳出整个循环');
+                    break;
+                }
+                zjq_lines.push('n = ' + zjq_n + '：正常输出');
+            }
+            zjq_lines.push('zjq_final|循环提前结束，3、6 被跳过，8 之后不再执行');
+            var zjq_html = '';
+            for (var zjq_i = 0; zjq_i < zjq_lines.length; zjq_i++) {
+                var zjq_line = zjq_lines[zjq_i];
+                if (zjq_line.indexOf('zjq_final|') === 0) {
+                    zjq_html += '<p class="zjq_final">' + zjq_escapeHtml(zjq_line.slice(10)) + '</p>';
+                } else {
+                    zjq_html += '<p>' + zjq_escapeHtml(zjq_line) + '</p>';
+                }
+            }
+            document.getElementById('zjq_bc_out').innerHTML = zjq_html;
+        });
+
+        // 嵌套循环：九九乘法表
+        (function () {
+            var zjq_grid = document.getElementById('zjq_mul_grid');
+            var zjq_html = '';
+            for (var zjq_i = 1; zjq_i <= 9; zjq_i++) {
+                for (var zjq_j = 1; zjq_j <= zjq_i; zjq_j++) {
+                    var zjq_diag = zjq_i === zjq_j ? ' zjq_mul-diag' : '';
+                    zjq_html += '<span class="zjq_mul-cell' + zjq_diag + '">' + zjq_j + '×' + zjq_i + '=' + (zjq_i * zjq_j) + '</span>';
+                }
+            }
+            zjq_grid.innerHTML = zjq_html;
+        })();
+    </script>
+</body>
+</html>
