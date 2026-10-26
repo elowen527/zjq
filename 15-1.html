@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<!-- 姓名：张钧乔，日期：2026-10-26，功能名称：逢7过游戏——100个盒子的数7规则演示 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="逢7过游戏：100个盒子，7的倍数、个位或十位是7的数字要过，其余直接数">
+    <title>逢 7 过 | 张钧乔</title>
+    <style>
+        :root {
+            --zjq-ink: #182230;
+            --zjq-muted: #667085;
+            --zjq-white: #ffffff;
+            --zjq-orange: #e9693f;
+            --zjq-orange-dark: #b8472d;
+            --zjq-teal: #277b78;
+            --zjq-line: #d9d5cb;
+            --zjq-shadow: 0 14px 36px rgba(31, 48, 36, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--zjq-ink);
+            background:
+                radial-gradient(circle at 88% 4%, rgba(39, 123, 120, 0.10), transparent 24rem),
+                linear-gradient(135deg, #f4f0e8 0%, #edf3ee 55%, #fffaf2 100%);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            line-height: 1.7;
+        }
+
+        .zjq_shell {
+            width: min(1080px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 28px 0 44px;
+        }
+
+        .zjq_top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .zjq_back {
+            color: var(--zjq-muted);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .zjq_back:hover,
+        .zjq_back:focus {
+            color: var(--zjq-orange);
+        }
+
+        .zjq_badge {
+            color: var(--zjq-orange);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .zjq_header {
+            padding: 40px 0 8px;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(34px, 5vw, 54px);
+            line-height: 1.15;
+        }
+
+        h1 span {
+            color: var(--zjq-orange);
+        }
+
+        .zjq_intro {
+            max-width: 720px;
+            margin: 14px 0 0;
+            color: var(--zjq-muted);
+            font-size: 16px;
+        }
+
+        .zjq_rules {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin: 28px 0 0;
+        }
+
+        .zjq_rule {
+            padding: 14px 18px;
+            background: var(--zjq-white);
+            border: 1px solid var(--zjq-line);
+            border-left: 4px solid var(--zjq-teal);
+            border-radius: 4px;
+        }
+
+        .zjq_rule strong {
+            display: block;
+            font-size: 15px;
+        }
+
+        .zjq_rule span {
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_rule code {
+            color: var(--zjq-orange-dark);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 13px;
+        }
+
+        .zjq_controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            margin: 26px 0 10px;
+        }
+
+        .zjq_btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 4px;
+            background: var(--zjq-teal);
+            color: var(--zjq-white);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .zjq-btn:hover {
+            background: #1d5f5c;
+        }
+
+        .zjq_btn.zjq_btn-orange {
+            background: var(--zjq-orange);
+        }
+
+        .zjq_btn.zjq-btn-orange:hover {
+            background: var(--zjq-orange-dark);
+        }
+
+        .zjq_stats {
+            margin-left: auto;
+            color: var(--zjq-muted);
+            font-size: 13.5px;
+        }
+
+        .zjq_stats strong {
+            color: var(--zjq-teal);
+        }
+
+        .zjq_detail {
+            min-height: 48px;
+            margin: 8px 0 18px;
+            padding: 10px 16px;
+            border: 1px dashed var(--zjq-line);
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.75);
+            color: var(--zjq-muted);
+            font-size: 14px;
+        }
+
+        .zjq_detail strong {
+            color: var(--zjq-ink);
+        }
+
+        .zjq_detail.zjq_detail-pass strong {
+            color: var(--zjq-orange-dark);
+        }
+
+        .zjq_grid {
+            display: grid;
+            grid-template-columns: repeat(10, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .zjq_box {
+            position: relative;
+            display: grid;
+            place-items: center;
+            aspect-ratio: 1 / 1;
+            padding: 0;
+            background: var(--zjq-white);
+            border: 1px solid var(--zjq-line);
+            border-radius: 6px;
+            color: var(--zjq-ink);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(14px, 2vw, 20px);
+            cursor: pointer;
+            transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease, border-color 140ms ease;
+        }
+
+        .zjq_box:hover {
+            border-color: var(--zjq-teal);
+            box-shadow: 0 6px 14px rgba(31, 48, 36, 0.12);
+            transform: translateY(-2px);
+        }
+
+        /* 满足数7规则：不显示数字，显示高亮的"过"盒子 */
+        .zjq_box .zjq_mark {
+            display: none;
+            color: var(--zjq-white);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-size: clamp(13px, 1.8vw, 18px);
+            font-weight: 700;
+        }
+
+        .zjq_box.zjq_pass {
+            background: var(--zjq-orange);
+            border-color: var(--zjq-orange-dark);
+        }
+
+        .zjq_box.zjq_pass .zjq_num {
+            display: none;
+        }
+
+        .zjq_box.zjq_pass .zjq_mark {
+            display: inline;
+        }
+
+        /* 测试模式：隐藏答案 */
+        .zjq_box.zjq_hidden .zjq_num,
+        .zjq_box.zjq_hidden .zjq_mark {
+            display: none;
+        }
+
+        .zjq_box.zjq_hidden::before {
+            content: "?";
+            color: var(--zjq-muted);
+            font-size: clamp(13px, 1.8vw, 18px);
+        }
+
+        .zjq_box.zjq_hidden.zjq_pass {
+            background: var(--zjq-white);
+            border-color: var(--zjq-line);
+        }
+
+        /* 刚揭晓时的弹跳动画 */
+        .zjq_box.zjq_just {
+            animation: zjq_pop 320ms ease;
+        }
+
+        @keyframes zjq_pop {
+            0% { transform: scale(0.7); }
+            60% { transform: scale(1.12); }
+            100% { transform: scale(1); }
+        }
+
+        .zjq_footer {
+            margin-top: 44px;
+            padding: 22px 0 4px;
+            border-top: 1px solid var(--zjq-line);
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_footer a {
+            color: var(--zjq-teal);
+            text-decoration: none;
+        }
+
+        .zjq_footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 760px) {
+            .zjq_grid {
+                grid-template-columns: repeat(8, minmax(0, 1fr));
+            }
+
+            .zjq_rules {
+                grid-template-columns: 1fr;
+            }
+
+            .zjq_stats {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .zjq_grid {
+                grid-template-columns: repeat(5, minmax(0, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="zjq_shell">
+        <nav class="zjq_top">
+            <a class="zjq_back" href="index.html">← 返回作品集首页</a>
+            <span class="zjq_badge">15-1 / GAME</span>
+        </nav>
+
+        <header class="zjq_header">
+            <h1>逢 <span>7</span> 过</h1>
+            <p class="zjq_intro">一百个盒子从 1 数到 100：满足"数 7 规则"的数字不能喊出来，盒子会变成「过」；其余盒子直接显示数字。点击任意盒子可以看到判定原因，也可以开启测试模式考考自己。</p>
+        </header>
+
+        <section class="zjq_rules" aria-label="数7规则">
+            <div class="zjq_rule">
+                <strong>规则一：7 的倍数</strong>
+                <span><code>n % 7 === 0</code>，如 7、14、21、98</span>
+            </div>
+            <div class="zjq_rule">
+                <strong>规则二：个位是 7</strong>
+                <span><code>n % 10 === 7</code>，如 7、17、97</span>
+            </div>
+            <div class="zjq_rule">
+                <strong>规则三：十位是 7</strong>
+                <span><code>Math.floor(n / 10) === 7</code>，如 70—79</span>
+            </div>
+        </section>
+
+        <div class="zjq_controls">
+            <button class="zjq_btn" id="zjq_btn_test" type="button">开始测试</button>
+            <button class="zjq_btn zjq-btn-orange" id="zjq_btn_show" type="button">显示全部答案</button>
+            <p class="zjq_stats" id="zjq_stats">已揭晓 <strong>100</strong> / 100 · 找到「过」<strong>30</strong> / 30</p>
+        </div>
+
+        <p class="zjq_detail" id="zjq_detail">点击任意盒子，这里会显示它命中了哪条规则。</p>
+
+        <section class="zjq_grid" id="zjq_grid" aria-label="100个盒子"></section>
+
+        <footer class="zjq_footer">
+            张钧乔 · 《高级网页设计》课堂实践 · <a href="index.html">返回首页</a>
+        </footer>
+    </div>
+
+    <script>
+        // 姓名：张钧乔 日期：2026-10-26 功能名称：逢7过游戏——100个盒子的数7规则演示
+        var zjq_passCount = 0;
+
+        // 数7规则：7的倍数、个位是7、十位是7 → 都要"过"
+        function zjq_isPass(zjq_n) {
+            return zjq_n % 7 === 0 || zjq_n % 10 === 7 || Math.floor(zjq_n / 10) === 7;
+        }
+
+        // 解释某个数字命中了哪些规则
+        function zjq_explain(zjq_n) {
+            var zjq_reasons = [];
+            if (zjq_n % 7 === 0) {
+                zjq_reasons.push('是 7 的倍数（' + zjq_n + ' = 7 × ' + (zjq_n / 7) + '）');
+            }
+            if (zjq_n % 10 === 7) {
+                zjq_reasons.push('个位是 7');
+            }
+            if (Math.floor(zjq_n / 10) === 7) {
+                zjq_reasons.push('十位是 7');
+            }
+            if (zjq_reasons.length === 0) {
+                return { pass: false, text: '<strong>' + zjq_n + '</strong> 不是 7 的倍数，个位、十位也都不是 7 —— 不满足要求，直接数出数字。' };
+            }
+            return { pass: true, text: '<strong>' + zjq_n + '</strong> ' + zjq_reasons.join('，同时') + ' —— 满足要求，喊「过」！' };
+        }
+
+        // 渲染 100 个盒子
+        (function () {
+            var zjq_grid = document.getElementById('zjq_grid');
+            var zjq_html = '';
+            for (var zjq_n = 1; zjq_n <= 100; zjq_n++) {
+                var zjq_pass = zjq_isPass(zjq_n);
+                if (zjq_pass) { zjq_passCount++; }
+                zjq_html += '<button type="button" class="zjq_box' + (zjq_pass ? ' zjq_pass' : '') + '" data-n="' + zjq_n + '">' +
+                    '<span class="zjq_num">' + zjq_n + '</span>' +
+                    '<span class="zjq_mark">过</span>' +
+                    '</button>';
+            }
+            zjq_grid.innerHTML = zjq_html;
+        })();
+
+        var zjq_gridEl = document.getElementById('zjq_grid');
+        var zjq_statsEl = document.getElementById('zjq_stats');
+        var zjq_detailEl = document.getElementById('zjq_detail');
+        var zjq_btnTest = document.getElementById('zjq_btn_test');
+        var zjq_btnShow = document.getElementById('zjq_btn_show');
+        var zjq_testMode = false;
+        var zjq_revealedCount = 100;
+        var zjq_foundPass = zjq_passCount;
+
+        function zjq_updateStats() {
+            zjq_statsEl.innerHTML = '已揭晓 <strong>' + zjq_revealedCount + '</strong> / 100 · 找到「过」<strong>' + zjq_foundPass + '</strong> / ' + zjq_passCount;
+        }
+
+        function zjq_showDetail(zjq_n) {
+            var zjq_result = zjq_explain(zjq_n);
+            zjq_detailEl.className = zjq_result.pass ? 'zjq_detail zjq_detail-pass' : 'zjq_detail';
+            zjq_detailEl.innerHTML = zjq_result.text;
+        }
+
+        // 点击盒子：测试模式下揭晓，任何时候都显示判定原因
+        zjq_gridEl.addEventListener('click', function (zjq_event) {
+            var zjq_box = zjq_event.target.closest('.zjq_box');
+            if (!zjq_box) { return; }
+
+            var zjq_n = parseInt(zjq_box.getAttribute('data-n'), 10);
+            zjq_showDetail(zjq_n);
+
+            if (zjq_testMode && zjq_box.classList.contains('zjq_hidden')) {
+                zjq_box.classList.remove('zjq_hidden');
+                zjq_box.classList.add('zjq_just');
+                zjq_revealedCount++;
+                if (zjq_box.classList.contains('zjq_pass')) { zjq_foundPass++; }
+                zjq_updateStats();
+            }
+        });
+
+        // 测试模式：隐藏全部答案，逐个点击揭晓
+        zjq_btnTest.addEventListener('click', function () {
+            zjq_testMode = !zjq_testMode;
+            var zjq_boxes = zjq_gridEl.querySelectorAll('.zjq_box');
+            if (zjq_testMode) {
+                for (var zjq_i = 0; zjq_i < zjq_boxes.length; zjq_i++) {
+                    zjq_boxes[zjq_i].classList.add('zjq_hidden');
+                    zjq_boxes[zjq_i].classList.remove('zjq_just');
+                }
+                zjq_revealedCount = 0;
+                zjq_foundPass = 0;
+                zjq_btnTest.textContent = '退出测试';
+                zjq_detailEl.className = 'zjq_detail';
+                zjq_detailEl.innerHTML = '测试模式：先猜一猜哪些数字要「过」，再点击盒子验证。';
+            } else {
+                for (var zjq_j = 0; zjq_j < zjq_boxes.length; zjq_j++) {
+                    zjq_boxes[zjq_j].classList.remove('zjq_hidden');
+                }
+                zjq_revealedCount = 100;
+                zjq_foundPass = zjq_passCount;
+                zjq_btnTest.textContent = '开始测试';
+            }
+            zjq_updateStats();
+        });
+
+        // 显示全部答案：退出测试并揭晓所有盒子
+        zjq_btnShow.addEventListener('click', function () {
+            zjq_testMode = false;
+            var zjq_boxes = zjq_gridEl.querySelectorAll('.zjq_box');
+            for (var zjq_i = 0; zjq_i < zjq_boxes.length; zjq_i++) {
+                zjq_boxes[zjq_i].classList.remove('zjq_hidden');
+            }
+            zjq_revealedCount = 100;
+            zjq_foundPass = zjq_passCount;
+            zjq_btnTest.textContent = '开始测试';
+            zjq_updateStats();
+        });
+    </script>
+</body>
+</html>

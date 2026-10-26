@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<!-- 姓名：张钧乔，日期：2026-10-22，功能名称：JavaScript六种基本数据类型演示 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="JavaScript 六种数据类型演示：Number、String、Boolean、Undefined、Null、Object">
+    <title>JavaScript 数据类型 | 张钧乔</title>
+    <style>
+        :root {
+            --zjq-ink: #182230;
+            --zjq-muted: #667085;
+            --zjq-white: #ffffff;
+            --zjq-orange: #e9693f;
+            --zjq-orange-dark: #b8472d;
+            --zjq-teal: #277b78;
+            --zjq-line: #d9d5cb;
+            --zjq-shadow: 0 14px 36px rgba(31, 48, 36, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--zjq-ink);
+            background:
+                radial-gradient(circle at 88% 4%, rgba(233, 105, 63, 0.10), transparent 24rem),
+                linear-gradient(135deg, #f4f0e8 0%, #edf3ee 55%, #fffaf2 100%);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            line-height: 1.7;
+        }
+
+        code {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+        }
+
+        .zjq_shell {
+            width: min(1080px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 28px 0 44px;
+        }
+
+        .zjq_top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .zjq_back {
+            color: var(--zjq-muted);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .zjq_back:hover,
+        .zjq_back:focus {
+            color: var(--zjq-orange);
+        }
+
+        .zjq_badge {
+            color: var(--zjq-orange);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .zjq_header {
+            padding: 44px 0 8px;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(34px, 5vw, 54px);
+            line-height: 1.15;
+        }
+
+        h1 span {
+            color: var(--zjq-teal);
+        }
+
+        .zjq_intro {
+            max-width: 700px;
+            margin: 16px 0 0;
+            color: var(--zjq-muted);
+            font-size: 16px;
+        }
+
+        .zjq_classify {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin: 30px 0 8px;
+        }
+
+        .zjq_classify-block {
+            padding: 18px 24px;
+            background: var(--zjq-white);
+            border: 1px solid var(--zjq-line);
+            border-radius: 4px;
+        }
+
+        .zjq_classify-block h2 {
+            margin: 0 0 4px;
+            font-size: 16px;
+            letter-spacing: 1px;
+        }
+
+        .zjq_classify-block p {
+            margin: 0;
+            color: var(--zjq-muted);
+            font-size: 14px;
+        }
+
+        .zjq_classify-basic h2 {
+            color: var(--zjq-teal);
+        }
+
+        .zjq_classify-ref h2 {
+            color: var(--zjq-orange);
+        }
+
+        .zjq_grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin-top: 26px;
+        }
+
+        .zjq_card {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid var(--zjq-line);
+            border-top: 4px solid var(--zjq-muted);
+            border-radius: 6px;
+            box-shadow: 0 8px 22px rgba(31, 48, 36, 0.06);
+        }
+
+        .zjq_card-head {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed var(--zjq-line);
+        }
+
+        .zjq_card-no {
+            color: var(--zjq-muted);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 15px;
+        }
+
+        .zjq_card-name {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 20px;
+        }
+
+        .zjq_card-cn {
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_type-tag {
+            margin-left: auto;
+            padding: 1px 9px;
+            border-radius: 999px;
+            color: var(--zjq-white);
+            background: var(--zjq-muted);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .zjq_tag-basic {
+            background: var(--zjq-teal);
+        }
+
+        .zjq_tag-ref {
+            background: var(--zjq-orange);
+        }
+
+        .zjq_card-desc {
+            margin: 12px 0 14px;
+            color: var(--zjq-muted);
+            font-size: 13.5px;
+        }
+
+        .zjq_samples {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .zjq_sample {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 4px;
+            background: #faf8f3;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 13px;
+            text-align: left;
+            transition: border-color 150ms ease, background 150ms ease;
+        }
+
+        .zjq_sample:hover {
+            border-color: var(--zjq-teal);
+            background: var(--zjq-white);
+        }
+
+        .zjq_sample.zjq_active {
+            border-color: var(--zjq-teal);
+            background: #eef5f3;
+        }
+
+        .zjq_sample code {
+            font-size: 12.5px;
+            overflow-wrap: anywhere;
+        }
+
+        .zjq_sample-label {
+            margin-left: auto;
+            color: var(--zjq-muted);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .zjq_output {
+            flex: 1;
+            margin-top: 12px;
+            padding: 12px 14px;
+            min-height: 96px;
+            border-radius: 4px;
+            background: var(--zjq-ink);
+            color: #cfd8dc;
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .zjq_output p {
+            margin: 0;
+        }
+
+        .zjq_output-hint {
+            color: #7d8a99;
+            font-style: italic;
+        }
+
+        .zjq_output code {
+            color: #ffd9a8;
+        }
+
+        .zjq_typeof-line strong {
+            color: #8fd0c3;
+        }
+
+        .zjq_output.zjq_error {
+            background: #5d1f16;
+            color: #ffd9c9;
+        }
+
+        .zjq_card[data-type="number"] { border-top-color: #277b78; }
+        .zjq_card[data-type="number"] .zjq_card-name { color: #277b78; }
+
+        .zjq_card[data-type="string"] { border-top-color: #e9693f; }
+        .zjq_card[data-type="string"] .zjq_card-name { color: #e9693f; }
+
+        .zjq_card[data-type="boolean"] { border-top-color: #2e7d32; }
+        .zjq_card[data-type="boolean"] .zjq_card-name { color: #2e7d32; }
+
+        .zjq_card[data-type="undefined"] { border-top-color: #667085; }
+        .zjq_card[data-type="undefined"] .zjq_card-name { color: #667085; }
+
+        .zjq_card[data-type="null"] { border-top-color: #182230; }
+        .zjq_card[data-type="null"] .zjq_card-name { color: #182230; }
+
+        .zjq_card[data-type="object"] { border-top-color: #8e44ad; }
+        .zjq_card[data-type="object"] .zjq_card-name { color: #8e44ad; }
+
+        .zjq_checker {
+            margin-top: 46px;
+            padding: 26px 28px;
+            background: var(--zjq-white);
+            border-left: 4px solid var(--zjq-orange);
+            box-shadow: var(--zjq-shadow);
+        }
+
+        .zjq_checker h2 {
+            margin: 0 0 6px;
+            font-size: 22px;
+        }
+
+        .zjq_checker > p {
+            margin: 0 0 16px;
+            color: var(--zjq-muted);
+            font-size: 14px;
+        }
+
+        .zjq_checker-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .zjq_input {
+            flex: 1;
+            min-width: 240px;
+            padding: 11px 14px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 4px;
+            background: #faf8f3;
+            color: var(--zjq-ink);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 14px;
+        }
+
+        .zjq_input:focus {
+            outline: none;
+            border-color: var(--zjq-orange);
+        }
+
+        .zjq_btn {
+            padding: 11px 28px;
+            border: none;
+            border-radius: 4px;
+            background: var(--zjq-orange);
+            color: var(--zjq-white);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .zjq_btn:hover {
+            background: var(--zjq-orange-dark);
+        }
+
+        .zjq_result {
+            margin-top: 16px;
+            padding: 13px 16px;
+            border: 1px dashed var(--zjq-line);
+            border-radius: 4px;
+            background: #faf8f3;
+            font-size: 14px;
+        }
+
+        .zjq_result strong {
+            color: var(--zjq-teal);
+        }
+
+        .zjq_notes-title {
+            margin: 44px 0 16px;
+            font-size: 22px;
+        }
+
+        .zjq_notes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .zjq_notes li {
+            padding: 15px 18px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.72);
+            font-size: 14px;
+        }
+
+        .zjq_footer {
+            margin-top: 50px;
+            padding: 22px 0 4px;
+            border-top: 1px solid var(--zjq-line);
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_footer a {
+            color: var(--zjq-teal);
+            text-decoration: none;
+        }
+
+        .zjq_footer a:hover {
+            text-decoration: underline;
+        }
+
+        .zjq_intro code,
+        .zjq_checker p code,
+        .zjq_result code,
+        .zjq_notes code {
+            padding: 1px 6px;
+            border-radius: 3px;
+            background: #efece4;
+            color: var(--zjq-orange-dark);
+            font-size: 13px;
+        }
+
+        @media (max-width: 860px) {
+            .zjq_grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .zjq_notes {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .zjq_grid,
+            .zjq_classify {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="zjq_shell">
+        <nav class="zjq_top">
+            <a class="zjq_back" href="index.html">← 返回作品集首页</a>
+            <span class="zjq_badge">14-2 / JAVASCRIPT</span>
+        </nav>
+
+        <header class="zjq_header">
+            <h1>JavaScript <span>六种数据类型</span></h1>
+            <p class="zjq_intro">JavaScript 的值分为六种数据类型：前五种是基本类型，变量里直接保存值；Object 是引用类型，变量里保存的是地址。点击卡片里的示例可现场运行，并查看 <code>typeof</code> 的检测结果。</p>
+        </header>
+
+        <section class="zjq_classify" aria-label="数据类型分类">
+            <div class="zjq_classify-block zjq_classify-basic">
+                <h2>基本类型 × 5</h2>
+                <p>Number · String · Boolean · Undefined · Null</p>
+            </div>
+            <div class="zjq_classify-block zjq_classify-ref">
+                <h2>引用类型 × 1</h2>
+                <p>Object —— 普通对象、数组、函数都属于它</p>
+            </div>
+        </section>
+
+        <section aria-label="六种数据类型演示">
+            <div class="zjq_grid" id="zjq_grid"></div>
+        </section>
+
+        <section class="zjq_checker" aria-label="typeof 检测器">
+            <h2>typeof 检测器</h2>
+            <p>输入任意 JavaScript 值试试，例如 <code>123</code>、<code>"张钧乔"</code>、<code>true</code>、<code>null</code>、<code>[1, 2, 3]</code>、<code>({ a: 1 })</code>。</p>
+            <div class="zjq_checker-row">
+                <input class="zjq_input" id="zjq_input" type="text" placeholder="在此输入 JavaScript 值，回车或点击检测">
+                <button class="zjq_btn" id="zjq_btn" type="button">检测</button>
+            </div>
+            <div class="zjq_result" id="zjq_result">等待输入……输入后按回车或点击「检测」，内容会被当作 JavaScript 表达式运行。</div>
+        </section>
+
+        <section aria-label="容易混淆的知识点">
+            <h2 class="zjq_notes-title">容易混淆的四个点</h2>
+            <ul class="zjq_notes">
+                <li><code>typeof null</code> 返回 <code>"object"</code>：历史遗留问题，null 仍是独立的基本类型。</li>
+                <li><code>typeof []</code> 返回 <code>"object"</code>：判断数组请使用 <code>Array.isArray()</code>。</li>
+                <li><code>typeof function(){}</code> 返回 <code>"function"</code>：但函数本质上也是对象。</li>
+                <li><code>NaN === NaN</code> 结果为 <code>false</code>：判断 NaN 要用 <code>isNaN()</code>。</li>
+            </ul>
+        </section>
+
+        <footer class="zjq_footer">
+            张钧乔 · 《高级网页设计》课堂实践 · <a href="index.html">返回首页</a>
+        </footer>
+    </div>
+
+    <script>
+        // 姓名：张钧乔 日期：2026-10-22 功能名称：JavaScript六种基本数据类型演示
+        var zjq_typeData = [
+            {
+                key: 'number',
+                name: 'Number',
+                cn: '数字型',
+                tag: 'BASIC',
+                desc: '保存整数、浮点数和特殊数值（NaN、Infinity），用于数学运算。',
+                samples: [
+                    { code: '100', label: '整数' },
+                    { code: '3.14', label: '浮点数' },
+                    { code: '1e3', label: '科学记数法' },
+                    { code: '0x1F', label: '十六进制' },
+                    { code: 'NaN', label: '非数字' },
+                    { code: '0.1 + 0.2', label: '经典精度问题' }
+                ]
+            },
+            {
+                key: 'string',
+                name: 'String',
+                cn: '字符串',
+                tag: 'BASIC',
+                desc: '单引号或双引号包裹的文本，可以用 + 号拼接。',
+                samples: [
+                    { code: '"张钧乔"', label: '双引号' },
+                    { code: "'hello world'", label: '单引号' },
+                    { code: "'front' + 'end'", label: '拼接' },
+                    { code: "'1' + 1", label: '字符串 + 数字' },
+                    { code: "'5' - 2", label: '隐式转换' },
+                    { code: "'张钧乔'.length", label: '获取长度' }
+                ]
+            },
+            {
+                key: 'boolean',
+                name: 'Boolean',
+                cn: '布尔型',
+                tag: 'BASIC',
+                desc: '只有 true 和 false 两个值，是比较与逻辑判断的结果。',
+                samples: [
+                    { code: 'true', label: '真' },
+                    { code: 'false', label: '假' },
+                    { code: '3 > 2', label: '比较运算' },
+                    { code: "5 === '5'", label: '全等比较' },
+                    { code: '!0', label: '逻辑非' },
+                    { code: "!!'abc'", label: '双重取反' }
+                ]
+            },
+            {
+                key: 'undefined',
+                name: 'Undefined',
+                cn: '未定义',
+                tag: 'BASIC',
+                desc: '声明了变量但没有赋值时，变量拿到的默认值。',
+                samples: [
+                    { code: 'undefined', label: '字面量' },
+                    { code: 'void 0', label: 'void 表达式' },
+                    { code: '(function(){ var zjq_temp; return zjq_temp; })()', label: '未赋值的变量' },
+                    { code: '({}).zjq_none', label: '属性不存在' },
+                    { code: 'zjq_undeclaredVariable', label: '未声明 → 报错' }
+                ]
+            },
+            {
+                key: 'null',
+                name: 'Null',
+                cn: '空值',
+                tag: 'BASIC',
+                desc: '表示"故意留空"，常用于主动清空一个引用。',
+                samples: [
+                    { code: 'null', label: '字面量' },
+                    { code: 'typeof null', label: '检测结果' },
+                    { code: 'null == undefined', label: '宽松相等' },
+                    { code: 'null === undefined', label: '严格相等' },
+                    { code: 'Number(null)', label: '转为数字' }
+                ]
+            },
+            {
+                key: 'object',
+                name: 'Object',
+                cn: '对象',
+                tag: 'REFERENCE',
+                desc: '引用类型：普通对象、数组、函数都由它派生。',
+                samples: [
+                    { code: "({ name: '张钧乔', skill: 'JavaScript' })", label: '对象字面量' },
+                    { code: '[10, 20, 30]', label: '数组字面量' },
+                    { code: 'typeof [1, 2, 3]', label: '数组的类型' },
+                    { code: 'typeof function(){}', label: '函数的类型' },
+                    { code: "({ name: '张钧乔' }).name", label: '读取属性' },
+                    { code: 'new Date()', label: '内置对象' }
+                ]
+            }
+        ];
+
+        function zjq_escapeHtml(zjq_text) {
+            return String(zjq_text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function zjq_formatValue(zjq_val) {
+            if (zjq_val === null) { return 'null'; }
+            if (zjq_val === undefined) { return 'undefined'; }
+            if (typeof zjq_val === 'function') { return 'function () { … }'; }
+            if (typeof zjq_val === 'object') {
+                try {
+                    var zjq_json = JSON.stringify(zjq_val);
+                    return zjq_json === undefined ? String(zjq_val) : zjq_json;
+                } catch (zjq_err) {
+                    return String(zjq_val);
+                }
+            }
+            return String(zjq_val);
+        }
+
+        // 渲染六张类型卡片
+        (function () {
+            var zjq_grid = document.getElementById('zjq_grid');
+            var zjq_html = '';
+
+            zjq_typeData.forEach(function (zjq_type, zjq_index) {
+                zjq_html += '<article class="zjq_card" data-type="' + zjq_type.key + '">';
+                zjq_html += '<div class="zjq_card-head">';
+                zjq_html += '<span class="zjq_card-no">0' + (zjq_index + 1) + '</span>';
+                zjq_html += '<h3 class="zjq_card-name">' + zjq_type.name + '</h3>';
+                zjq_html += '<span class="zjq_card-cn">' + zjq_type.cn + '</span>';
+                zjq_html += '<span class="zjq_type-tag ' + (zjq_type.tag === 'BASIC' ? 'zjq_tag-basic' : 'zjq_tag-ref') + '">' + zjq_type.tag + '</span>';
+                zjq_html += '</div>';
+                zjq_html += '<p class="zjq_card-desc">' + zjq_type.desc + '</p>';
+                zjq_html += '<div class="zjq_samples">';
+                zjq_type.samples.forEach(function (zjq_sample, zjq_sampleIndex) {
+                    zjq_html += '<button class="zjq_sample" type="button" data-type-index="' + zjq_index + '" data-sample-index="' + zjq_sampleIndex + '">';
+                    zjq_html += '<code>' + zjq_escapeHtml(zjq_sample.code) + '</code>';
+                    zjq_html += '<span class="zjq_sample-label">' + zjq_sample.label + '</span>';
+                    zjq_html += '</button>';
+                });
+                zjq_html += '</div>';
+                zjq_html += '<div class="zjq_output"><span class="zjq_output-hint">点击上方示例，查看值与 typeof</span></div>';
+                zjq_html += '</article>';
+            });
+
+            zjq_grid.innerHTML = zjq_html;
+        })();
+
+        // 点击示例：运行表达式并显示结果
+        document.getElementById('zjq_grid').addEventListener('click', function (zjq_event) {
+            var zjq_btn = zjq_event.target.closest('.zjq_sample');
+            if (!zjq_btn) { return; }
+
+            var zjq_typeIndex = parseInt(zjq_btn.getAttribute('data-type-index'), 10);
+            var zjq_sampleIndex = parseInt(zjq_btn.getAttribute('data-sample-index'), 10);
+            var zjq_sample = zjq_typeData[zjq_typeIndex].samples[zjq_sampleIndex];
+            var zjq_card = zjq_btn.closest('.zjq_card');
+            var zjq_output = zjq_card.querySelector('.zjq_output');
+
+            var zjq_allSamples = zjq_card.querySelectorAll('.zjq_sample');
+            for (var zjq_i = 0; zjq_i < zjq_allSamples.length; zjq_i++) {
+                zjq_allSamples[zjq_i].classList.remove('zjq_active');
+            }
+            zjq_btn.classList.add('zjq_active');
+            zjq_output.classList.remove('zjq_error');
+
+            try {
+                var zjq_val = eval(zjq_sample.code);
+                zjq_output.innerHTML =
+                    '<p>表达式：<code>' + zjq_escapeHtml(zjq_sample.code) + '</code></p>' +
+                    '<p>值：<code>' + zjq_escapeHtml(zjq_formatValue(zjq_val)) + '</code></p>' +
+                    '<p class="zjq_typeof-line">typeof：<strong>' + (typeof zjq_val) + '</strong></p>';
+            } catch (zjq_err) {
+                zjq_output.classList.add('zjq_error');
+                zjq_output.innerHTML =
+                    '<p>表达式：<code>' + zjq_escapeHtml(zjq_sample.code) + '</code></p>' +
+                    '<p>运行出错：<code>' + zjq_escapeHtml(zjq_err.name + '：' + zjq_err.message) + '</code></p>' +
+                    '<p class="zjq_typeof-line">typeof：无法取得（未声明的变量不能访问）</p>';
+            }
+        });
+
+        // typeof 检测器
+        var zjq_inputEl = document.getElementById('zjq_input');
+        var zjq_resultEl = document.getElementById('zjq_result');
+        var zjq_btnEl = document.getElementById('zjq_btn');
+
+        function zjq_runChecker() {
+            var zjq_raw = zjq_inputEl.value.trim();
+            if (zjq_raw === '') {
+                zjq_resultEl.innerHTML = '请先输入内容，再点击检测。';
+                return;
+            }
+            try {
+                var zjq_val = eval(zjq_raw);
+                zjq_resultEl.innerHTML =
+                    '输入 <code>' + zjq_escapeHtml(zjq_raw) + '</code> → ' +
+                    '值 <code>' + zjq_escapeHtml(zjq_formatValue(zjq_val)) + '</code> → ' +
+                    '<strong>typeof：' + (typeof zjq_val) + '</strong>';
+            } catch (zjq_err) {
+                zjq_resultEl.innerHTML =
+                    '输入 <code>' + zjq_escapeHtml(zjq_raw) + '</code> → ' +
+                    '<strong>无法求值（' + zjq_escapeHtml(zjq_err.name + '：' + zjq_err.message) + '）</strong>';
+            }
+        }
+
+        zjq_btnEl.addEventListener('click', zjq_runChecker);
+        zjq_inputEl.addEventListener('keydown', function (zjq_event) {
+            if (zjq_event.key === 'Enter' || zjq_event.keyCode === 13) {
+                zjq_runChecker();
+            }
+        });
+    </script>
+</body>
+</html>
