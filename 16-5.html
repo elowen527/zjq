@@ -4,18 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="新车上市信息表格实践：最新上市与即将上市两个 Tab 的点击切换，点击表格行触发高亮动画">
+    <meta name="description" content="新车上市表格实践：最新上市与即将上市两个 Tab 切换展示不同数据，点击任意文字触发行高亮闪烁动画">
     <title>新车上市 | 张钧乔</title>
     <style>
         :root {
-            --zjq-blue: #4c88c5;
-            --zjq-blue-deep: #2f6ea8;
-            --zjq-blue-light: #dce9f7;
             --zjq-ink: #333333;
-            --zjq-muted: #777777;
-            --zjq-line: #cfcfcf;
-            --zjq-head: #f2f2f2;
-            --zjq-stripe: #fafcff;
+            --zjq-dark: #1a1a1a;
+            --zjq-muted: #999999;
+            --zjq-line: #e5e5e5;
+            --zjq-tab-bg: #f4f4f4;
+            --zjq-hit: #fdf0d5;
         }
 
         * {
@@ -24,231 +22,263 @@
 
         body {
             margin: 0;
-            padding: 40px 16px;
+            padding: 40px 0;
             color: var(--zjq-ink);
-            background: #ffffff;
+            background:
+                radial-gradient(circle at 88% 4%, rgba(233, 105, 63, 0.08), transparent 22rem),
+                linear-gradient(135deg, #f4f0e8 0%, #edf3ee 55%, #fffaf2 100%);
             font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
             font-size: 13px;
-            line-height: 1.6;
+            line-height: 1.7;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .zjq_back {
+            position: fixed;
+            top: 16px;
+            left: 20px;
+            color: #9a958a;
+            font-size: 13px;
+        }
+
+        .zjq_back:hover {
+            color: #b8472d;
         }
 
         .zjq_box {
             width: 320px;
             margin: 0 auto;
+            border: 1px solid #dcdcdc;
+            border-radius: 3px;
+            background: #ffffff;
+            box-shadow: 0 8px 22px rgba(31, 48, 36, 0.08);
+            overflow: hidden;
         }
 
         /* ===== Tab 栏 ===== */
         .zjq_tabs {
             display: flex;
+            border-bottom: 1px solid var(--zjq-line);
         }
 
         .zjq_tab {
             flex: 1;
-            padding: 7px 0;
-            border: 1px solid var(--zjq-line);
-            border-bottom: none;
-            background: #ffffff;
+            padding: 9px 0;
+            border: none;
+            background: var(--zjq-tab-bg);
             color: var(--zjq-muted);
-            font-size: 13.5px;
-            font-weight: 700;
-            text-align: center;
+            font-family: inherit;
+            font-size: 14px;
             cursor: pointer;
-            user-select: none;
-            transition: background 200ms ease, color 200ms ease;
+            transition: background 180ms ease, color 180ms ease;
         }
 
         .zjq_tab + .zjq_tab {
-            border-left: none;
-        }
-
-        .zjq_tab:hover {
-            color: var(--zjq-blue);
+            border-left: 1px solid var(--zjq-line);
         }
 
         .zjq_tab.zjq_tab-on {
-            position: relative;
-            background: var(--zjq-blue-light);
-            color: var(--zjq-blue-deep);
+            background: #ffffff;
+            color: var(--zjq-dark);
+            font-weight: 700;
         }
 
-        /* 激活 Tab 底部的白色压边，使其与表格连成一体 */
-        .zjq_tab.zjq_tab-on::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: -1px;
-            height: 1px;
-            background: var(--zjq-blue-light);
+        .zjq_tab:not(.zjq_tab-on):hover {
+            color: #666666;
+            background: #ececec;
         }
 
         /* ===== 表格 ===== */
         .zjq_table {
             width: 100%;
-            border: 1px solid var(--zjq-line);
             border-collapse: collapse;
-            background: #ffffff;
         }
 
-        .zjq_table th,
-        .zjq_table td {
-            padding: 7px 10px;
+        .zjq_table th {
+            padding: 8px 10px;
             border-bottom: 1px solid var(--zjq-line);
+            background: #fafafa;
+            color: #808080;
+            font-size: 12.5px;
+            font-weight: 400;
             text-align: left;
-            white-space: nowrap;
         }
 
-        .zjq_table thead th {
-            background: var(--zjq-head);
-            color: var(--zjq-ink);
-            font-weight: 700;
-            border-bottom: 1px solid var(--zjq-line);
+        .zjq_table th:nth-child(3) {
+            text-align: right;
         }
 
-        .zjq_table tbody tr:nth-child(even) {
-            background: var(--zjq-stripe);
+        .zjq_table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 150ms ease;
+        }
+
+        .zjq_table tr:last-child td {
+            border-bottom: none;
         }
 
         .zjq_col-time {
-            width: 76px;
+            color: var(--zjq-muted);
+            width: 26%;
+            white-space: nowrap;
+        }
+
+        .zjq_col-name {
+            color: var(--zjq-dark);
         }
 
         .zjq_col-price {
-            width: 96px;
-            text-align: left;
+            color: var(--zjq-muted);
+            text-align: right;
+            white-space: nowrap;
         }
 
-        /* ===== 行点击高亮动画 ===== */
-        .zjq_table tbody tr {
-            cursor: pointer;
-            transition: background 300ms ease;
-        }
-
-        .zjq_table tbody tr:hover {
-            background: #eef5fc;
+        /* ===== 点击行的高亮动画 ===== */
+        .zjq_table td.zjq_cell-hit {
+            animation: zjq_flash 900ms ease-out;
         }
 
         @keyframes zjq_flash {
             0% {
-                background: #fff3c2;
-                box-shadow: inset 3px 0 0 var(--zjq-blue);
+                background: #ffe9a8;
+                box-shadow: inset 0 0 0 2px #f5b90f;
             }
-            55% {
-                background: #e8f2fd;
-                box-shadow: inset 3px 0 0 var(--zjq-blue);
+            60% {
+                background: var(--zjq-hit);
+                box-shadow: inset 0 0 0 1px #f0cf7a;
             }
             100% {
                 background: transparent;
-                box-shadow: inset 3px 0 0 transparent;
+                box-shadow: inset 0 0 0 0 transparent;
             }
         }
 
-        .zjq_table tbody tr.zjq_hit {
-            animation: zjq_flash 1.1s ease forwards;
+        /* Tab 切换时表格内容的淡入 */
+        .zjq_body-wrap.zjq_body-fade {
+            animation: zjq_fadein 320ms ease;
         }
 
-        /* 点击瞬间文字的弹跳强调 */
-        @keyframes zjq_bump {
-            0% { transform: scale(1); }
-            40% { transform: scale(1.05); color: var(--zjq-blue-deep); }
-            100% { transform: scale(1); }
+        @keyframes zjq_fadein {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .zjq_table tbody tr.zjq_hit td {
-            animation: zjq_bump 500ms ease;
+        .zjq_note {
+            width: 320px;
+            margin: 14px auto 0;
+            color: #9a958a;
+            font-size: 12.5px;
         }
     </style>
 </head>
 <body>
+    <a class="zjq_back" href="index.html">← 返回作品集首页</a>
+
     <div class="zjq_box">
         <!-- Tab 栏 -->
-        <div class="zjq_tabs" id="zjq_tabs">
-            <span class="zjq_tab zjq_tab-on" data-tab="new">最新上市</span>
-            <span class="zjq_tab" data-tab="soon">即将上市</span>
+        <div class="zjq_tabs">
+            <button class="zjq_tab zjq_tab-on" type="button" data-tab="new">最新上市</button>
+            <button class="zjq_tab" type="button" data-tab="soon">即将上市</button>
         </div>
 
-        <!-- 数据表格 -->
-        <table class="zjq_table">
-            <thead>
-                <tr>
-                    <th class="zjq_col-time">上市时间</th>
-                    <th>品牌/车型</th>
-                    <th class="zjq_col-price">售价（万元）</th>
-                </tr>
-            </thead>
-            <tbody id="zjq_tbody"></tbody>
-        </table>
+        <!-- 表格 -->
+        <div class="zjq_body-wrap" id="zjq_body_wrap">
+            <table class="zjq_table">
+                <thead>
+                    <tr>
+                        <th>上市时间</th>
+                        <th>品牌/车型</th>
+                        <th>售价（万元）</th>
+                    </tr>
+                </thead>
+                <tbody id="zjq_tbody"></tbody>
+            </table>
+        </div>
     </div>
 
+    <p class="zjq_note">点击「最新上市 / 即将上市」切换数据，点击表格中任意一行文字可触发高亮动画。</p>
+
     <script>
-        // 姓名：张钧乔 日期：2026-10-29 功能名称：新车上市表格——Tab切换与行点击高亮动画
-        var zjq_carData = {
+        // 姓名：张钧乔 日期：2026-10-29 功能名称：新车上市表格——Tab切换与点击高亮动画
+        var zjq_data = {
             new: [
                 { time: '12月13日', name: '沃尔沃S60L', price: '26.98-38.49' },
                 { time: '12月12日', name: 'Jeep牧马人龙腾典藏', price: '47.99-59.99' },
                 { time: '12月10日', name: '一汽大众高尔夫7', price: '11.89-18.29' },
                 { time: '12月6日', name: '2014款古思特', price: '419.0-666.0' },
                 { time: '12月5日', name: '起亚新K5', price: '15.98-25.18' },
-                { time: '12月5日', name: '2014款奥德赛', price: '22.98-29.68' }
+                { time: '12月5日', name: '2014款奥德赛', price: '22.98-28.68' }
             ],
             soon: [
-                { time: '12月20日', name: '奥迪A3 Limousine', price: '20.59-31.99' },
-                { time: '12月21日', name: '宝马2系运动旅行车', price: '27.99-34.99' },
-                { time: '12月25日', name: '长安CS75四驱版', price: '14.08-16.28' },
-                { time: '12月28日', name: '东风标致新408', price: '12.69-17.19' },
-                { time: '1月8日', name: '广汽本田缤智1.8L', price: '13.88-18.98' },
-                { time: '1月15日', name: '北京现代 ix25 2.0L', price: '13.98-18.68' }
+                { time: '12月20日', name: '广汽丰田全新汉兰达', price: '24.88-42.28' },
+                { time: '12月26日', name: '奥迪新款A6L', price: '41.53-74.26' },
+                { time: '12月28日', name: '别克全新英朗', price: '10.99-15.99' },
+                { time: '1月6日', name: '大众新帕萨特', price: '18.38-32.28' },
+                { time: '1月15日', name: '一汽丰田新卡罗拉', price: '10.78-15.98' },
+                { time: '1月20日', name: '广汽本田缤智', price: '12.88-18.98' }
             ]
         };
 
-        var zjq_tbody = document.getElementById('zjq_tbody');
+        var zjq_current = 'new';
 
         /* ===== 渲染表格 ===== */
-        function zjq_renderRows(zjq_key) {
-            var zjq_rows = zjq_carData[zjq_key];
+        function zjq_render() {
+            var zjq_rows = zjq_data[zjq_current];
             var zjq_html = '';
             for (var zjq_i = 0; zjq_i < zjq_rows.length; zjq_i++) {
                 var zjq_r = zjq_rows[zjq_i];
-                zjq_html += '<tr data-idx="' + zjq_i + '">';
-                zjq_html += '<td class="zjq_col-time">' + zjq_r.time + '</td>';
-                zjq_html += '<td>' + zjq_r.name + '</td>';
-                zjq_html += '<td class="zjq_col-price">' + zjq_r.price + '</td>';
-                zjq_html += '</tr>';
+                zjq_html += '<tr><td class="zjq_col-time">' + zjq_r.time + '</td>' +
+                    '<td class="zjq_col-name">' + zjq_r.name + '</td>' +
+                    '<td class="zjq_col-price">' + zjq_r.price + '</td></tr>';
             }
-            zjq_tbody.innerHTML = zjq_html;
+            document.getElementById('zjq_tbody').innerHTML = zjq_html;
         }
 
         /* ===== Tab 切换 ===== */
-        var zjq_currentKey = 'new';
+        document.querySelectorAll('.zjq_tab').forEach(function (zjq_tab) {
+            zjq_tab.addEventListener('click', function () {
+                var zjq_key = zjq_tab.getAttribute('data-tab');
+                if (zjq_key === zjq_current) { return; }
 
-        document.getElementById('zjq_tabs').addEventListener('click', function (zjq_event) {
-            var zjq_tab = zjq_event.target.closest('.zjq_tab');
-            if (!zjq_tab) { return; }
+                document.querySelectorAll('.zjq_tab').forEach(function (zjq_t) {
+                    zjq_t.classList.remove('zjq_tab-on');
+                });
+                zjq_tab.classList.add('zjq_tab-on');
+                zjq_current = zjq_key;
 
-            var zjq_key = zjq_tab.getAttribute('data-tab');
-            if (zjq_key === zjq_currentKey) { return; }
-            zjq_currentKey = zjq_key;
+                var zjq_wrap = document.getElementById('zjq_body_wrap');
+                zjq_wrap.classList.remove('zjq_body-fade');
+                void zjq_wrap.offsetWidth; // 重置动画
+                zjq_wrap.classList.add('zjq_body-fade');
 
-            var zjq_all = document.querySelectorAll('.zjq_tab');
-            for (var zjq_i = 0; zjq_i < zjq_all.length; zjq_i++) {
-                zjq_all[zjq_i].classList.toggle('zjq_tab-on', zjq_all[zjq_i] === zjq_tab);
-            }
-            zjq_renderRows(zjq_key);
+                zjq_render();
+            });
         });
 
-        /* ===== 行点击高亮动画 ===== */
-        zjq_tbody.addEventListener('click', function (zjq_event) {
-            var zjq_row = zjq_event.target.closest('tr');
-            if (!zjq_row) { return; }
+        /* ===== 点击任意文字：高亮闪烁动画 ===== */
+        document.getElementById('zjq_tbody').addEventListener('click', function (zjq_event) {
+            var zjq_cell = zjq_event.target.closest('td');
+            if (!zjq_cell) { return; }
 
-            // 重新触发动画：先移除再强制回流后添加
-            zjq_row.classList.remove('zjq_hit');
-            void zjq_row.offsetWidth;
-            zjq_row.classList.add('zjq_hit');
+            // 先移除再添加，保证连续点击同一格也能重新播放动画
+            zjq_cell.classList.remove('zjq_cell-hit');
+            void zjq_cell.offsetWidth;
+            zjq_cell.classList.add('zjq_cell-hit');
         });
 
-        /* 初始渲染 */
-        zjq_renderRows(zjq_currentKey);
+        zjq_render();
     </script>
 </body>
 </html>
