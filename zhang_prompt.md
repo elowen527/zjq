@@ -107,3 +107,12 @@
 
 **Prompt:**
 完成15-2.html，展示javascript程序结构：循环，条件。然后提交到github。
+
+---
+
+## 2026-10-29 14:25:55
+
+**Model:** DeepSeek-V4.1-Flash
+
+**Prompt:**
+完成16-4.html，使用的图标在font目录里选，图片使用AI生成，完成的网页尽可能的和给定的图片相似

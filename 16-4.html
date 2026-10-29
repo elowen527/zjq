@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<!-- 姓名：张钧乔，建立时间：2026-10-29 14:25:55，使用的大模型：DeepSeek-V4.1-Flash，功能名称：仿 B 站首页布局——频道导航、双十一课程轮播与视频卡片网格 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="仿 bilibili 首页布局练习：频道导航、双十一课程轮播图与视频推荐卡片网格，纯原生 HTML/CSS 实现">
+    <title>哔哩哔哩首页布局 | 张钧乔</title>
+    <link rel="stylesheet" href="font/zjq-icon.css">
+    <style>
+        :root {
+            --zjq-ink: #18191c;
+            --zjq-sub: #61666d;
+            --zjq-muted: #9499a0;
+            --zjq-pill: #f6f7f8;
+            --zjq-pink: #fb7299;
+            --zjq-pink-deep: #e83c86;
+            --zjq-line: #e3e5e7;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #ffffff;
+            color: var(--zjq-ink);
+            font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .zjq_page {
+            width: min(1024px, 100%);
+            margin: 0 auto;
+            padding: 6px 24px 0;
+        }
+
+        /* ===== 顶部频道导航 ===== */
+        .zjq_top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 8px 0 14px;
+        }
+
+        .zjq_channels {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+        }
+
+        .zjq_home-grid {
+            display: grid;
+            grid-template-columns: auto auto;
+            justify-items: center;
+            align-items: center;
+            column-gap: 40px;
+            row-gap: 7px;
+        }
+
+        .zjq_avatar-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #eee;
+        }
+
+        .zjq_avatar-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .zjq_flame-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 19px;
+            background: radial-gradient(circle at 35% 25%, #ff9f7d, #ff5c39 70%);
+            box-shadow: 0 3px 8px rgba(255, 92, 57, 0.35);
+        }
+
+        .zjq_mini-tab {
+            font-size: 12px;
+            color: var(--zjq-sub);
+            white-space: nowrap;
+        }
+
+        .zjq_mini-tab.zjq_mini-on {
+            color: var(--zjq-pink-deep);
+            font-weight: 700;
+        }
+
+        .zjq_channel-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+
+        .zjq_channel-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+        }
+
+        .zjq_channel {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            padding: 6px 14px;
+            border-radius: 4px;
+            background: var(--zjq-pill);
+            color: var(--zjq-ink);
+            font-size: 12.5px;
+            white-space: nowrap;
+            transition: background 150ms ease, color 150ms ease;
+        }
+
+        .zjq_channel:hover {
+            background: #fdeef3;
+            color: var(--zjq-pink-deep);
+        }
+
+        .zjq_channel .zjq_i {
+            font-size: 11px;
+            color: var(--zjq-muted);
+        }
+
+        .zjq_quick {
+            display: grid;
+            grid-template-columns: repeat(3, auto);
+            gap: 9px 16px;
+            padding-top: 6px;
+            font-size: 12px;
+            color: var(--zjq-sub);
+        }
+
+        .zjq_quick a {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .zjq_quick a:hover {
+            color: var(--zjq-pink-deep);
+        }
+
+        .zjq_quick .zjq_i {
+            font-size: 12px;
+            color: var(--zjq-pink);
+        }
+
+        /* ===== 主体：轮播 + 卡片 ===== */
+        .zjq_main {
+            display: grid;
+            grid-template-columns: 537fr 425fr;
+            gap: 14px;
+            align-items: start;
+        }
+
+        .zjq_banner {
+            position: relative;
+            aspect-ratio: 537 / 290;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #ff7ab5 url("img/16-4/banner.jpg") center / cover no-repeat;
+            cursor: pointer;
+        }
+
+        .zjq_banner-veil {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(100deg,
+                rgba(255, 122, 170, 0.55) 0%,
+                rgba(255, 175, 205, 0.20) 48%,
+                rgba(255, 130, 175, 0.30) 100%);
+        }
+
+        .zjq_banner-body {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 14px 20px 12px;
+            overflow: hidden;
+        }
+
+        .zjq_brand {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #e2347c;
+            letter-spacing: 0.5px;
+        }
+
+        .zjq_brand-mark {
+            display: inline-grid;
+            place-items: center;
+            width: 20px;
+            height: 16px;
+            border-radius: 4px;
+            background: #ffffff;
+            color: #e2347c;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+
+        .zjq_hero-title {
+            margin: 8px 0 0;
+            font-size: clamp(24px, 4.4vw, 44px);
+            line-height: 1.14;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .zjq_hero-title .zjq_t1 {
+            display: block;
+            color: #e63f88;
+            text-shadow: 2px 2px 0 #ffffff, 4px 4px 0 rgba(219, 37, 116, 0.22);
+        }
+
+        .zjq_hero-title .zjq_t2 {
+            display: block;
+            margin-left: 42px;
+            color: #ffe14d;
+            text-shadow: 2px 2px 0 #e63f88, 4px 5px 0 rgba(255, 255, 255, 0.55);
+        }
+
+        .zjq_hero-white {
+            align-self: flex-start;
+            margin-top: 12px;
+            padding: 3px 14px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #f52b74, #ff5f9e);
+            color: #ffffff;
+            font-size: clamp(14px, 1.65vw, 17px);
+            font-weight: 800;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(219, 37, 116, 0.28);
+        }
+
+        .zjq_hero-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 9px;
+        }
+
+        .zjq_hero-tag {
+            padding: 2px 9px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.82);
+            color: #d8357c;
+            font-size: 11.5px;
+            font-weight: 700;
+        }
+
+        .zjq_hero-foot {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: auto;
+            padding-top: 10px;
+        }
+
+        .zjq_hero-caption {
+            color: #ffffff;
+            font-size: 13px;
+            text-shadow: 0 1px 4px rgba(199, 40, 106, 0.55);
+        }
+
+        .zjq_dots {
+            display: flex;
+            gap: 7px;
+            margin-top: 8px;
+        }
+
+        .zjq_dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.65);
+        }
+
+        .zjq_dot.zjq_dot-on {
+            background: #ffffff;
+            border-color: #ffffff;
+            transform: scale(1.1);
+        }
+
+        .zjq_hero-arrows {
+            display: flex;
+            gap: 8px;
+        }
+
+        .zjq_arrow {
+            display: grid;
+            place-items: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.55);
+            color: #ffffff;
+            font-size: 15px;
+            line-height: 1;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+            transition: background 150ms ease;
+        }
+
+        .zjq_arrow:hover {
+            background: #ffffff;
+            color: var(--zjq-pink-deep);
+        }
+
+        /* ===== 视频卡片 ===== */
+        .zjq_cards {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px 12px;
+        }
+
+        .zjq_card {
+            display: block;
+        }
+
+        .zjq_thumb {
+            position: relative;
+            aspect-ratio: 209 / 145;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #eceff1;
+        }
+
+        .zjq_thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 300ms ease;
+        }
+
+        .zjq_card:hover .zjq_thumb img {
+            transform: scale(1.04);
+        }
+
+        .zjq_dur {
+            position: absolute;
+            right: 6px;
+            bottom: 6px;
+            padding: 1px 5px;
+            border-radius: 3px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #ffffff;
+            font-size: 11px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .zjq_stats {
+            position: absolute;
+            left: 8px;
+            bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            color: #ffffff;
+            font-size: 11.5px;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        .zjq_stat {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .zjq_stat .zjq_i {
+            font-size: 11px;
+        }
+
+        .zjq_cover-text {
+            position: absolute;
+            left: 9px;
+            top: 12px;
+            font-size: clamp(13px, 1.55vw, 17px);
+            font-weight: 900;
+            line-height: 1.25;
+            color: #ffffff;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 0 #e0568c, 0 0 10px rgba(255, 255, 255, 0.75);
+            transform: rotate(-2deg);
+            transform-origin: left top;
+        }
+
+        .zjq_cover-text small {
+            display: block;
+            font-size: 0.72em;
+            margin-top: 4px;
+        }
+
+        .zjq_card-title {
+            margin: 7px 2px 3px;
+            font-size: 13.5px;
+            font-weight: 600;
+            line-height: 1.45;
+            color: var(--zjq-ink);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .zjq_card:hover .zjq_card-title {
+            color: var(--zjq-pink-deep);
+        }
+
+        .zjq_card-meta {
+            margin: 0 2px;
+            color: var(--zjq-muted);
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ===== 页脚 ===== */
+        .zjq_footer {
+            margin-top: 26px;
+            padding: 14px 0 18px;
+            border-top: 1px solid var(--zjq-line);
+            color: var(--zjq-muted);
+            font-size: 12px;
+        }
+
+        .zjq_footer a {
+            color: var(--zjq-pink-deep);
+        }
+
+        @media (max-width: 900px) {
+            .zjq_main {
+                grid-template-columns: 1fr;
+            }
+
+            .zjq_top {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .zjq_quick {
+                padding-top: 0;
+            }
+        }
+
+        @media (max-width: 620px) {
+            .zjq_cards {
+                grid-template-columns: 1fr;
+            }
+
+            .zjq_home-grid {
+                column-gap: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="zjq_page">
+        <!-- 顶部：头像、热门入口、频道导航、快捷入口 -->
+        <div class="zjq_top">
+            <div class="zjq_channels">
+                <div class="zjq_home-grid">
+                    <a class="zjq_avatar-btn" href="#zjq_works" aria-label="个人中心">
+                        <img src="img/16-4/avatar.jpg" alt="用户头像">
+                    </a>
+                    <a class="zjq_flame-btn" href="#zjq_works" aria-label="热门榜单">
+                        <span class="zjq_i zjq_i-flame"></span>
+                    </a>
+                    <a class="zjq_mini-tab" href="#zjq_works">动态</a>
+                    <a class="zjq_mini-tab zjq_mini-on" href="#zjq_works">热门</a>
+                </div>
+
+                <div class="zjq_channel-rows">
+                    <div class="zjq_channel-row">
+                        <a class="zjq_channel" href="#">番剧</a>
+                        <a class="zjq_channel" href="#">国创</a>
+                        <a class="zjq_channel" href="#">综艺</a>
+                        <a class="zjq_channel" href="#">动画</a>
+                        <a class="zjq_channel" href="#">鬼畜</a>
+                        <a class="zjq_channel" href="#">舞蹈</a>
+                        <a class="zjq_channel" href="#">娱乐</a>
+                        <a class="zjq_channel" href="#">科技数码</a>
+                        <a class="zjq_channel" href="#">美食</a>
+                    </div>
+                    <div class="zjq_channel-row">
+                        <a class="zjq_channel" href="#">电影</a>
+                        <a class="zjq_channel" href="#">电视剧</a>
+                        <a class="zjq_channel" href="#">纪录片</a>
+                        <a class="zjq_channel" href="#">游戏</a>
+                        <a class="zjq_channel" href="#">音乐</a>
+                        <a class="zjq_channel" href="#">影视</a>
+                        <a class="zjq_channel" href="#">知识</a>
+                        <a class="zjq_channel" href="#">资讯</a>
+                        <a class="zjq_channel" href="#">更多<span class="zjq_i zjq_i-chevron"></span></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="zjq_quick">
+                <a href="#"><span class="zjq_i zjq_i-column"></span>专栏</a>
+                <a href="#"><span class="zjq_i zjq_i-flag"></span>活动</a>
+                <a href="#"><span class="zjq_i zjq_i-community"></span>社区中心</a>
+                <a href="#"><span class="zjq_i zjq_i-live"></span>直播</a>
+                <a href="#"><span class="zjq_i zjq_i-course"></span>课堂</a>
+                <a href="#"><span class="zjq_i zjq_i-song"></span>新歌热榜</a>
+            </div>
+        </div>
+
+        <!-- 主体：左轮播 + 右卡片 -->
+        <div class="zjq_main">
+            <a class="zjq_banner" href="#" aria-label="双十一 B 站来请课">
+                <span class="zjq_banner-veil"></span>
+                <div class="zjq_banner-body">
+                    <div class="zjq_brand"><span class="zjq_brand-mark">tv</span>bilibili 课堂</div>
+                    <h1 class="zjq_hero-title">
+                        <span class="zjq_t1">双十一B站来</span>
+                        <span class="zjq_t2">“请课”</span>
+                    </h1>
+                    <span class="zjq_hero-white">正版好课囤一波</span>
+                    <div class="zjq_hero-tags">
+                        <span class="zjq_hero-tag">11.11 学习节专场</span>
+                        <span class="zjq_hero-tag">好课限时特惠</span>
+                    </div>
+                    <div class="zjq_hero-foot">
+                        <div>
+                            <div class="zjq_hero-caption">双十一B站来“请课” 正版好课囤一波</div>
+                            <div class="zjq_dots">
+                                <span class="zjq_dot zjq_dot-on"></span>
+                                <span class="zjq_dot"></span>
+                                <span class="zjq_dot"></span>
+                                <span class="zjq_dot"></span>
+                                <span class="zjq_dot"></span>
+                                <span class="zjq_dot"></span>
+                            </div>
+                        </div>
+                        <div class="zjq_hero-arrows">
+                            <span class="zjq_arrow">‹</span>
+                            <span class="zjq_arrow">›</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+
+            <div class="zjq_cards">
+                <a class="zjq_card" href="#">
+                    <div class="zjq_thumb">
+                        <img src="img/16-4/v1.jpg" alt="Desire4 四人围坐聊天">
+                        <div class="zjq_stats">
+                            <span class="zjq_stat"><span class="zjq_i zjq_i-play"></span>3346</span>
+                            <span class="zjq_stat"><span class="zjq_i zjq_i-comment"></span>4</span>
+                        </div>
+                        <span class="zjq_dur">32:42</span>
+                    </div>
+                    <div class="zjq_card-title">Desire4《D1课堂》今天是周六，周钟没有响！10.24日</div>
+                    <p class="zjq_card-meta">只分享快乐的财神爷 · 10月24日</p>
+                </a>
+
+                <a class="zjq_card" href="#">
+                    <div class="zjq_thumb">
+                        <img src="img/16-4/v2.jpg" alt="一家三口与熟睡的宝宝">
+                        <div class="zjq_stats">
+                            <span class="zjq_stat"><span class="zjq_i zjq_i-play"></span>2.1万</span>
+                            <span class="zjq_stat"><span class="zjq_i zjq_i-comment"></span>4</span>
+                        </div>
+                        <span class="zjq_dur">32:42</span>
+                    </div>
+                    <div class="zjq_card-title">「我们这一家」妈妈的警告书/妈妈不想让人看/妈妈在百货公司</div>
+                    <p class="zjq_card-meta">小野春菜 · 10月24日</p>
+                </a>
+
+                <a class="zjq_card" href="#">
+                    <div class="zjq_thumb">
+                        <img src="img/16-4/v3.jpg" alt="演唱会舞台上的歌手">
+                        <div class="zjq_stats">
+                            <span class="zjq_stat"><span class="zjq_i zjq_i-play"></span>6139</span>
+                            <span class="zjq_stat"><span class="zjq_i zjq_i-comment"></span>126</span>
+                        </div>
+                        <span class="zjq_dur">09:10</span>
+                    </div>
+                    <div class="zjq_card-title">【王源巡演】王源宇宙超级无敌大</div>
+                    <p class="zjq_card-meta">王源工作室 · 10月24日</p>
+                </a>
+
+                <a class="zjq_card" href="#">
+                    <div class="zjq_thumb">
+                        <img src="img/16-4/v4.jpg" alt="女生在书桌前使用笔记本电脑">
+                        <div class="zjq_cover-text">
+                            低精力女生能做的事
+                            <small>搞钱小众赛道</small>
+                        </div>
+                        <div class="zjq_stats">
+                            <span class="zjq_stat"><span class="zjq_i zjq_i-play"></span>38.38万</span>
+                            <span class="zjq_stat"><span class="zjq_i zjq_i-comment"></span>48</span>
+                        </div>
+                        <span class="zjq_dur">12:05</span>
+                    </div>
+                    <div class="zjq_card-title">我总出一套特适合大连大学生的邪</div>
+                    <p class="zjq_card-meta">小鹿的日常 · 10月24日</p>
+                </a>
+            </div>
+        </div>
+
+        <footer class="zjq_footer">
+            张钧乔 · 《高级网页设计》课堂实践 · 仿 bilibili 首页布局练习 · <a href="index.html">返回作品集首页</a>
+        </footer>
+    </div>
+</body>
+</html>

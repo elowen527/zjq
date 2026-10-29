@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<!-- 姓名：张钧乔，建立时间：2026-10-29 11:20:00，使用的大模型：GLM-5.3，功能名称：仿哔哩哔哩首页——频道导航、轮播大图与视频推荐卡片 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="仿哔哩哔哩首页实践：频道胶囊导航、左侧轮播大图、右侧视频推荐卡片网格，图标来自本地 iconfont 字体">
+    <title>仿哔哩哔哩首页 | 张钧乔</title>
+    <link rel="stylesheet" href="font/iconfont.css">
+    <style>
+        :root {
+            --zjq-pink: #fb7299;
+            --zjq-pink-deep: #ff5c8a;
+            --zjq-ink: #18191c;
+            --zjq-muted: #9499a0;
+            --zjq-line: #e3e5e7;
+            --zjq-pill: #f1f2f3;
+            --zjq-blue: #00a1d6;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--zjq-ink);
+            background: #ffffff;
+            font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .iconfont {
+            vertical-align: -0.12em;
+        }
+
+        .zjq_page {
+            width: min(1140px, calc(100% - 32px));
+            margin: 0 auto;
+        }
+
+        /* ===== 顶部导航 ===== */
+        .zjq_header {
+            display: flex;
+            align-items: flex-start;
+            gap: 22px;
+            padding: 14px 0 10px;
+        }
+
+        .zjq_entry {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            width: 62px;
+            flex-shrink: 0;
+            font-size: 12px;
+            color: #61666d;
+            cursor: pointer;
+        }
+
+        .zjq_entry:hover {
+            color: var(--zjq-pink);
+        }
+
+        .zjq_avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid var(--zjq-pink);
+            object-fit: cover;
+        }
+
+        .zjq_hot-mark {
+            display: grid;
+            place-items: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff7c9c, #f0336b);
+            color: #fff;
+            font-size: 22px;
+            box-shadow: 0 4px 10px rgba(240, 51, 107, 0.35);
+        }
+
+        .zjq_channels {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 4px;
+        }
+
+        .zjq_channel-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 8px;
+        }
+
+        .zjq_channel {
+            padding: 6px 14px;
+            border-radius: 6px;
+            background: var(--zjq-pill);
+            color: #61666d;
+            font-size: 13.5px;
+            white-space: nowrap;
+            transition: background 150ms ease, color 150ms ease;
+        }
+
+        .zjq_channel:hover {
+            background: var(--zjq-pink);
+            color: #fff;
+        }
+
+        .zjq_channel .iconfont {
+            font-size: 13px;
+            margin-right: 2px;
+        }
+
+        .zjq_more {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .zjq_more .iconfont {
+            font-size: 11px;
+        }
+
+        .zjq_side-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-left: auto;
+            padding-top: 8px;
+            font-size: 13.5px;
+            color: #61666d;
+            white-space: nowrap;
+        }
+
+        .zjq_side-row {
+            display: flex;
+            gap: 18px;
+        }
+
+        .zjq_side-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .zjq_side-item:hover {
+            color: var(--zjq-pink);
+        }
+
+        /* ===== 主体区域 ===== */
+        .zjq_main {
+            display: grid;
+            grid-template-columns: minmax(0, 1.42fr) minmax(0, 1fr) 56px;
+            gap: 16px;
+            padding: 6px 0 30px;
+        }
+
+        /* 轮播大图 */
+        .zjq_banner {
+            position: relative;
+            min-height: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #0b0d12;
+        }
+
+        .zjq_banner img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 400ms ease;
+        }
+
+        .zjq_banner::after {
+            content: "";
+            position: absolute;
+            inset: 40% 0 0;
+            background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.78));
+        }
+
+        .zjq_banner-title {
+            position: absolute;
+            left: 24px;
+            bottom: 52px;
+            z-index: 2;
+            color: #fff;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+        }
+
+        .zjq_dots {
+            position: absolute;
+            left: 24px;
+            bottom: 22px;
+            z-index: 2;
+            display: flex;
+            gap: 8px;
+        }
+
+        .zjq_dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.45);
+            cursor: pointer;
+            transition: all 200ms ease;
+        }
+
+        .zjq_dot.zjq_dot-on {
+            width: 18px;
+            border-radius: 4px;
+            background: #fff;
+        }
+
+        .zjq_banner-arrows {
+            position: absolute;
+            right: 18px;
+            bottom: 16px;
+            z-index: 2;
+            display: flex;
+            gap: 8px;
+        }
+
+        .zjq_arrow {
+            display: grid;
+            place-items: center;
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.22);
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 150ms ease;
+        }
+
+        .zjq_arrow:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .zjq_arrow-left .iconfont {
+            display: inline-block;
+            transform: rotate(90deg);
+        }
+
+        .zjq_arrow-right .iconfont {
+            display: inline-block;
+            transform: rotate(-90deg);
+        }
+
+        /* 视频卡片网格 */
+        .zjq_video-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-rows: repeat(2, minmax(0, 1fr));
+            gap: 14px 16px;
+        }
+
+        .zjq_card {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .zjq_thumb {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 16 / 9;
+            background: #f6f7f8;
+        }
+
+        .zjq_thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 300ms ease;
+        }
+
+        .zjq_card:hover .zjq_thumb img {
+            transform: scale(1.05);
+        }
+
+        .zjq_duration {
+            position: absolute;
+            right: 8px;
+            bottom: 8px;
+            padding: 1px 7px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            font-size: 12px;
+            font-family: Consolas, Monaco, monospace;
+        }
+
+        .zjq_stats {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 7px;
+            color: var(--zjq-muted);
+            font-size: 12.5px;
+        }
+
+        .zjq_stats span {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .zjq_stats .iconfont {
+            font-size: 13px;
+        }
+
+        .zjq_card-title {
+            margin: 4px 0 0;
+            font-size: 13.5px;
+            line-height: 1.45;
+            color: var(--zjq-ink);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .zjq_card:hover .zjq_card-title {
+            color: var(--zjq-pink);
+        }
+
+        .zjq_card-up {
+            margin-top: 4px;
+            color: var(--zjq-muted);
+            font-size: 12.5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 右侧浮动工具条 */
+        .zjq_tools {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 14px;
+        }
+
+        .zjq_tool-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 8px 4px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 8px;
+            background: #fff;
+            color: #61666d;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .zjq_tool-btn .iconfont {
+            font-size: 15px;
+        }
+
+        .zjq_tool-btn:hover {
+            color: var(--zjq-pink);
+            border-color: var(--zjq-pink);
+        }
+
+        .zjq_tool-btn.zjq_tool-circular {
+            border-radius: 50%;
+            padding: 12px 0;
+            width: 44px;
+            align-self: flex-end;
+        }
+
+        @media (max-width: 920px) {
+            .zjq_header {
+                flex-wrap: wrap;
+            }
+
+            .zjq_side-nav {
+                margin-left: 0;
+            }
+
+            .zjq_main {
+                grid-template-columns: 1fr;
+            }
+
+            .zjq_banner {
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="zjq_page">
+        <!-- 顶部导航 -->
+        <header class="zjq_header">
+            <div class="zjq_entry">
+                <img class="zjq_avatar" src="img/16-3/Cute_anime_style_avatar_icon___2026-10-29T06-27-15.png" alt="头像">
+                <span>动态</span>
+            </div>
+            <div class="zjq_entry">
+                <span class="zjq_hot-mark"><span class="iconfont icon-ic_interest"></span></span>
+                <span>热门</span>
+            </div>
+
+            <nav class="zjq_channels">
+                <div class="zjq_channel-row">
+                    <a class="zjq_channel" href="javascript:;">番剧</a>
+                    <a class="zjq_channel" href="javascript:;">国创</a>
+                    <a class="zjq_channel" href="javascript:;">综艺</a>
+                    <a class="zjq_channel" href="javascript:;">动画</a>
+                    <a class="zjq_channel" href="javascript:;">鬼畜</a>
+                    <a class="zjq_channel" href="javascript:;">舞蹈</a>
+                    <a class="zjq_channel" href="javascript:;">娱乐</a>
+                    <a class="zjq_channel" href="javascript:;">科技数码</a>
+                    <a class="zjq_channel" href="javascript:;">美食</a>
+                </div>
+                <div class="zjq_channel-row">
+                    <a class="zjq_channel" href="javascript:;">电影</a>
+                    <a class="zjq_channel" href="javascript:;">电视剧</a>
+                    <a class="zjq_channel" href="javascript:;">纪录片</a>
+                    <a class="zjq_channel" href="javascript:;">游戏</a>
+                    <a class="zjq_channel" href="javascript:;">音乐</a>
+                    <a class="zjq_channel" href="javascript:;">影视</a>
+                    <a class="zjq_channel" href="javascript:;">知识</a>
+                    <a class="zjq_channel" href="javascript:;">资讯</a>
+                    <a class="zjq_channel zjq_more" href="javascript:;">更多<span class="iconfont icon-xiangxia"></span></a>
+                </div>
+            </nav>
+
+            <div class="zjq_side-nav">
+                <div class="zjq_side-row">
+                    <span class="zjq_side-item"><span class="iconfont icon-ic_article"></span>专栏</span>
+                    <span class="zjq_side-item"><span class="iconfont icon-ic_interest"></span>活动</span>
+                    <span class="zjq_side-item"><span class="iconfont icon-ic_channel"></span>社区中心</span>
+                </div>
+                <div class="zjq_side-row">
+                    <span class="zjq_side-item"><span class="iconfont icon-ic_video"></span>直播</span>
+                    <span class="zjq_side-item"><span class="iconfont icon-ic_class1"></span>课堂</span>
+                    <span class="zjq_side-item"><span class="iconfont icon-ic_playlist"></span>新歌热榜</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主体 -->
+        <main class="zjq_main">
+            <!-- 左侧轮播 -->
+            <section class="zjq_banner" aria-label="轮播推荐">
+                <img id="zjq_banner_img" src="img/16-3/Chinese_fantasy_mobile_game_pr_2026-10-29T06-27-18.png" alt="轮播大图">
+                <div class="zjq_banner-title" id="zjq_banner_title">父亲未尽之业，由我继续！</div>
+                <div class="zjq_dots" id="zjq_dots"></div>
+                <div class="zjq_banner-arrows">
+                    <button class="zjq_arrow zjq_arrow-left" id="zjq_prev" type="button"><span class="iconfont icon-xiangshang"></span></button>
+                    <button class="zjq_arrow zjq_arrow-right" id="zjq_next" type="button"><span class="iconfont icon-xiangxia"></span></button>
+                </div>
+            </section>
+
+            <!-- 右侧视频卡片 -->
+            <section class="zjq_video-grid" id="zjq_video_grid" aria-label="视频推荐"></section>
+
+            <!-- 浮动工具条 -->
+            <aside class="zjq_tools" aria-label="快捷工具">
+                <button class="zjq_tool-btn" id="zjq_refresh_btn" type="button">
+                    <span class="iconfont icon-ic_moveup"></span>换
+                    一
+                    换
+                </button>
+                <button class="zjq_tool-btn zjq_tool-circular" type="button">
+                    <span class="iconfont icon-ic_more"></span>
+                </button>
+            </aside>
+        </main>
+    </div>
+
+    <script>
+        // 姓名：张钧乔 日期：2026-10-29 功能名称：仿哔哩哔哩首页——轮播切换与推荐卡片刷新
+        var zjq_bannerImg = document.getElementById('zjq_banner_img');
+
+        /* ===== 轮播数据与切换 ===== */
+        var zjq_slides = [
+            { title: '父亲未尽之业，由我继续！' },
+            { title: '三分钟超爽技能打牌，全新名将正式登场' },
+            { title: '百将牌 · 群雄逐鹿，谁主沉浮' },
+            { title: '新春版本前瞻：名将张星彩参上' },
+            { title: '限时活动开启，登录即领豪华礼包' },
+            { title: '全服竞技场排行赛，巅峰对决一触即发' },
+            { title: '周年庆典回顾：与百万玩家同行' },
+            { title: '下一站，更广阔的江湖' }
+        ];
+        var zjq_slideIndex = 0;
+
+        (function () {
+            var zjq_dots = document.getElementById('zjq_dots');
+            var zjq_html = '';
+            for (var zjq_i = 0; zjq_i < zjq_slides.length; zjq_i++) {
+                zjq_html += '<span class="zjq_dot' + (zjq_i === 0 ? ' zjq_dot-on' : '') + '" data-slide="' + zjq_i + '"></span>';
+            }
+            zjq_dots.innerHTML = zjq_html;
+        })();
+
+        function zjq_goSlide(zjq_n) {
+            zjq_slideIndex = (zjq_n + zjq_slides.length) % zjq_slides.length;
+            document.getElementById('zjq_banner_title').textContent = zjq_slides[zjq_slideIndex].title;
+            var zjq_all = document.querySelectorAll('.zjq_dot');
+            for (var zjq_i = 0; zjq_i < zjq_all.length; zjq_i++) {
+                zjq_all[zjq_i].classList.toggle('zjq_dot-on', zjq_i === zjq_slideIndex);
+            }
+        }
+
+        document.getElementById('zjq_prev').addEventListener('click', function () { zjq_goSlide(zjq_slideIndex - 1); });
+        document.getElementById('zjq_next').addEventListener('click', function () { zjq_goSlide(zjq_slideIndex + 1); });
+        document.getElementById('zjq_dots').addEventListener('click', function (zjq_event) {
+            var zjq_dot = zjq_event.target.closest('.zjq_dot');
+            if (zjq_dot) { zjq_goSlide(parseInt(zjq_dot.getAttribute('data-slide'), 10)); }
+        });
+        setInterval(function () { zjq_goSlide(zjq_slideIndex + 1); }, 4000);
+
+        /* ===== 推荐视频卡片 ===== */
+        var zjq_videos = [
+            {
+                img: 'img/16-3/Chinese_variety_show_TV_studio_2026-10-29T06-27-12.png',
+                duration: '01:02:22',
+                play: '4936',
+                danmu: '67',
+                title: 'Desire4《D1课堂》今天是周六，闹钟没有响！10.24日',
+                up: '只分享快乐的财神爷',
+                date: '10月24日'
+            },
+            {
+                img: 'img/16-3/Cute_Chinese_cartoon_animation_2026-10-29T06-27-11.png',
+                duration: '32:42',
+                play: '3346',
+                danmu: '4',
+                title: '「我们这一家」妈妈的警告书/妈妈不想让人看/妈妈在百货公司',
+                up: '小野菜菜',
+                date: '10月24日'
+            },
+            {
+                img: 'img/16-3/Dreamy_night_scene__a_young_As_2026-10-29T06-27-17.png',
+                duration: '09:10',
+                play: '6139',
+                danmu: '126',
+                title: '【王源巡演】王源宇宙超级无敌大',
+                up: '星河入梦',
+                date: '10月23日'
+            },
+            {
+                img: 'img/16-3/Young_Asian_female_college_stu_2026-10-29T06-27-20.png',
+                duration: '12:05',
+                play: '38.3万',
+                danmu: '48',
+                title: '我总结一套适合大连大学生的省钱攻略',
+                up: '阿球在大连',
+                date: '10月22日'
+            }
+        ];
+
+        function zjq_renderCards() {
+            var zjq_grid = document.getElementById('zjq_video_grid');
+            var zjq_html = '';
+            for (var zjq_i = 0; zjq_i < zjq_videos.length; zjq_i++) {
+                var zjq_v = zjq_videos[zjq_i];
+                zjq_html += '<article class="zjq_card">';
+                zjq_html += '<div class="zjq_thumb"><img src="' + zjq_v.img + '" alt="' + zjq_v.title + '"><span class="zjq_duration">' + zjq_v.duration + '</span></div>';
+                zjq_html += '<div class="zjq_stats"><span><span class="iconfont icon-bofang"></span>' + zjq_v.play + '</span><span><span class="iconfont icon-ic_danmu"></span>' + zjq_v.danmu + '</span></div>';
+                zjq_html += '<h3 class="zjq_card-title">' + zjq_v.title + '</h3>';
+                zjq_html += '<p class="zjq_card-up">' + zjq_v.up + ' · ' + zjq_v.date + '</p>';
+                zjq_html += '</article>';
+            }
+            zjq_grid.innerHTML = zjq_html;
+        }
+
+        zjq_renderCards();
+
+        // 换一换：把推荐卡片数组反转一遍模拟刷新
+        document.getElementById('zjq_refresh_btn').addEventListener('click', function () {
+            zjq_videos.unshift(zjq_videos.pop());
+            zjq_renderCards();
+        });
+    </script>
+</body>
+</html>

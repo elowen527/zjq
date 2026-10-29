@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<!-- 姓名：张钧乔，建立时间：2026-10-29 10:30:00，使用的大模型：GLM-5.3，功能名称：JavaScript数组方法交互演示——增删改查与迭代方法 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="JavaScript 数组方法演示：push、pop、shift、unshift、splice、slice、join、indexOf、reverse、sort 与 map、filter、reduce 等迭代方法的可视化交互">
+    <title>JavaScript 数组方法 | 张钧乔</title>
+    <style>
+        :root {
+            --zjq-ink: #182230;
+            --zjq-muted: #667085;
+            --zjq-white: #ffffff;
+            --zjq-orange: #e9693f;
+            --zjq-orange-dark: #b8472d;
+            --zjq-teal: #277b78;
+            --zjq-line: #d9d5cb;
+            --zjq-shadow: 0 14px 36px rgba(31, 48, 36, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--zjq-ink);
+            background:
+                radial-gradient(circle at 88% 4%, rgba(233, 105, 63, 0.10), transparent 24rem),
+                linear-gradient(135deg, #f4f0e8 0%, #edf3ee 55%, #fffaf2 100%);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            line-height: 1.7;
+        }
+
+        code, pre {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+        }
+
+        .zjq_shell {
+            width: min(1080px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 28px 0 44px;
+        }
+
+        .zjq_top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .zjq_back {
+            color: var(--zjq-muted);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .zjq_back:hover {
+            color: var(--zjq-orange);
+        }
+
+        .zjq_badge {
+            color: var(--zjq-orange);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .zjq_header {
+            padding: 40px 0 8px;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(34px, 5vw, 54px);
+            line-height: 1.15;
+        }
+
+        h1 span {
+            color: var(--zjq-teal);
+        }
+
+        .zjq_intro {
+            max-width: 740px;
+            margin: 14px 0 0;
+            color: var(--zjq-muted);
+            font-size: 16px;
+        }
+
+        h2 {
+            margin: 44px 0 6px;
+            font-size: 24px;
+        }
+
+        .zjq_section-desc {
+            margin: 0 0 18px;
+            color: var(--zjq-muted);
+            font-size: 14px;
+        }
+
+        .zjq_panel {
+            padding: 20px 22px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid var(--zjq-line);
+            border-radius: 6px;
+            box-shadow: 0 8px 22px rgba(31, 48, 36, 0.06);
+        }
+
+        .zjq_panel h3 {
+            margin: 0 0 4px;
+            font-size: 17px;
+        }
+
+        .zjq_panel > p {
+            margin: 0 0 14px;
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .zjq_btn {
+            padding: 9px 18px;
+            border: none;
+            border-radius: 4px;
+            background: var(--zjq-teal);
+            color: var(--zjq-white);
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .zjq_btn:hover {
+            background: #1d5f5c;
+        }
+
+        .zjq_btn.zjq_btn-orange {
+            background: var(--zjq-orange);
+        }
+
+        .zjq_btn.zjq_btn-orange:hover {
+            background: var(--zjq-orange-dark);
+        }
+
+        .zjq_btn.zjq_btn-ghost {
+            background: var(--zjq-white);
+            border: 1px solid var(--zjq-line);
+            color: var(--zjq-ink);
+        }
+
+        .zjq_btn.zjq_btn-ghost:hover {
+            border-color: var(--zjq-teal);
+            color: var(--zjq-teal);
+        }
+
+        /* ===== 数组舞台 ===== */
+        .zjq_stage {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: stretch;
+            min-height: 86px;
+            padding: 16px;
+            border: 2px dashed var(--zjq-line);
+            border-radius: 6px;
+            background: #faf8f3;
+        }
+
+        .zjq_cell {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2px;
+            min-width: 72px;
+            padding: 10px 12px 6px;
+            border-radius: 5px;
+            background: var(--zjq-white);
+            border: 1px solid var(--zjq-line);
+            border-bottom: 3px solid var(--zjq-teal);
+            text-align: center;
+            animation: zjq_pop 260ms ease;
+        }
+
+        .zjq_cell.zjq_cell-hot {
+            border-bottom-color: var(--zjq-orange);
+            background: #fdeee7;
+        }
+
+        @keyframes zjq_pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.12); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .zjq_cell-val {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .zjq_cell-idx {
+            color: var(--zjq-muted);
+            font-size: 11px;
+        }
+
+        .zjq_stage-empty {
+            align-self: center;
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_len {
+            margin-top: 10px;
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_len strong {
+            color: var(--zjq-teal);
+        }
+
+        .zjq_result {
+            margin-top: 12px;
+            padding: 10px 14px;
+            border: 1px dashed var(--zjq-line);
+            border-radius: 4px;
+            background: #faf8f3;
+            font-size: 13.5px;
+        }
+
+        .zjq_result strong {
+            color: var(--zjq-orange-dark);
+        }
+
+        .zjq_grid-2 {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 18px;
+            margin-top: 18px;
+        }
+
+        .zjq_input {
+            flex: 1;
+            min-width: 110px;
+            padding: 9px 12px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 4px;
+            background: #faf8f3;
+            color: var(--zjq-ink);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 14px;
+        }
+
+        .zjq_input:focus {
+            outline: none;
+            border-color: var(--zjq-teal);
+        }
+
+        .zjq_cmd-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .zjq_cmd-list li {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 6px 12px;
+            border-left: 3px solid var(--zjq-line);
+            background: #faf8f3;
+            margin-bottom: 5px;
+            font-size: 12.5px;
+        }
+
+        .zjq_cmd-list li.zjq_hit {
+            border-left-color: var(--zjq-orange);
+            background: #fdeee7;
+            font-weight: 700;
+        }
+
+        .zjq_cmd-list code {
+            color: var(--zjq-muted);
+        }
+
+        /* ===== 迭代方法管道 ===== */
+        .zjq_iter-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .zjq_iter-card {
+            display: flex;
+            flex-direction: column;
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid var(--zjq-line);
+            border-top: 4px solid var(--zjq-teal);
+            border-radius: 6px;
+            box-shadow: 0 8px 22px rgba(31, 48, 36, 0.06);
+        }
+
+        .zjq_iter-head {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .zjq_iter-name {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--zjq-teal);
+        }
+
+        .zjq_iter-cn {
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_iter-desc {
+            margin: 6px 0 10px;
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_iter-card pre {
+            margin: 0 0 12px;
+            padding: 12px 14px;
+            border-radius: 4px;
+            background: var(--zjq-ink);
+            color: #d5e3df;
+            font-size: 12.5px;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .zjq_pipe {
+            margin-top: 12px;
+            padding: 12px 14px;
+            border-radius: 4px;
+            background: #eef5f3;
+            font-size: 12.5px;
+        }
+
+        .zjq_pipe-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .zjq_chip {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: var(--zjq-white);
+            border: 1px solid var(--zjq-line);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 12.5px;
+            font-weight: 700;
+            animation: zjq_pop 260ms ease;
+        }
+
+        .zjq_chip.zjq_chip-out {
+            background: var(--zjq-teal);
+            border-color: var(--zjq-teal);
+            color: var(--zjq-white);
+        }
+
+        .zjq_pipe-arrow {
+            color: var(--zjq-orange);
+            font-weight: 700;
+        }
+
+        .zjq_pipe-note {
+            margin: 0;
+            color: var(--zjq-muted);
+        }
+
+        .zjq_pipe-note strong {
+            color: var(--zjq-orange-dark);
+        }
+
+        .zjq_footer {
+            margin-top: 44px;
+            padding: 22px 0 4px;
+            border-top: 1px solid var(--zjq-line);
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_footer a {
+            color: var(--zjq-teal);
+            text-decoration: none;
+        }
+
+        .zjq_footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 860px) {
+            .zjq_grid-2,
+            .zjq_iter-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="zjq_shell">
+        <nav class="zjq_top">
+            <a class="zjq_back" href="index.html">← 返回作品集首页</a>
+            <span class="zjq_badge">16-1 / ARRAY</span>
+        </nav>
+
+        <header class="zjq_header">
+            <h1>JavaScript <span>数组方法</span></h1>
+            <p class="zjq_intro">数组是最常用的数据结构。本页把数组方法做成可视化舞台：下面的小方块就是数组元素，点击按钮执行方法，观察数组如何实时变化；迭代方法则以「管道」的形式展示数据从进到出的全过程。</p>
+        </header>
+
+        <!-- 数组舞台 -->
+        <section aria-label="数组增删方法">
+            <h2>一、数组舞台：增删元素一目了然</h2>
+            <p class="zjq_section-desc">push / pop 操作尾部，shift / unshift 操作头部，splice 可以在任意位置插入或删除。橙色高亮表示刚刚被操作的元素。</p>
+
+            <div class="zjq_stage" id="zjq_stage"></div>
+            <p class="zjq_len" id="zjq_len">数组长度 length = <strong>4</strong></p>
+
+            <div class="zjq_row" style="margin-top:10px">
+                <button class="zjq_btn" type="button" data-act="push">push('葡萄')</button>
+                <button class="zjq_btn zjq_btn-orange" type="button" data-act="pop">pop()</button>
+                <button class="zjq_btn" type="button" data-act="unshift">unshift('草莓')</button>
+                <button class="zjq_btn zjq_btn-orange" type="button" data-act="shift">shift()</button>
+                <button class="zjq_btn zjq_btn-ghost" type="button" data-act="splice">splice(1, 1)</button>
+                <button class="zjq_btn zjq_btn-ghost" type="button" data-act="reverse">reverse()</button>
+                <button class="zjq_btn zjq_btn-ghost" type="button" data-act="sort">sort()</button>
+                <button class="zjq_btn zjq_btn-ghost" type="button" data-act="reset">重置数组</button>
+            </div>
+
+            <div class="zjq_result" id="zjq_stage_result">点击上方按钮，观察数组方块的变化。</div>
+
+            <div class="zjq_grid-2">
+                <div class="zjq_panel">
+                    <h3>查找方法 —— indexOf 与 includes</h3>
+                    <p>indexOf 返回元素下标（找不到返回 -1），includes 只回答「有没有」。</p>
+                    <div class="zjq_row">
+                        <input class="zjq_input" id="zjq_search_input" type="text" value="香蕉" placeholder="输入水果名，如：苹果">
+                        <button class="zjq_btn" id="zjq_search_btn" type="button">查 找</button>
+                    </div>
+                    <ul class="zjq_cmd-list" id="zjq_search_list">
+                        <li data-m="indexOf"><span>indexOf('香蕉')</span><code>返回下标或 -1</code></li>
+                        <li data-m="includes"><span>includes('香蕉')</span><code>返回 true / false</code></li>
+                    </ul>
+                    <div class="zjq_result" id="zjq_search_result">输入元素后点击「查找」。</div>
+                </div>
+
+                <div class="zjq_panel">
+                    <h3>不改变原数组 —— slice / concat / join</h3>
+                    <p>这三个方法都会返回新数组或新字符串，原数组保持不变。</p>
+                    <div class="zjq_row">
+                        <button class="zjq_btn" type="button" data-keep="slice">slice(1, 3)</button>
+                        <button class="zjq_btn" type="button" data-keep="concat">concat(['芒果'])</button>
+                        <button class="zjq_btn" type="button" data-keep="join">join(' → ')</button>
+                    </div>
+                    <div class="zjq_result" id="zjq_keep_result">点击按钮查看返回值（原数组不受影响）。</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 迭代方法 -->
+        <section aria-label="数组迭代方法">
+            <h2>二、迭代方法：数据像流水线一样加工</h2>
+            <p class="zjq_section-desc">map、filter、reduce 是函数式编程三剑客：map 逐个加工，filter 逐个筛选，reduce 汇总成一个值。点击「运行」看每个元素如何流过管道。</p>
+
+            <div class="zjq_iter-grid" id="zjq_iter_grid"></div>
+        </section>
+
+        <footer class="zjq_footer">
+            张钧乔 · 《高级网页设计》课堂实践 · <a href="index.html">返回首页</a>
+        </footer>
+    </div>
+
+    <script>
+        // 姓名：张钧乔 日期：2026-10-29 功能名称：JavaScript数组方法交互演示——增删改查与迭代方法
+        function zjq_escapeHtml(zjq_text) {
+            return String(zjq_text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        /* ================= 数组舞台 ================= */
+
+        var zjq_resetData = ['苹果', '香蕉', '橘子', '樱桃'];
+        var zjq_fruits = zjq_resetData.slice();
+        var zjq_hotVal = null;
+
+        function zjq_renderStage() {
+            var zjq_stage = document.getElementById('zjq_stage');
+            if (zjq_fruits.length === 0) {
+                zjq_stage.innerHTML = '<span class="zjq_stage-empty">数组空了：[] —— 点击「重置数组」恢复</span>';
+            } else {
+                var zjq_html = '';
+                for (var zjq_i = 0; zjq_i < zjq_fruits.length; zjq_i++) {
+                    var zjq_hot = zjq_fruits[zjq_i] === zjq_hotVal ? ' zjq_cell-hot' : '';
+                    zjq_html += '<div class="zjq_cell' + zjq_hot + '"><span class="zjq_cell-val">' + zjq_escapeHtml(zjq_fruits[zjq_i]) + '</span><span class="zjq_cell-idx">[' + zjq_i + ']</span></div>';
+                }
+                zjq_stage.innerHTML = zjq_html;
+            }
+            document.getElementById('zjq_len').innerHTML =
+                '数组长度 length = <strong>' + zjq_fruits.length + '</strong>　当前数组：[ ' +
+                zjq_fruits.map(function (zjq_f) { return "'" + zjq_f + "'"; }).join(', ') + ' ]';
+            zjq_hotVal = null;
+        }
+
+        var zjq_stageMsgs = {
+            push: function () {
+                zjq_fruits.push('葡萄');
+                zjq_hotVal = '葡萄';
+                return 'push 在<strong>尾部</strong>添加元素并返回新的长度 → ' + zjq_fruits.length;
+            },
+            pop: function () {
+                if (zjq_fruits.length === 0) { return '数组已空，pop() 返回 undefined。'; }
+                var zjq_out = zjq_fruits.pop();
+                return "pop() 删除<strong>尾部</strong>元素，返回被删的 <strong>'" + zjq_out + "'</strong>";
+            },
+            unshift: function () {
+                zjq_fruits.unshift('草莓');
+                zjq_hotVal = '草莓';
+                return 'unshift 在<strong>头部</strong>添加元素，原有元素整体后移一位';
+            },
+            shift: function () {
+                if (zjq_fruits.length === 0) { return '数组已空，shift() 返回 undefined。'; }
+                var zjq_out = zjq_fruits.shift();
+                return "shift() 删除<strong>头部</strong>元素，返回被删的 <strong>'" + zjq_out + "'</strong>，其余元素整体前移";
+            },
+            splice: function () {
+                if (zjq_fruits.length < 2) { return 'splice(1, 1) 需要至少 2 个元素：从下标 1 开始删 1 个。'; }
+                var zjq_out = zjq_fruits.splice(1, 1);
+                return "splice(1, 1) 从下标 1 开始删除 1 个元素 → 删掉了 <strong>'" + zjq_out[0] + "'</strong>（第一个参数是起点，第二个是个数）";
+            },
+            reverse: function () {
+                zjq_fruits.reverse();
+                zjq_hotVal = zjq_fruits[0];
+                return 'reverse() 将数组<strong>原地翻转</strong>，首尾互换';
+            },
+            sort: function () {
+                zjq_fruits.sort();
+                zjq_hotVal = zjq_fruits[0];
+                return 'sort() 按默认规则（Unicode 码位）<strong>原地排序</strong>，数字排序需传入比较函数';
+            },
+            reset: function () {
+                zjq_fruits = zjq_resetData.slice();
+                return '数组已重置为初始状态';
+            }
+        };
+
+        document.querySelectorAll('[data-act]').forEach(function (zjq_btn) {
+            zjq_btn.addEventListener('click', function () {
+                var zjq_act = zjq_btn.getAttribute('data-act');
+                var zjq_msg = zjq_stageMsgs[zjq_act]();
+                zjq_renderStage();
+                document.getElementById('zjq_stage_result').innerHTML =
+                    '<code>' + zjq_escapeHtml(zjq_btn.textContent) + '</code> → ' + zjq_msg;
+            });
+        });
+
+        /* ===== 查找方法 ===== */
+
+        document.getElementById('zjq_search_btn').addEventListener('click', function () {
+            var zjq_q = document.getElementById('zjq_search_input').value.trim();
+            var zjq_resultEl = document.getElementById('zjq_search_result');
+            var zjq_listItems = document.querySelectorAll('#zjq_search_list li');
+
+            if (!zjq_q) {
+                zjq_resultEl.innerHTML = '请先输入要查找的元素。';
+                return;
+            }
+
+            var zjq_idx = zjq_fruits.indexOf(zjq_q);
+            var zjq_has = zjq_fruits.includes(zjq_q);
+
+            for (var zjq_i = 0; zjq_i < zjq_listItems.length; zjq_i++) {
+                zjq_listItems[zjq_i].classList.toggle('zjq_hit', zjq_has);
+            }
+
+            if (zjq_has) {
+                zjq_resultEl.innerHTML =
+                    "indexOf('" + zjq_escapeHtml(zjq_q) + "') → <strong>" + zjq_idx + "</strong>（在下标 " + zjq_idx + " 处找到）　" +
+                    "includes('" + zjq_escapeHtml(zjq_q) + "') → <strong>true</strong>";
+            } else {
+                zjq_resultEl.innerHTML =
+                    "indexOf('" + zjq_escapeHtml(zjq_q) + "') → <strong>-1</strong>（没找到）　" +
+                    "includes('" + zjq_escapeHtml(zjq_q) + "') → <strong>false</strong>";
+            }
+        });
+
+        /* ===== 不改变原数组的方法 ===== */
+
+        document.querySelectorAll('[data-keep]').forEach(function (zjq_btn) {
+            zjq_btn.addEventListener('click', function () {
+                var zjq_keep = zjq_btn.getAttribute('data-keep');
+                var zjq_msg;
+                if (zjq_keep === 'slice') {
+                    zjq_msg = "slice(1, 3) 截取下标 1 到 3（不含 3）→ 返回新数组 <strong>[" +
+                        zjq_fruits.slice(1, 3).map(function (zjq_f) { return "'" + zjq_f + "'"; }).join(', ') + "]</strong>";
+                } else if (zjq_keep === 'concat') {
+                    zjq_msg = "concat(['芒果']) 拼接数组 → 返回新数组 <strong>[" +
+                        zjq_fruits.concat(['芒果']).map(function (zjq_f) { return "'" + zjq_f + "'"; }).join(', ') + "]</strong>";
+                } else {
+                    zjq_msg = "join(' → ') 把元素连成字符串 → <strong>\"" + zjq_escapeHtml(zjq_fruits.join(' → ')) + "\"</strong>";
+                }
+                document.getElementById('zjq_keep_result').innerHTML =
+                    '<code>' + zjq_escapeHtml(zjq_btn.textContent) + '</code> → ' + zjq_msg + '　<span style="color:var(--zjq-teal)">原数组仍是：[' +
+                    zjq_fruits.map(function (zjq_f) { return "'" + zjq_f + "'"; }).join(', ') + ']</span>';
+            });
+        });
+
+        /* ================= 迭代方法 ================= */
+
+        var zjq_nums = [3, 8, 12, 5, 20];
+
+        var zjq_iterDemos = [
+            {
+                name: 'map',
+                cn: '逐个加工，一一对应',
+                desc: '对每个元素执行回调，返回一个长度相同的新数组，原数组不变。',
+                code: "var zjq_nums = [3, 8, 12, 5, 20];\nvar zjq_doubled = zjq_nums.map(function (zjq_n) {\n    return zjq_n * 2;\n});",
+                run: function () {
+                    var zjq_out = zjq_nums.map(function (zjq_n) { return zjq_n * 2; });
+                    return {
+                        chips: zjq_nums.map(function (zjq_n, zjq_i) { return zjq_n + ' × 2 = ' + zjq_out[zjq_i]; }),
+                        result: zjq_out.join(', '),
+                        note: '每个元素都被 ×2，输出长度 = 输入长度 = <strong>5</strong>'
+                    };
+                }
+            },
+            {
+                name: 'filter',
+                cn: '逐个筛选，留下真值',
+                desc: '回调返回 true 的元素才能通过，返回一个可能更短的新数组。',
+                code: "var zjq_nums = [3, 8, 12, 5, 20];\nvar zjq_big = zjq_nums.filter(function (zjq_n) {\n    return zjq_n > 6;\n});",
+                run: function () {
+                    var zjq_out = zjq_nums.filter(function (zjq_n) { return zjq_n > 6; });
+                    return {
+                        chips: zjq_nums.map(function (zjq_n) { return zjq_n + (zjq_n > 6 ? ' ✓ 通过' : ' ✗ 淘汰'); }),
+                        result: zjq_out.join(', '),
+                        note: '条件 n &gt; 6，5 个元素中有 <strong>' + zjq_out.length + '</strong> 个通过筛选'
+                    };
+                }
+            },
+            {
+                name: 'reduce',
+                cn: '不断累积，归成一个值',
+                desc: '累积器 acc 携带上一轮结果，与当前元素计算后继续传递，最终得到一个值。',
+                code: "var zjq_nums = [3, 8, 12, 5, 20];\nvar zjq_sum = zjq_nums.reduce(function (zjq_acc, zjq_n) {\n    return zjq_acc + zjq_n;\n}, 0);",
+                run: function () {
+                    var zjq_acc = 0;
+                    var zjq_steps = [];
+                    for (var zjq_i = 0; zjq_i < zjq_nums.length; zjq_i++) {
+                        zjq_acc += zjq_nums[zjq_i];
+                        zjq_steps.push(zjq_acc + ' + ' + zjq_nums[zjq_i] + ' = ' + zjq_acc);
+                    }
+                    return {
+                        chips: zjq_steps,
+                        result: String(zjq_acc),
+                        note: '初始值 acc = 0，逐轮累加，最终归并为 <strong>' + zjq_acc + '</strong>'
+                    };
+                }
+            },
+            {
+                name: 'forEach',
+                cn: '逐个访问，没有返回值',
+                desc: '纯粹遍历执行操作（如打印、修改 DOM），return 值会被忽略。',
+                code: "var zjq_nums = [3, 8, 12, 5, 20];\nzjq_nums.forEach(function (zjq_n, zjq_i) {\n    console.log(zjq_i + ' 号元素是 ' + zjq_n);\n});",
+                run: function () {
+                    return {
+                        chips: zjq_nums.map(function (zjq_n, zjq_i) { return '[' + zjq_i + '] ' + zjq_n; }),
+                        result: '无返回值（undefined）',
+                        note: 'forEach 只负责「逐一访问」，<strong>不产生新数组</strong>，需要结果时请用 map / filter'
+                    };
+                }
+            },
+            {
+                name: 'find',
+                cn: '找到第一个就停',
+                desc: '返回第一个满足条件的元素，找不到返回 undefined。',
+                code: "var zjq_nums = [3, 8, 12, 5, 20];\nvar zjq_first = zjq_nums.find(function (zjq_n) {\n    return zjq_n > 10;\n});",
+                run: function () {
+                    var zjq_hit = null;
+                    for (var zjq_i = 0; zjq_i < zjq_nums.length; zjq_i++) {
+                        if (zjq_nums[zjq_i] > 10) { zjq_hit = zjq_nums[zjq_i]; break; }
+                    }
+                    var zjq_chips = [];
+                    for (var zjq_j = 0; zjq_j < zjq_nums.length; zjq_j++) {
+                        if (zjq_nums[zjq_j] > 10) {
+                            zjq_chips.push(zjq_nums[zjq_j] + ' ✓ 找到了！');
+                            break;
+                        }
+                        zjq_chips.push(zjq_nums[zjq_j] + ' ✗ 继续');
+                    }
+                    return {
+                        chips: zjq_chips,
+                        result: String(zjq_hit),
+                        note: '条件 n &gt; 10：遇到第一个满足的 <strong>' + zjq_hit + '</strong> 就立即返回，不再往后看'
+                    };
+                }
+            },
+            {
+                name: 'some / every',
+                cn: '部分满足 / 全部满足',
+                desc: 'some 只要有一个元素满足就返回 true；every 要求所有元素都满足。',
+                code: "var zjq_nums = [3, 8, 12, 5, 20];\nzjq_nums.some(function (zjq_n) { return zjq_n > 15; }); // true\nzjq_nums.every(function (zjq_n) { return zjq_n > 15; }); // false",
+                run: function () {
+                    var zjq_some = zjq_nums.some(function (zjq_n) { return zjq_n > 15; });
+                    var zjq_every = zjq_nums.every(function (zjq_n) { return zjq_n > 15; });
+                    return {
+                        chips: [
+                            'some: 是否有元素 > 15 → ' + (zjq_some ? 'true' : 'false'),
+                            'every: 是否全部 > 15 → ' + (zjq_every ? 'true' : 'false')
+                        ],
+                        result: 'some = ' + zjq_some + '，every = ' + zjq_every,
+                        note: '20 满足 some 的条件；但 3、8、5 拖了 every 的后腿'
+                    };
+                }
+            }
+        ];
+
+        (function () {
+            var zjq_grid = document.getElementById('zjq_iter_grid');
+            var zjq_html = '';
+            for (var zjq_i = 0; zjq_i < zjq_iterDemos.length; zjq_i++) {
+                var zjq_demo = zjq_iterDemos[zjq_i];
+                zjq_html += '<article class="zjq_iter-card">';
+                zjq_html += '<div class="zjq_iter-head"><span class="zjq_iter-name">' + zjq_demo.name + '</span><span class="zjq_iter-cn">' + zjq_demo.cn + '</span></div>';
+                zjq_html += '<p class="zjq_iter-desc">' + zjq_demo.desc + '</p>';
+                zjq_html += '<pre><code>' + zjq_escapeHtml(zjq_demo.code) + '</code></pre>';
+                zjq_html += '<div><button type="button" class="zjq_btn" data-iter="' + zjq_i + '">运 行</button></div>';
+                zjq_html += '<div class="zjq_pipe" id="zjq_iter_out_' + zjq_i + '"><p class="zjq_pipe-note">点击「运行」，看数据流过管道。</p></div>';
+                zjq_html += '</article>';
+            }
+            zjq_grid.innerHTML = zjq_html;
+        })();
+
+        document.getElementById('zjq_iter_grid').addEventListener('click', function (zjq_event) {
+            var zjq_btn = zjq_event.target.closest('[data-iter]');
+            if (!zjq_btn) { return; }
+
+            var zjq_index = parseInt(zjq_btn.getAttribute('data-iter'), 10);
+            var zjq_data = zjq_iterDemos[zjq_index].run();
+            var zjq_html = '<div class="zjq_pipe-row"><span class="zjq_chip">输入 [ ' + zjq_nums.join(', ') + ' ]</span>' +
+                '<span class="zjq_pipe-arrow">→</span>';
+            for (var zjq_i = 0; zjq_i < zjq_data.chips.length; zjq_i++) {
+                zjq_html += '<span class="zjq_chip">' + zjq_escapeHtml(zjq_data.chips[zjq_i]) + '</span>';
+            }
+            zjq_html += '<span class="zjq_pipe-arrow">→</span><span class="zjq_chip zjq_chip-out">输出：' + zjq_escapeHtml(zjq_data.result) + '</span></div>';
+            zjq_html += '<p class="zjq_pipe-note">' + zjq_data.note + '</p>';
+            document.getElementById('zjq_iter_out_' + zjq_index).innerHTML = zjq_html;
+        });
+
+        /* 初始化 */
+        zjq_renderStage();
+    </script>
+</body>
+</html>

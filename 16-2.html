@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<!-- 姓名：张钧乔，建立时间：2026-10-29 14:05:00，使用的大模型：DeepSeek-V4.1-Flash，功能名称：JavaScript数组方法逐帧动画演示——储物柜模型与方法实验室 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="JavaScript 数组方法动画演示：用储物柜比喻数组，逐帧演示 push、pop、unshift、shift、splice、indexOf、includes、find、findIndex、slice、concat、join、reverse、sort 与 map、filter、reduce 等迭代方法">
+    <title>数组方法实验室 | 张钧乔</title>
+    <style>
+        :root {
+            --zjq-ink: #182230;
+            --zjq-muted: #667085;
+            --zjq-white: #ffffff;
+            --zjq-orange: #e9693f;
+            --zjq-orange-dark: #b8472d;
+            --zjq-teal: #277b78;
+            --zjq-teal-dark: #1d5f5c;
+            --zjq-line: #d9d5cb;
+            --zjq-paper: #faf8f3;
+            --zjq-shadow: 0 14px 36px rgba(31, 48, 36, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--zjq-ink);
+            background:
+                radial-gradient(circle at 88% 4%, rgba(233, 105, 63, 0.10), transparent 24rem),
+                linear-gradient(135deg, #f4f0e8 0%, #edf3ee 55%, #fffaf2 100%);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            line-height: 1.7;
+        }
+
+        code, pre {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+        }
+
+        .zjq_shell {
+            width: min(1120px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 28px 0 44px;
+        }
+
+        .zjq_top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .zjq_back {
+            color: var(--zjq-muted);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .zjq_back:hover {
+            color: var(--zjq-orange);
+        }
+
+        .zjq_badge {
+            color: var(--zjq-orange);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .zjq_header {
+            padding: 40px 0 8px;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(34px, 5vw, 54px);
+            line-height: 1.15;
+        }
+
+        h1 span {
+            color: var(--zjq-teal);
+        }
+
+        .zjq_intro {
+            max-width: 760px;
+            margin: 14px 0 0;
+            color: var(--zjq-muted);
+            font-size: 16px;
+        }
+
+        h2 {
+            margin: 46px 0 6px;
+            font-size: 24px;
+        }
+
+        .zjq_section-desc {
+            margin: 0 0 18px;
+            color: var(--zjq-muted);
+            font-size: 14px;
+        }
+
+        /* ================= 储物柜模型 ================= */
+
+        .zjq_anatomy {
+            padding: 22px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid var(--zjq-line);
+            border-radius: 8px;
+            box-shadow: 0 8px 22px rgba(31, 48, 36, 0.06);
+        }
+
+        .zjq_rack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: stretch;
+            min-height: 98px;
+            padding: 14px;
+            border: 2px dashed var(--zjq-line);
+            border-radius: 8px;
+            background: var(--zjq-paper);
+        }
+
+        .zjq_cell {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 92px;
+            min-height: 96px;
+            padding: 24px 6px 8px;
+            background: var(--zjq-white);
+            border: 1px solid var(--zjq-line);
+            border-bottom: 4px solid var(--zjq-teal);
+            border-radius: 6px 6px 3px 3px;
+            text-align: center;
+            animation: zjq_pop 280ms ease;
+            transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+        }
+
+        .zjq_cell-idx {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1px 0;
+            background: #eeebe3;
+            border-bottom: 1px solid var(--zjq-line);
+            color: var(--zjq-muted);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 11px;
+        }
+
+        .zjq_cell-val {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 14.5px;
+            font-weight: 700;
+            word-break: break-all;
+        }
+
+        .zjq_cell-hot {
+            background: #fdeee7;
+            border-bottom-color: var(--zjq-orange);
+            transform: translateY(-4px);
+            box-shadow: 0 6px 14px rgba(233, 105, 63, 0.18);
+        }
+
+        .zjq_cell-next {
+            background: #eaf3f1;
+            border-bottom-color: var(--zjq-teal);
+        }
+
+        .zjq_rack-empty {
+            align-self: center;
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_rack-foot {
+            margin: 8px 0 0;
+            color: var(--zjq-muted);
+            font-size: 12.5px;
+        }
+
+        .zjq_rack-foot strong {
+            color: var(--zjq-teal);
+        }
+
+        .zjq_anatomy-cap {
+            margin: 12px 0 0;
+            padding: 10px 14px;
+            border-left: 3px solid var(--zjq-orange);
+            background: #fdf6f2;
+            font-size: 13.5px;
+        }
+
+        .zjq_traits {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .zjq_trait {
+            padding: 12px 14px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 6px;
+            background: var(--zjq-paper);
+            color: var(--zjq-ink);
+            font-family: inherit;
+            text-align: left;
+            cursor: pointer;
+            transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+        }
+
+        .zjq_trait strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .zjq_trait span {
+            color: var(--zjq-muted);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .zjq_trait:hover {
+            border-color: var(--zjq-teal);
+            transform: translateY(-2px);
+        }
+
+        .zjq_trait-on {
+            background: var(--zjq-teal);
+            border-color: var(--zjq-teal);
+        }
+
+        .zjq_trait-on strong,
+        .zjq_trait-on span {
+            color: var(--zjq-white);
+        }
+
+        /* ================= 方法实验室 ================= */
+
+        .zjq_lab {
+            display: grid;
+            grid-template-columns: 214px minmax(0, 1fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .zjq_lab-side {
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid var(--zjq-line);
+            border-radius: 8px;
+        }
+
+        .zjq_tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .zjq_tab {
+            flex: 1;
+            padding: 7px 0;
+            border: 1px solid var(--zjq-line);
+            border-radius: 4px;
+            background: var(--zjq-white);
+            color: var(--zjq-muted);
+            font-family: inherit;
+            font-size: 12.5px;
+            cursor: pointer;
+        }
+
+        .zjq_tab:hover {
+            border-color: var(--zjq-teal);
+            color: var(--zjq-teal);
+        }
+
+        .zjq_tab-on {
+            background: var(--zjq-ink);
+            border-color: var(--zjq-ink);
+            color: var(--zjq-white);
+            font-weight: 700;
+        }
+
+        .zjq_mbtn {
+            display: flex;
+            width: 100%;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 6px;
+            margin-bottom: 5px;
+            padding: 8px 10px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 4px;
+            background: var(--zjq-paper);
+            font-family: inherit;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .zjq_mbtn code {
+            color: var(--zjq-teal);
+            font-size: 12.5px;
+            font-weight: 700;
+        }
+
+        .zjq_mbtn span {
+            color: var(--zjq-muted);
+            font-size: 11.5px;
+        }
+
+        .zjq_mbtn:hover {
+            border-color: var(--zjq-teal);
+        }
+
+        .zjq_mbtn-on {
+            background: var(--zjq-teal);
+            border-color: var(--zjq-teal);
+        }
+
+        .zjq_mbtn-on code,
+        .zjq_mbtn-on span {
+            color: var(--zjq-white);
+        }
+
+        .zjq_lab-main {
+            padding: 20px 22px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid var(--zjq-line);
+            border-radius: 8px;
+            box-shadow: 0 8px 22px rgba(31, 48, 36, 0.06);
+        }
+
+        .zjq_lab-head {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .zjq_m-name {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 21px;
+            font-weight: 700;
+            color: var(--zjq-teal);
+        }
+
+        .zjq_m-cn {
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_pill {
+            margin-left: auto;
+            padding: 3px 11px;
+            border-radius: 999px;
+            font-size: 11.5px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .zjq_pill-mut {
+            background: #fdeee7;
+            color: var(--zjq-orange-dark);
+        }
+
+        .zjq_pill-pure {
+            background: #e6f1ef;
+            color: var(--zjq-teal);
+        }
+
+        .zjq_m-desc {
+            margin: 6px 0 0;
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_code {
+            margin: 12px 0 16px;
+            padding: 12px 14px;
+            border-radius: 5px;
+            background: var(--zjq-ink);
+            color: #d5e3df;
+            font-size: 12.5px;
+            line-height: 1.7;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .zjq_rack-label {
+            margin-bottom: 6px;
+            color: var(--zjq-muted);
+            font-size: 12.5px;
+        }
+
+        .zjq_rack-label code {
+            color: var(--zjq-teal);
+            font-weight: 700;
+        }
+
+        .zjq_next-block {
+            margin-top: 14px;
+        }
+
+        .zjq_hide {
+            display: none;
+        }
+
+        .zjq_strbox {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 5px;
+            background: #eaf3f1;
+            border: 1px solid #cfe3df;
+            color: var(--zjq-teal-dark);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .zjq_out {
+            margin-top: 14px;
+            padding: 8px 14px;
+            border: 1px dashed var(--zjq-orange);
+            border-radius: 5px;
+            background: #fff7f3;
+            color: var(--zjq-orange-dark);
+            font-size: 13px;
+        }
+
+        .zjq_note {
+            margin-top: 14px;
+            min-height: 46px;
+            padding: 10px 14px;
+            border-left: 3px solid var(--zjq-orange);
+            background: #fdf6f2;
+            font-size: 13.5px;
+        }
+
+        .zjq_ret {
+            margin-top: 10px;
+            padding: 10px 14px;
+            border-radius: 5px;
+            background: #eef5f3;
+            font-size: 13.5px;
+        }
+
+        .zjq_ret strong {
+            color: var(--zjq-teal-dark);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+        }
+
+        .zjq_btn {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 4px;
+            background: var(--zjq-teal);
+            color: var(--zjq-white);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .zjq_btn:hover {
+            background: var(--zjq-teal-dark);
+        }
+
+        .zjq_btn-ghost {
+            background: var(--zjq-white);
+            border: 1px solid var(--zjq-line);
+            color: var(--zjq-ink);
+        }
+
+        .zjq_btn-ghost:hover {
+            border-color: var(--zjq-teal);
+            color: var(--zjq-teal);
+        }
+
+        .zjq_btn-orange {
+            background: var(--zjq-orange);
+        }
+
+        .zjq_btn-orange:hover {
+            background: var(--zjq-orange-dark);
+        }
+
+        .zjq_row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-top: 14px;
+        }
+
+        .zjq_step {
+            color: var(--zjq-muted);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 12px;
+        }
+
+        /* ================= 迭代流水线 ================= */
+
+        .zjq_pipe-wrap {
+            padding: 22px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--zjq-line);
+            border-radius: 8px;
+        }
+
+        .zjq_pipe-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .zjq_pipe-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 999px;
+            background: var(--zjq-white);
+            color: var(--zjq-ink);
+            font-family: inherit;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .zjq_pipe-btn:hover {
+            border-color: var(--zjq-teal);
+            color: var(--zjq-teal);
+        }
+
+        .zjq_pipe-on {
+            background: var(--zjq-teal);
+            border-color: var(--zjq-teal);
+            color: var(--zjq-white);
+            font-weight: 700;
+        }
+
+        .zjq_belt {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            gap: 14px;
+            align-items: center;
+            padding: 18px;
+            border-radius: 8px;
+            background: linear-gradient(120deg, #f7f4ec, #eef5f3);
+            border: 1px solid var(--zjq-line);
+        }
+
+        .zjq_belt-block {
+            min-height: 108px;
+        }
+
+        .zjq_belt-tag {
+            margin-bottom: 8px;
+            color: var(--zjq-muted);
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .zjq_beads {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            min-height: 54px;
+        }
+
+        .zjq_bead {
+            display: inline-flex;
+            min-width: 48px;
+            height: 48px;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--zjq-line);
+            border-radius: 50%;
+            background: var(--zjq-white);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 14px;
+            font-weight: 700;
+            transition: transform 200ms ease, background 200ms ease, color 200ms ease, border-color 200ms ease, opacity 200ms ease;
+        }
+
+        .zjq_bead-on {
+            background: var(--zjq-orange);
+            border-color: var(--zjq-orange);
+            color: var(--zjq-white);
+            transform: translateY(-6px) scale(1.1);
+        }
+
+        .zjq_bead-drop {
+            opacity: 0.3;
+            text-decoration: line-through;
+        }
+
+        .zjq_bead-out {
+            background: var(--zjq-teal);
+            border-color: var(--zjq-teal);
+            color: var(--zjq-white);
+            animation: zjq_pop 280ms ease;
+        }
+
+        .zjq_bead-final {
+            background: var(--zjq-ink);
+            border-color: var(--zjq-ink);
+        }
+
+        .zjq_belt-station {
+            display: flex;
+            min-width: 132px;
+            align-self: stretch;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 12px 16px;
+            border: 1px dashed var(--zjq-teal);
+            border-radius: 8px;
+            background: var(--zjq-white);
+        }
+
+        .zjq_op {
+            color: var(--zjq-teal);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .zjq_flow {
+            color: var(--zjq-orange);
+            font-size: 20px;
+            animation: zjq_nudge 1.0s ease-in-out infinite;
+        }
+
+        .zjq_hint {
+            color: var(--zjq-muted);
+            font-size: 12.5px;
+        }
+
+        .zjq_pipe-code {
+            margin: 16px 0 0;
+            padding: 12px 14px;
+            border-radius: 5px;
+            background: var(--zjq-ink);
+            color: #d5e3df;
+            font-size: 12.5px;
+            line-height: 1.7;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .zjq_pipe-result {
+            margin-top: 12px;
+            padding: 10px 14px;
+            border-radius: 5px;
+            background: #eef5f3;
+            font-size: 13.5px;
+        }
+
+        .zjq_pipe-result strong {
+            color: var(--zjq-teal-dark);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+        }
+
+        /* ================= 速查表 ================= */
+
+        .zjq_table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--zjq-line);
+            border-radius: 8px;
+            box-shadow: 0 8px 22px rgba(31, 48, 36, 0.06);
+        }
+
+        .zjq_table {
+            width: 100%;
+            min-width: 640px;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.94);
+            font-size: 13.5px;
+        }
+
+        .zjq_table caption {
+            padding: 12px 16px;
+            background: var(--zjq-paper);
+            border-bottom: 1px solid var(--zjq-line);
+            color: var(--zjq-muted);
+            font-size: 12.5px;
+            text-align: left;
+        }
+
+        .zjq_table th {
+            padding: 11px 16px;
+            background: var(--zjq-ink);
+            color: #dfe8e5;
+            font-size: 12.5px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-align: left;
+        }
+
+        .zjq_table td {
+            padding: 9px 16px;
+            border-bottom: 1px solid #e8e4da;
+            vertical-align: top;
+        }
+
+        .zjq_table tbody tr:nth-child(even) {
+            background: var(--zjq-paper);
+        }
+
+        .zjq_table tbody tr:hover {
+            background: #eef5f3;
+        }
+
+        .zjq_table code {
+            padding: 1px 7px;
+            border-radius: 3px;
+            background: #eaf3f1;
+            color: var(--zjq-teal-dark);
+            font-size: 12.5px;
+            font-weight: 700;
+        }
+
+        .zjq_tag-mut {
+            color: var(--zjq-orange-dark);
+            font-weight: 700;
+        }
+
+        .zjq_tag-pure {
+            color: var(--zjq-teal);
+            font-weight: 700;
+        }
+
+        .zjq_footer {
+            margin-top: 46px;
+            padding: 22px 0 4px;
+            border-top: 1px solid var(--zjq-line);
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_footer a {
+            color: var(--zjq-teal);
+            text-decoration: none;
+        }
+
+        .zjq_footer a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes zjq_pop {
+            0% { transform: scale(0.55); opacity: 0; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes zjq_nudge {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(5px); }
+        }
+
+        @media (max-width: 940px) {
+            .zjq_lab,
+            .zjq_belt {
+                grid-template-columns: 1fr;
+            }
+
+            .zjq_traits {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .zjq_belt-station {
+                flex-direction: row;
+                min-width: 0;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .zjq_cell {
+                width: 74px;
+                min-height: 88px;
+            }
+
+            .zjq_traits {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="zjq_shell">
+        <nav class="zjq_top">
+            <a class="zjq_back" href="index.html">← 返回作品集首页</a>
+            <span class="zjq_badge">16-2 / ARRAY LAB</span>
+        </nav>
+
+        <header class="zjq_header">
+            <h1>数组，是一排会动的<span>储物柜</span></h1>
+            <p class="zjq_intro">把数组想象成墙上的一排储物柜：每个格子上贴着号码牌（下标），里面塞着一个值。所有数组方法，本质上都是在<b>搬柜子里的东西</b>。本页用逐帧动画把搬动过程放慢给你看：先看结构，再看方法怎么动手，最后看数据怎么在流水线上流出来。</p>
+        </header>
+
+        <!-- 一、储物柜模型 -->
+        <section aria-label="数组结构">
+            <h2>一、先认识这排柜子</h2>
+            <p class="zjq_section-desc">下面就是数组 <code>zjq_fruits</code> 的样子。点右边的四个特性，看看柜子会怎么变。</p>
+
+            <div class="zjq_anatomy">
+                <div class="zjq_rack" id="zjq_an_rack"></div>
+                <p class="zjq_rack-foot" id="zjq_an_foot"></p>
+                <p class="zjq_anatomy-cap" id="zjq_an_cap"></p>
+
+                <div class="zjq_traits" id="zjq_traits">
+                    <button class="zjq_trait zjq_trait-on" type="button" data-trait="idx">
+                        <strong>下标从 0 开始</strong>
+                        <span>第一个格子是 0 号，不是 1 号</span>
+                    </button>
+                    <button class="zjq_trait" type="button" data-trait="order">
+                        <strong>有序</strong>
+                        <span>按加入顺序排队，位置固定</span>
+                    </button>
+                    <button class="zjq_trait" type="button" data-trait="repeat">
+                        <strong>可重复</strong>
+                        <span>同一个值能占好几个格子</span>
+                    </button>
+                    <button class="zjq_trait" type="button" data-trait="mixed">
+                        <strong>类型随意</strong>
+                        <span>数字、字符串、布尔值可以混装</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 二、方法实验室 -->
+        <section aria-label="数组方法逐帧演示">
+            <h2>二、方法实验室：看元素被搬进搬出</h2>
+            <p class="zjq_section-desc">左边选方法，右边自动逐帧播放。橙色柜子＝本次被操作的位置，青色柜子＝方法返回的新数组，下方会告诉你<b>原数组有没有被改动</b>以及<b>返回值是什么</b>。</p>
+
+            <div class="zjq_lab">
+                <aside class="zjq_lab-side" id="zjq_lab_side">
+                    <div class="zjq_tabs" id="zjq_tabs"></div>
+                    <div id="zjq_method_list"></div>
+                </aside>
+
+                <div class="zjq_lab-main">
+                    <div class="zjq_lab-head">
+                        <span class="zjq_m-name" id="zjq_m_name">push</span>
+                        <span class="zjq_m-cn" id="zjq_m_cn">尾部追加</span>
+                        <span class="zjq_pill zjq_pill-mut" id="zjq_m_pill">会改变原数组</span>
+                    </div>
+                    <p class="zjq_m-desc" id="zjq_m_desc"></p>
+                    <pre class="zjq_code" id="zjq_m_code"></pre>
+
+                    <div class="zjq_rack-label">原数组 <code id="zjq_rack_name">zjq_fruits</code></div>
+                    <div class="zjq_rack" id="zjq_rack"></div>
+                    <p class="zjq_rack-foot" id="zjq_rack_foot"></p>
+
+                    <div class="zjq_next-block zjq_hide" id="zjq_next_wrap">
+                        <div class="zjq_rack-label">方法返回的新数组 / 新字符串</div>
+                        <div class="zjq_rack" id="zjq_next"></div>
+                        <p class="zjq_rack-foot" id="zjq_next_foot"></p>
+                    </div>
+
+                    <div class="zjq_out zjq_hide" id="zjq_out"></div>
+
+                    <div class="zjq_row">
+                        <button class="zjq_btn" id="zjq_replay" type="button">↻ 重新播放</button>
+                        <span class="zjq_step" id="zjq_step">第 0 / 0 帧</span>
+                    </div>
+
+                    <div class="zjq_note" id="zjq_note">点击左侧任意方法开始演示。</div>
+                    <div class="zjq_ret" id="zjq_ret">返回值：——</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 三、迭代流水线 -->
+        <section aria-label="数组迭代方法">
+            <h2>三、迭代流水线：5 颗珠子怎么流出来</h2>
+            <p class="zjq_section-desc">迭代方法就是一条流水线：数组里的每颗珠子依次经过加工站，加工完的成品落进右边的筐里。选一种加工方式，看珠子一颗颗往前走。</p>
+
+            <div class="zjq_pipe-wrap">
+                <div class="zjq_pipe-tabs" id="zjq_pipe_tabs"></div>
+
+                <div class="zjq_belt">
+                    <div class="zjq_belt-block">
+                        <div class="zjq_belt-tag">输入 · zjq_nums</div>
+                        <div class="zjq_beads" id="zjq_beads"></div>
+                    </div>
+                    <div class="zjq_belt-station">
+                        <div class="zjq_belt-tag">加工站</div>
+                        <div class="zjq_op" id="zjq_op">n × 2</div>
+                        <div class="zjq_flow" aria-hidden="true">→</div>
+                    </div>
+                    <div class="zjq_belt-block">
+                        <div class="zjq_belt-tag">输出</div>
+                        <div class="zjq_beads" id="zjq_out_beads"><span class="zjq_hint">等待运行…</span></div>
+                    </div>
+                </div>
+
+                <pre class="zjq_pipe-code" id="zjq_pipe_code"></pre>
+                <div class="zjq_pipe-result" id="zjq_pipe_result">选好加工方式后点击「开始传送」。</div>
+                <div class="zjq_row">
+                    <button class="zjq_btn zjq_btn-orange" id="zjq_pipe_play" type="button">▶ 开始传送</button>
+                    <button class="zjq_btn zjq_btn-ghost" id="zjq_pipe_reset" type="button">重置</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 四、速查表 -->
+        <section aria-label="数组方法速查表">
+            <h2>四、速查表：20 个方法一眼分清</h2>
+            <p class="zjq_section-desc">面试和写代码时最常查的一张表。<b>改动原数组</b>的方法要小心，它们会悄悄改掉你原来的数据。</p>
+
+            <div class="zjq_table-wrap">
+                <table class="zjq_table">
+                    <caption>颜色说明：<span class="zjq_tag-mut">橙色 = 会改变原数组</span>　<span class="zjq_tag-pure">青色 = 原数组保持不变</span></caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">方法</th>
+                            <th scope="col">干什么用</th>
+                            <th scope="col">是否改变原数组</th>
+                            <th scope="col">返回值</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>push()</code></td>
+                            <td>在尾部添加一个或多个元素</td>
+                            <td class="zjq_tag-mut">改变</td>
+                            <td>新的长度</td>
+                        </tr>
+                        <tr>
+                            <td><code>pop()</code></td>
+                            <td>删除最后一个元素</td>
+                            <td class="zjq_tag-mut">改变</td>
+                            <td>被删掉的元素</td>
+                        </tr>
+                        <tr>
+                            <td><code>unshift()</code></td>
+                            <td>在头部添加元素，其余元素后移</td>
+                            <td class="zjq_tag-mut">改变</td>
+                            <td>新的长度</td>
+                        </tr>
+                        <tr>
+                            <td><code>shift()</code></td>
+                            <td>删除第一个元素，其余元素前移</td>
+                            <td class="zjq_tag-mut">改变</td>
+                            <td>被删掉的元素</td>
+                        </tr>
+                        <tr>
+                            <td><code>splice()</code></td>
+                            <td>在任意位置删除、插入、替换元素</td>
+                            <td class="zjq_tag-mut">改变</td>
+                            <td>被删元素组成的新数组</td>
+                        </tr>
+                        <tr>
+                            <td><code>slice()</code></td>
+                            <td>按范围截取一段（含头不含尾）</td>
+                            <td class="zjq_tag-pure">不变</td>
+                            <td>新数组</td>
+                        </tr>
+                        <tr>
+                            <td><code>concat()</code></td>
+                            <td>把另一个数组接到后面</td>
+                            <td class="zjq_tag-pure">不变</td>
+                            <td>新数组</td>
+                        </tr>
+                        <tr>
+                            <td><code>join()</code></td>
+                            <td>用分隔符把元素连成一个字符串</td>
+                            <td class="zjq_tag-pure">不变</td>
+                            <td>字符串</td>
+                        </tr>
+                        <tr>
+                            <td><code>reverse()</code></td>
+                            <td>原地首尾翻转</td>
+                            <td class="zjq_tag-mut">改变</td>
+                            <td>翻转后的原数组</td>
+                        </tr>
+                        <tr>
+                            <td><code>sort()</code></td>
+                            <td>原地排序，数字排序必须给比较函数</td>
+                            <td class="zjq_tag-mut">改变</td>
+                            <td>排序后的原数组</td>
+                        </tr>
+                        <tr>
+                            <td><code>indexOf()</code></td>
+                            <td>从前向后找某个值的位置</td>
+                            <td class="zjq_tag-pure">不变</td>
+                            <td>下标，找不到返回 -1</td>
+                        </tr>
+                        <tr>
+                            <td><code>includes()</code></td>
+                            <td>判断数组里有没有这个值</td>
+                            <td class="zjq_tag-pure">不变</td>
+                            <td>true / false</td>
+                        </tr>
+                        <tr>
+                            <td><code>find()</code></td>
+                            <td>找第一个满足条件的元素</td>
+                            <td class="zjq_tag-pure">不变</td>
+                            <td>元素本身，找不到是 undefined</td>
+                        </tr>
+                        <tr>
+                            <td><code>findIndex()</code></td>
+                            <td>找第一个满足条件的元素的下标</td>
+                            <td class="zjq_tag-pure">不变</td>
+                            <td>下标，找不到返回 -1</td>
+                        </tr>
+                        <tr>
+                            <td><code>forEach()</code></td>
+                            <td>逐个访问，纯粹执行操作</td>
+                            <td class="zjq_tag-pure">不变</td>
+                            <td>undefined（没有返回值）</td>
+                        </tr>
+                        <tr>
+                            <td><code>map()</code></td>
+                            <td>逐个加工，一一对应</td>
+                            <td class="zjq_tag-pure">不变</td>
+                            <td>等长的新数组</td>
+                        </tr>
+                        <tr>
+                            <td><code>filter()</code></td>
+                            <td>逐个筛选，留下条件为真的</td>
+                            <td class="zjq_tag-pure">不变</td>
+                            <td>可能更短的新数组</td>
+                        </tr>
+                        <tr>
+                            <td><code>reduce()</code></td>
+                            <td>带着累积器一路归并成一个值</td>
+                            <td class="zjq_tag-pure">不变</td>
+                            <td>归并出来的单个值</td>
+                        </tr>
+                        <tr>
+                            <td><code>some()</code></td>
+                            <td>只要有一个满足条件就停</td>
+                            <td class="zjq_tag-pure">不变</td>
+                            <td>true / false</td>
+                        </tr>
+                        <tr>
+                            <td><code>every()</code></td>
+                            <td>必须全部满足条件</td>
+                            <td class="zjq_tag-pure">不变</td>
+                            <td>true / false</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <footer class="zjq_footer">
+            张钧乔 · 《高级网页设计》课堂实践 · <a href="index.html">返回首页</a>
+        </footer>
+    </div>
+
+    <script>
+        // 姓名：张钧乔 日期：2026-10-29 功能名称：JavaScript数组方法逐帧动画演示——储物柜模型与方法实验室
+        var zjq_fruits = ['苹果', '香蕉', '橘子', '樱桃'];
+        var zjq_nums = [3, 8, 12, 5, 20];
+
+        function zjq_esc(zjq_text) {
+            return String(zjq_text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function zjq_fmt(zjq_v) {
+            return typeof zjq_v === 'string' ? "'" + zjq_v + "'" : String(zjq_v);
+        }
+
+        function zjq_fr(zjq_arr, zjq_hot, zjq_note, zjq_extra) {
+            var zjq_frame = { arr: zjq_arr, hot: zjq_hot || [], note: zjq_note };
+            if (zjq_extra) {
+                for (var zjq_k in zjq_extra) {
+                    zjq_frame[zjq_k] = zjq_extra[zjq_k];
+                }
+            }
+            return zjq_frame;
+        }
+
+        /* ================= 一、储物柜模型 ================= */
+
+        var zjq_traitData = {
+            idx: {
+                arr: ['苹果', '香蕉', '橘子', '樱桃'],
+                hot: [0],
+                note: '下标从 0 开始，所以最后一个元素的下标是 length - 1 = 3。想拿「橘子」就写 zjq_fruits[2]。'
+            },
+            order: {
+                arr: ['苹果', '香蕉', '橘子', '樱桃'],
+                hot: [],
+                note: '数组是有序的：元素的先后顺序就是下标顺序。push 加到队尾，unshift 插到队头，位置一变，下标全跟着变。'
+            },
+            repeat: {
+                arr: ['苹果', '苹果', '香蕉'],
+                hot: [0, 1],
+                note: '同一个值可以占多个格子，它们待在不同下标上（0 和 1）。判断数组里是否有某值时，别把「重复」当成不存在。'
+            },
+            mixed: {
+                arr: ['苹果', 42, true, null],
+                hot: [],
+                note: '一个数组可以混装不同类型的数据，但混装之后排序、计算都会变得很难处理，实际项目里通常一个数组只放一种类型。'
+            }
+        };
+
+        function zjq_cells(zjq_arr, zjq_hot, zjq_cls) {
+            if (!zjq_arr.length) {
+                return '<span class="zjq_rack-empty">[] 空数组 —— 一个格子都不剩了</span>';
+            }
+            var zjq_html = '';
+            for (var zjq_i = 0; zjq_i < zjq_arr.length; zjq_i++) {
+                var zjq_hotCls = zjq_hot.indexOf(zjq_i) > -1 ? ' zjq_cell-hot' : '';
+                zjq_html += '<div class="zjq_cell' + zjq_hotCls + (zjq_cls ? ' ' + zjq_cls : '') + '">' +
+                    '<span class="zjq_cell-idx">' + zjq_i + '</span>' +
+                    '<span class="zjq_cell-val">' + zjq_esc(zjq_arr[zjq_i]) + '</span>' +
+                    '</div>';
+            }
+            return zjq_html;
+        }
+
+        function zjq_paintTrait(zjq_key) {
+            var zjq_d = zjq_traitData[zjq_key];
+            document.getElementById('zjq_an_rack').innerHTML = zjq_cells(zjq_d.arr, zjq_d.hot, '');
+            document.getElementById('zjq_an_foot').innerHTML =
+                'length = <strong>' + zjq_d.arr.length + '</strong>　' +
+                '数组字面量写法：[' + zjq_d.arr.map(zjq_fmt).join(', ') + ']';
+            document.getElementById('zjq_an_cap').textContent = zjq_d.note;
+        }
+
+        document.getElementById('zjq_traits').addEventListener('click', function (zjq_e) {
+            var zjq_btn = zjq_e.target.closest('[data-trait]');
+            if (!zjq_btn) { return; }
+            var zjq_all = document.querySelectorAll('.zjq_trait');
+            for (var zjq_i = 0; zjq_i < zjq_all.length; zjq_i++) {
+                zjq_all[zjq_i].classList.remove('zjq_trait-on');
+            }
+            zjq_btn.classList.add('zjq_trait-on');
+            zjq_paintTrait(zjq_btn.getAttribute('data-trait'));
+        });
+
+        /* ================= 二、方法实验室 ================= */
+
+        var zjq_methods = [
+            /* ---------- 增删 ---------- */
+            {
+                key: 'push', name: 'push', cn: '尾部追加', group: '增删', mutates: true,
+                desc: '把元素塞到最后一个格子后面，数组变长。',
+                code: "zjq_fruits.push('葡萄');\n// → 5（新的长度）",
+                data: 'zjq_fruits',
+                build: function () {
+                    var zjq_a = zjq_fruits.slice();
+                    return {
+                        frames: [
+                            zjq_fr(zjq_a, [], '原数组 4 个格子，占着下标 0 ~ 3，length 是 4。'),
+                            zjq_fr(zjq_a.concat(['葡萄']), [4], 'push 在尾部新增了一个格子（下标 4），length 由 4 变成 5。')
+                        ],
+                        ret: '5　←　push 返回的是新长度，不是数组本身'
+                    };
+                }
+            },
+            {
+                key: 'pop', name: 'pop', cn: '尾部删除', group: '增删', mutates: true,
+                desc: '把最后一个格子里的东西拿走，数组变短。',
+                code: "var x = zjq_fruits.pop();\n// x = '樱桃'",
+                data: 'zjq_fruits',
+                build: function () {
+                    var zjq_a = zjq_fruits.slice();
+                    return {
+                        frames: [
+                            zjq_fr(zjq_a, [zjq_a.length - 1], 'pop 只盯最后一个格子，也就是下标 3。'),
+                            zjq_fr(zjq_a.slice(0, zjq_a.length - 1), [], '尾巴被取走，length 从 4 变 3，其余格子原地不动。', { out: '樱桃' })
+                        ],
+                        ret: "'樱桃'　←　pop 返回被删掉的那个元素"
+                    };
+                }
+            },
+            {
+                key: 'unshift', name: 'unshift', cn: '头部插入', group: '增删', mutates: true,
+                desc: '在队头插队，所有老元素整体往后挪一格。',
+                code: "zjq_fruits.unshift('草莓');\n// → 5（新的长度）",
+                data: 'zjq_fruits',
+                build: function () {
+                    var zjq_a = zjq_fruits.slice();
+                    return {
+                        frames: [
+                            zjq_fr(zjq_a, [], '原本 4 个格子：苹果在 0 号位，樱桃在 3 号位。'),
+                            zjq_fr(['草莓'].concat(zjq_a), [0], '头部插入「草莓」，老元素整体后移一位：苹果从下标 0 挪到 1，樱桃挪到 4。')
+                        ],
+                        ret: '5　←　返回新长度'
+                    };
+                }
+            },
+            {
+                key: 'shift', name: 'shift', cn: '头部删除', group: '增删', mutates: true,
+                desc: '把队头那个格子清空，后面的元素整体往前补位。',
+                code: "var x = zjq_fruits.shift();\n// x = '苹果'",
+                data: 'zjq_fruits',
+                build: function () {
+                    var zjq_a = zjq_fruits.slice();
+                    return {
+                        frames: [
+                            zjq_fr(zjq_a, [0], 'shift 只盯第一个格子，也就是下标 0。'),
+                            zjq_fr(zjq_a.slice(1), [], '队头空了，香蕉从下标 1 补到 0，后面的全往前挪一格。', { out: '苹果' })
+                        ],
+                        ret: "'苹果'　←　返回被删掉的那个元素"
+                    };
+                }
+            },
+            {
+                key: 'splice', name: 'splice', cn: '任意位置增删', group: '增删', mutates: true,
+                desc: '三个参数管三件事：从哪开始、删几个、补什么。',
+                code: "zjq_fruits.splice(1, 2, '柠檬');\n// 下标 1 开始，删 2 个，插入 '柠檬'",
+                data: 'zjq_fruits',
+                build: function () {
+                    var zjq_a = zjq_fruits.slice();
+                    return {
+                        frames: [
+                            zjq_fr(zjq_a, [1, 2], '参数 (1, 2)：从下标 1 开始，连续删掉 2 个格子，也就是香蕉和橘子。'),
+                            zjq_fr(['苹果', '柠檬', '樱桃'], [1], '删完之后在原位置插入「柠檬」，length 从 4 变成 3。', { out: '香蕉、橘子' })
+                        ],
+                        ret: "['香蕉', '橘子']　←　返回被删掉元素组成的新数组"
+                    };
+                }
+            },
+
+            /* ---------- 查找 ---------- */
+            {
+                key: 'indexOf', name: 'indexOf', cn: '找下标', group: '查找', mutates: false,
+                desc: '从前往后一个个比，找到就报出下标，找不到就报 -1。',
+                code: "zjq_nums.indexOf(12);\n// → 2",
+                data: 'zjq_nums',
+                build: function () {
+                    return {
+                        frames: zjq_scan(zjq_nums, 12, 'indexOf'),
+                        ret: '2（下标）　←　找不到时会返回 -1'
+                    };
+                }
+            },
+            {
+                key: 'includes', name: 'includes', cn: '判断有没有', group: '查找', mutates: false,
+                desc: '只回答「有」或「没有」，不关心在第几个。',
+                code: "zjq_nums.includes(7);\n// → false",
+                data: 'zjq_nums',
+                build: function () {
+                    var zjq_frames = [];
+                    for (var zjq_i = 0; zjq_i < zjq_nums.length; zjq_i++) {
+                        zjq_frames.push(zjq_fr(zjq_nums, [zjq_i], '下标 ' + zjq_i + '：' + zjq_nums[zjq_i] + ' 不等于 7，继续看下一个。'));
+                    }
+                    zjq_frames.push(zjq_fr(zjq_nums, [], '5 个元素全比完了都没有 7，于是返回 false。includes 给的是布尔值，不是下标。'));
+                    return { frames: zjq_frames, ret: 'false　←　有就是 true，没有就是 false' };
+                }
+            },
+            {
+                key: 'find', name: 'find', cn: '找第一个满足的', group: '查找', mutates: false,
+                desc: '条件一成立立刻收工，后面的元素根本不看。',
+                code: "zjq_nums.find(function (n) {\n    return n > 10;\n});\n// → 12",
+                data: 'zjq_nums',
+                build: function () {
+                    return {
+                        frames: [
+                            zjq_fr(zjq_nums, [0], '下标 0：3 > 10 ？不成立，继续往右看。'),
+                            zjq_fr(zjq_nums, [1], '下标 1：8 > 10 ？还是不成立，继续。'),
+                            zjq_fr(zjq_nums, [2], '下标 2：12 > 10 成立！立刻返回 12，后面两个元素完全没被访问。')
+                        ],
+                        ret: '12　←　返回的是元素本身，找不到是 undefined'
+                    };
+                }
+            },
+            {
+                key: 'findIndex', name: 'findIndex', cn: '找满足的下标', group: '查找', mutates: false,
+                desc: '和 find 一样会提前停车，区别是它交出的是位置而不是值。',
+                code: "zjq_nums.findIndex(function (n) {\n    return n > 10;\n});\n// → 2",
+                data: 'zjq_nums',
+                build: function () {
+                    return {
+                        frames: [
+                            zjq_fr(zjq_nums, [0], '下标 0：3 > 10 ？不成立。'),
+                            zjq_fr(zjq_nums, [1], '下标 1：8 > 10 ？不成立。'),
+                            zjq_fr(zjq_nums, [2], '下标 2：12 > 10 成立 → 它要的是位置，于是返回下标 2。')
+                        ],
+                        ret: '2（下标）　←　一个都没满足就返回 -1'
+                    };
+                }
+            },
+
+            /* ---------- 转换 ---------- */
+            {
+                key: 'slice', name: 'slice', cn: '截取一段', group: '转换', mutates: false,
+                desc: '复印一份副本出来，原数组一根头发都不会掉。',
+                code: "zjq_fruits.slice(1, 3);\n// → ['香蕉', '橘子']",
+                data: 'zjq_fruits',
+                build: function () {
+                    var zjq_a = zjq_fruits.slice();
+                    return {
+                        frames: [
+                            zjq_fr(zjq_a, [1, 2], 'slice(1, 3)：从下标 1 取到下标 3 之前，含头不含尾，所以取的是下标 1 和 2。'),
+                            zjq_fr(zjq_a, [1, 2], '原数组一个都没少（右侧青色柜子才是返回值），这就是「不改变原数组」。', {
+                                next: ['香蕉', '橘子']
+                            })
+                        ],
+                        ret: "['香蕉', '橘子']　←　新数组，原数组长度仍是 4"
+                    };
+                }
+            },
+            {
+                key: 'concat', name: 'concat', cn: '拼接数组', group: '转换', mutates: false,
+                desc: '把另一个数组整个接到后面，同样只产生新数组。',
+                code: "zjq_fruits.concat(['芒果']);\n// → 长度 5 的新数组",
+                data: 'zjq_fruits',
+                build: function () {
+                    var zjq_a = zjq_fruits.slice();
+                    return {
+                        frames: [
+                            zjq_fr(zjq_a, [], 'concat 拿着另一个数组，准备往尾巴后面接。'),
+                            zjq_fr(zjq_a, [], '原数组还是 4 个格子；新数组把「芒果」接了进来，长度 5。', {
+                                next: zjq_a.concat(['芒果'])
+                            })
+                        ],
+                        ret: "['苹果', '香蕉', '橘子', '樱桃', '芒果']"
+                    };
+                }
+            },
+            {
+                key: 'join', name: 'join', cn: '连成字符串', group: '转换', mutates: false,
+                desc: '把每个元素转成文字，用分隔符串成一根长绳。',
+                code: "zjq_fruits.join(' → ');\n// → '苹果 → 香蕉 → 橘子 → 樱桃'",
+                data: 'zjq_fruits',
+                build: function () {
+                    var zjq_a = zjq_fruits.slice();
+                    return {
+                        frames: [
+                            zjq_fr(zjq_a, [], 'join 不搬柜子，它只是把格子里的值抄下来，用指定的分隔符连起来。'),
+                            zjq_fr(zjq_a, [], '返回值是一整段字符串，已经不是数组了 —— 所以它再也没有下标可用。', {
+                                next: ['苹果 → 香蕉 → 橘子 → 樱桃'],
+                                nextText: true
+                            })
+                        ],
+                        ret: '"苹果 → 香蕉 → 橘子 → 樱桃"　←　字符串，不是数组'
+                    };
+                }
+            },
+            {
+                key: 'reverse', name: 'reverse', cn: '原地翻转', group: '转换', mutates: true,
+                desc: '首尾互换，改的是原来那排柜子。',
+                code: "zjq_fruits.reverse();\n// 原数组被翻转",
+                data: 'zjq_fruits',
+                build: function () {
+                    var zjq_a = zjq_fruits.slice();
+                    return {
+                        frames: [
+                            zjq_fr(zjq_a, [], '翻转前：0 号是苹果，3 号是樱桃。'),
+                            zjq_fr(zjq_a.slice().reverse(), [0, 3], '首尾对调：苹果跑到下标 3，樱桃跑到下标 0，柜子数量没变。')
+                        ],
+                        ret: '翻转后的原数组本身　←　它返回的就是自己'
+                    };
+                }
+            },
+            {
+                key: 'sort', name: 'sort', cn: '默认排序（坑）', group: '转换', mutates: true,
+                desc: '不给比较函数时，它会先把数字当字符串比。',
+                code: "zjq_nums.sort();\n// → [12, 20, 3, 5, 8]  不是你要的大小顺序",
+                data: 'zjq_nums',
+                build: function () {
+                    return {
+                        frames: [
+                            zjq_fr(zjq_nums, [], '数组：[3, 8, 12, 5, 20]，看起来应该按大小排。'),
+                            zjq_fr([12, 20, 3, 5, 8], [0, 1], '默认按字符串比较：12 的首字符是「1」，比「3」小，于是 12、20 排到了 3 前面。这就是数字排序必须传比较函数的原因。')
+                        ],
+                        ret: '[12, 20, 3, 5, 8]　←　默认排序的坑'
+                    };
+                }
+            },
+            {
+                key: 'sortCmp', name: 'sort (a - b)', cn: '数字排序', group: '转换', mutates: true,
+                desc: '给个比较函数，它才知道该怎么比较大小。',
+                code: "zjq_nums.sort(function (a, b) {\n    return a - b;\n});\n// → [3, 5, 8, 12, 20]",
+                data: 'zjq_nums',
+                build: function () {
+                    return {
+                        frames: [
+                            zjq_fr(zjq_nums, [], '老老实实排数字，必须把比较规则告诉它。'),
+                            zjq_fr([3, 5, 8, 12, 20], [0, 4], 'a - b 为负数就把 a 放前面，所以得到升序；想要降序就写 b - a。')
+                        ],
+                        ret: '[3, 5, 8, 12, 20]　←　升序（降序把 a - b 换成 b - a）'
+                    };
+                }
+            }
+        ];
+
+        function zjq_scan(zjq_arr, zjq_target, zjq_way) {
+            var zjq_frames = [];
+            for (var zjq_i = 0; zjq_i < zjq_arr.length; zjq_i++) {
+                if (zjq_arr[zjq_i] === zjq_target) {
+                    zjq_frames.push(zjq_fr(zjq_arr, [zjq_i], '下标 ' + zjq_i + '：' + zjq_arr[zjq_i] + ' 等于 ' + zjq_target + '，命中！立即返回下标 ' + zjq_i + '，后面的元素不再比较。'));
+                    return zjq_frames;
+                }
+                zjq_frames.push(zjq_fr(zjq_arr, [zjq_i], '下标 ' + zjq_i + '：' + zjq_arr[zjq_i] + ' 不等于 ' + zjq_target + '，继续往右挪一格。'));
+            }
+            zjq_frames.push(zjq_fr(zjq_arr, [], '全部比完了都没有 ' + zjq_target + '，' + zjq_way + ' 返回 -1。'));
+            return zjq_frames;
+        }
+
+        var zjq_lab = { group: '增删', key: 'push', frames: [], ret: '', timer: null };
+
+        function zjq_currentMethod() {
+            for (var zjq_i = 0; zjq_i < zjq_methods.length; zjq_i++) {
+                if (zjq_methods[zjq_i].key === zjq_lab.key) { return zjq_methods[zjq_i]; }
+            }
+            return zjq_methods[0];
+        }
+
+        function zjq_renderSide() {
+            var zjq_groups = ['增删', '查找', '转换'];
+            var zjq_html = '';
+            for (var zjq_g = 0; zjq_g < zjq_groups.length; zjq_g++) {
+                var zjq_on = zjq_groups[zjq_g] === zjq_lab.group ? ' zjq_tab-on' : '';
+                zjq_html += '<button type="button" class="zjq_tab' + zjq_on + '" data-group="' + zjq_groups[zjq_g] + '">' + zjq_groups[zjq_g] + '</button>';
+            }
+            document.getElementById('zjq_tabs').innerHTML = zjq_html;
+
+            var zjq_list = '';
+            for (var zjq_i = 0; zjq_i < zjq_methods.length; zjq_i++) {
+                var zjq_m = zjq_methods[zjq_i];
+                if (zjq_m.group !== zjq_lab.group) { continue; }
+                var zjq_pick = zjq_m.key === zjq_lab.key ? ' zjq_mbtn-on' : '';
+                zjq_list += '<button type="button" class="zjq_mbtn' + zjq_pick + '" data-key="' + zjq_m.key + '">' +
+                    '<code>' + zjq_m.name + '</code><span>' + zjq_m.cn + '</span></button>';
+            }
+            document.getElementById('zjq_method_list').innerHTML = zjq_list;
+        }
+
+        function zjq_paintFrame(zjq_frame) {
+            var zjq_m = zjq_currentMethod();
+
+            document.getElementById('zjq_rack_name').textContent = zjq_m.data;
+            document.getElementById('zjq_rack').innerHTML = zjq_cells(zjq_frame.arr, zjq_frame.hot, '');
+            document.getElementById('zjq_rack_foot').innerHTML =
+                'length = <strong>' + zjq_frame.arr.length + '</strong>　' +
+                zjq_m.data + ' = [' + zjq_frame.arr.map(zjq_fmt).join(', ') + ']';
+
+            var zjq_nextWrap = document.getElementById('zjq_next_wrap');
+            if (zjq_frame.next) {
+                zjq_nextWrap.classList.remove('zjq_hide');
+                if (zjq_frame.nextText) {
+                    document.getElementById('zjq_next').innerHTML = '<div class="zjq_strbox">' + zjq_esc(zjq_frame.next[0]) + '</div>';
+                    document.getElementById('zjq_next_foot').textContent = '字符串长度 ' + zjq_frame.next[0].length + '（已经不能按下标取值了）';
+                } else {
+                    document.getElementById('zjq_next').innerHTML = zjq_cells(zjq_frame.next, [], 'zjq_cell-next');
+                    document.getElementById('zjq_next_foot').innerHTML =
+                        '新数组长度 = <strong>' + zjq_frame.next.length + '</strong>　返回值：[' + zjq_frame.next.map(zjq_fmt).join(', ') + ']';
+                }
+            } else {
+                zjq_nextWrap.classList.add('zjq_hide');
+            }
+
+            var zjq_out = document.getElementById('zjq_out');
+            if (zjq_frame.out) {
+                zjq_out.classList.remove('zjq_hide');
+                zjq_out.innerHTML = '被取走的元素：<strong>' + zjq_esc(zjq_frame.out) + '</strong>';
+            } else {
+                zjq_out.classList.add('zjq_hide');
+            }
+
+            document.getElementById('zjq_note').textContent = zjq_frame.note;
+        }
+
+        function zjq_playFrames() {
+            clearTimeout(zjq_lab.timer);
+            var zjq_total = zjq_lab.frames.length;
+            var zjq_i = 0;
+
+            document.getElementById('zjq_ret').innerHTML = '返回值：<strong>播放结束后揭晓</strong>';
+
+            function zjq_step() {
+                zjq_paintFrame(zjq_lab.frames[zjq_i]);
+                document.getElementById('zjq_step').textContent = '第 ' + (zjq_i + 1) + ' / ' + zjq_total + ' 帧';
+                zjq_i++;
+                if (zjq_i < zjq_total) {
+                    zjq_lab.timer = setTimeout(zjq_step, 950);
+                } else {
+                    document.getElementById('zjq_ret').innerHTML = '返回值：<strong>' + zjq_esc(zjq_lab.ret) + '</strong>';
+                }
+            }
+
+            zjq_step();
+        }
+
+        function zjq_openMethod() {
+            var zjq_m = zjq_currentMethod();
+
+            document.getElementById('zjq_m_name').textContent = zjq_m.name;
+            document.getElementById('zjq_m_cn').textContent = zjq_m.cn;
+            document.getElementById('zjq_m_desc').textContent = zjq_m.desc;
+            document.getElementById('zjq_m_code').textContent = zjq_m.code;
+
+            var zjq_pill = document.getElementById('zjq_m_pill');
+            zjq_pill.textContent = zjq_m.mutates ? '会改变原数组' : '原数组保持不变';
+            zjq_pill.className = 'zjq_pill ' + (zjq_m.mutates ? 'zjq_pill-mut' : 'zjq_pill-pure');
+
+            var zjq_data = zjq_m.build();
+            zjq_lab.frames = zjq_data.frames;
+            zjq_lab.ret = zjq_data.ret;
+            zjq_playFrames();
+        }
+
+        document.getElementById('zjq_lab_side').addEventListener('click', function (zjq_e) {
+            var zjq_tab = zjq_e.target.closest('[data-group]');
+            if (zjq_tab) {
+                zjq_lab.group = zjq_tab.getAttribute('data-group');
+                for (var zjq_i = 0; zjq_i < zjq_methods.length; zjq_i++) {
+                    if (zjq_methods[zjq_i].group === zjq_lab.group) {
+                        zjq_lab.key = zjq_methods[zjq_i].key;
+                        break;
+                    }
+                }
+                zjq_renderSide();
+                zjq_openMethod();
+                return;
+            }
+
+            var zjq_btn = zjq_e.target.closest('[data-key]');
+            if (zjq_btn) {
+                zjq_lab.key = zjq_btn.getAttribute('data-key');
+                zjq_renderSide();
+                zjq_openMethod();
+            }
+        });
+
+        document.getElementById('zjq_replay').addEventListener('click', function () {
+            zjq_playFrames();
+        });
+
+        /* ================= 三、迭代流水线 ================= */
+
+        var zjq_pipes = [
+            {
+                key: 'map', name: 'map 逐个加工', op: 'n × 2',
+                code: 'zjq_nums.map(function (zjq_n) {\n    return zjq_n * 2;\n});\n// → [6, 16, 24, 10, 40]',
+                tip: 'map 是「一对一」：进去 5 颗，出来还是 5 颗，顺序不变，只是每颗都被加工了一次。'
+            },
+            {
+                key: 'filter', name: 'filter 逐个筛选', op: 'n > 6 ?',
+                code: 'zjq_nums.filter(function (zjq_n) {\n    return zjq_n > 6;\n});\n// → [8, 12, 20]',
+                tip: 'filter 是「过关」：条件成立才放行，不成立的被划掉，所以出来的数量只会变少或不变。'
+            },
+            {
+                key: 'reduce', name: 'reduce 逐个累加', op: 'acc + n',
+                code: 'zjq_nums.reduce(function (zjq_acc, zjq_n) {\n    return zjq_acc + zjq_n;\n}, 0);\n// → 48',
+                tip: 'reduce 是「越走越少」：每颗珠子都被并进累积器，走完全程只剩一个数字。'
+            }
+        ];
+
+        var zjq_pipe = { key: 'map', timer: null };
+
+        function zjq_currentPipe() {
+            for (var zjq_i = 0; zjq_i < zjq_pipes.length; zjq_i++) {
+                if (zjq_pipes[zjq_i].key === zjq_pipe.key) { return zjq_pipes[zjq_i]; }
+            }
+            return zjq_pipes[0];
+        }
+
+        function zjq_renderPipes() {
+            var zjq_html = '';
+            for (var zjq_i = 0; zjq_i < zjq_pipes.length; zjq_i++) {
+                var zjq_on = zjq_pipes[zjq_i].key === zjq_pipe.key ? ' zjq_pipe-on' : '';
+                zjq_html += '<button type="button" class="zjq_pipe-btn' + zjq_on + '" data-pipe="' + zjq_pipes[zjq_i].key + '">' + zjq_pipes[zjq_i].name + '</button>';
+            }
+            document.getElementById('zjq_pipe_tabs').innerHTML = zjq_html;
+        }
+
+        function zjq_resetBelt() {
+            clearTimeout(zjq_pipe.timer);
+            var zjq_in = '';
+            for (var zjq_i = 0; zjq_i < zjq_nums.length; zjq_i++) {
+                zjq_in += '<span class="zjq_bead" data-bead="' + zjq_i + '">' + zjq_nums[zjq_i] + '</span>';
+            }
+            document.getElementById('zjq_beads').innerHTML = zjq_in;
+            document.getElementById('zjq_out_beads').innerHTML = '<span class="zjq_hint">等待运行…</span>';
+            var zjq_p = zjq_currentPipe();
+            document.getElementById('zjq_op').textContent = zjq_p.op;
+            document.getElementById('zjq_pipe_code').textContent = zjq_p.code;
+            document.getElementById('zjq_pipe_result').innerHTML = '选好加工方式后点击「开始传送」。';
+        }
+
+        function zjq_runBelt() {
+            clearTimeout(zjq_pipe.timer);
+            zjq_resetBelt();
+
+            var zjq_p = zjq_currentPipe();
+            var zjq_beads = document.querySelectorAll('#zjq_beads .zjq_bead');
+            var zjq_outBox = document.getElementById('zjq_out_beads');
+            var zjq_outList = [];
+            var zjq_acc = 0;
+            var zjq_i = 0;
+
+            zjq_outBox.innerHTML = '';
+
+            function zjq_tick() {
+                if (zjq_i >= zjq_nums.length) {
+                    var zjq_tail = '';
+                    if (zjq_p.key === 'map') {
+                        zjq_tail = '【' + zjq_outList.join(', ') + '】';
+                    } else if (zjq_p.key === 'filter') {
+                        zjq_tail = zjq_outList.length ? '【' + zjq_outList.join(', ') + '】' : '【】空数组';
+                    } else {
+                        zjq_tail = zjq_acc;
+                    }
+                    document.getElementById('zjq_pipe_result').innerHTML =
+                        '全部走完，输出 <strong>' + zjq_esc(zjq_tail) + '</strong>。' + zjq_p.tip;
+                    return;
+                }
+
+                var zjq_n = zjq_nums[zjq_i];
+                zjq_beads[zjq_i].classList.add('zjq_bead-on');
+
+                if (zjq_p.key === 'map') {
+                    var zjq_doubled = zjq_n * 2;
+                    zjq_outList.push(zjq_doubled);
+                    zjq_outBox.insertAdjacentHTML('beforeend', '<span class="zjq_bead zjq_bead-out">' + zjq_doubled + '</span>');
+                } else if (zjq_p.key === 'filter') {
+                    if (zjq_n > 6) {
+                        zjq_outList.push(zjq_n);
+                        zjq_outBox.insertAdjacentHTML('beforeend', '<span class="zjq_bead zjq_bead-out">' + zjq_n + '</span>');
+                    } else {
+                        zjq_beads[zjq_i].classList.add('zjq_bead-drop');
+                    }
+                } else {
+                    zjq_acc += zjq_n;
+                    zjq_outBox.insertAdjacentHTML('beforeend', '<span class="zjq_bead zjq_bead-out' + (zjq_i === zjq_nums.length - 1 ? ' zjq_bead-final' : '') + '">' + zjq_acc + '</span>');
+                }
+
+                zjq_i++;
+                zjq_pipe.timer = setTimeout(zjq_tick, 620);
+            }
+
+            zjq_tick();
+        }
+
+        document.getElementById('zjq_pipe_tabs').addEventListener('click', function (zjq_e) {
+            var zjq_btn = zjq_e.target.closest('[data-pipe]');
+            if (!zjq_btn) { return; }
+            zjq_pipe.key = zjq_btn.getAttribute('data-pipe');
+            zjq_renderPipes();
+            zjq_resetBelt();
+        });
+
+        document.getElementById('zjq_pipe_play').addEventListener('click', zjq_runBelt);
+        document.getElementById('zjq_pipe_reset').addEventListener('click', zjq_resetBelt);
+
+        /* ================= 初始化 ================= */
+
+        zjq_paintTrait('idx');
+        zjq_renderSide();
+        zjq_openMethod();
+        zjq_renderPipes();
+        zjq_resetBelt();
+    </script>
+</body>
+</html>
