@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<!-- 姓名：张钧乔，建立时间：2026-11-02 19:00:00，使用的大模型：GLM-5.3，功能名称：Promise与async/await异步流程演示——包饺子（串行、并行、汇总） -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="用 Promise 与 async/await 演示包饺子流程：买原料、取原料串行执行，和面与和馅并行执行（Promise.all），最后包饺子、吃饺子，setTimeout 模拟每步耗时">
+    <title>异步包饺子 | 张钧乔</title>
+    <style>
+        :root {
+            --zjq-ink: #182230;
+            --zjq-muted: #667085;
+            --zjq-white: #ffffff;
+            --zjq-orange: #e9693f;
+            --zjq-orange-dark: #b8472d;
+            --zjq-teal: #277b78;
+            --zjq-line: #d9d5cb;
+            --zjq-shadow: 0 14px 36px rgba(31, 48, 36, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--zjq-ink);
+            background:
+                radial-gradient(circle at 88% 4%, rgba(233, 105, 63, 0.10), transparent 24rem),
+                linear-gradient(135deg, #f4f0e8 0%, #edf3ee 55%, #fffaf2 100%);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            line-height: 1.7;
+        }
+
+        code, pre {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+        }
+
+        .zjq_shell {
+            width: min(1080px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 28px 0 44px;
+        }
+
+        .zjq_top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .zjq_back {
+            color: var(--zjq-muted);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .zjq_back:hover {
+            color: var(--zjq-orange);
+        }
+
+        .zjq_badge {
+            color: var(--zjq-orange);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .zjq_header {
+            padding: 40px 0 8px;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(34px, 5vw, 54px);
+            line-height: 1.15;
+        }
+
+        h1 span {
+            color: var(--zjq-teal);
+        }
+
+        .zjq_intro {
+            max-width: 760px;
+            margin: 14px 0 0;
+            color: var(--zjq-muted);
+            font-size: 16px;
+        }
+
+        h2 {
+            margin: 44px 0 6px;
+            font-size: 24px;
+        }
+
+        .zjq_section-desc {
+            margin: 0 0 18px;
+            color: var(--zjq-muted);
+            font-size: 14px;
+        }
+
+        .zjq_panel {
+            padding: 20px 22px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid var(--zjq-line);
+            border-radius: 6px;
+            box-shadow: 0 8px 22px rgba(31, 48, 36, 0.06);
+        }
+
+        .zjq_row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .zjq_btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 4px;
+            background: var(--zjq-teal);
+            color: var(--zjq-white);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .zjq_btn:hover {
+            background: #1d5f5c;
+        }
+
+        .zjq_btn:disabled {
+            background: #b8c2bd;
+            cursor: not-allowed;
+        }
+
+        .zjq_btn.zjq_btn-orange {
+            background: var(--zjq-orange);
+        }
+
+        .zjq_btn.zjq_btn-orange:hover {
+            background: var(--zjq-orange-dark);
+        }
+
+        /* ===== 流程图 ===== */
+        .zjq_flow {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: stretch;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .zjq_step {
+            position: relative;
+            flex: 1;
+            min-width: 128px;
+            padding: 14px 14px 12px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 8px;
+            background: #faf8f3;
+            text-align: center;
+            transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+        }
+
+        .zjq_step.zjq_step-active {
+            border-color: var(--zjq-teal);
+            box-shadow: 0 8px 20px rgba(39, 123, 120, 0.25);
+            transform: translateY(-4px);
+            background: var(--zjq-white);
+        }
+
+        .zjq_step.zjq_step-done {
+            border-color: #bcd9c8;
+            background: #eef7f0;
+        }
+
+        .zjq_step-no {
+            display: inline-grid;
+            place-items: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e3ded2;
+            color: var(--zjq-muted);
+            font-family: Consolas, Monaco, monospace;
+            font-size: 14px;
+            font-weight: 700;
+            transition: background 200ms ease, color 200ms ease;
+        }
+
+        .zjq_step-active .zjq_step-no {
+            background: var(--zjq-teal);
+            color: #fff;
+            animation: zjq_pulse 900ms ease-in-out infinite;
+        }
+
+        .zjq_step-done .zjq_step-no {
+            background: #3f9d63;
+            color: #fff;
+        }
+
+        @keyframes zjq_pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.12); opacity: 0.75; }
+        }
+
+        .zjq_step-name {
+            margin-top: 6px;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .zjq_step-time {
+            color: var(--zjq-muted);
+            font-size: 12px;
+        }
+
+        .zjq_step-status {
+            margin-top: 4px;
+            font-size: 12.5px;
+            color: var(--zjq-muted);
+        }
+
+        .zjq_step-active .zjq_step-status {
+            color: var(--zjq-teal);
+            font-weight: 700;
+        }
+
+        .zjq_step-done .zjq_step-status {
+            color: #3f9d63;
+            font-weight: 700;
+        }
+
+        .zjq_step-bar {
+            height: 6px;
+            margin-top: 8px;
+            border-radius: 999px;
+            background: #ece9e0;
+            overflow: hidden;
+        }
+
+        .zjq_step-bar i {
+            display: block;
+            width: 0;
+            height: 100%;
+            background: var(--zjq-teal);
+            transition: width 100ms linear;
+        }
+
+        .zjq_step-done .zjq_step-bar i {
+            width: 100%;
+            background: #3f9d63;
+        }
+
+        .zjq_arrow {
+            align-self: center;
+            color: var(--zjq-orange);
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .zjq_parallel {
+            flex: 1.6;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 220px;
+        }
+
+        .zjq_parallel-label {
+            text-align: center;
+            color: var(--zjq-orange-dark);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .zjq_parallel-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .zjq_parallel-row .zjq_step {
+            min-width: 0;
+        }
+
+        /* ===== 日志 ===== */
+        .zjq_log {
+            margin-top: 14px;
+            padding: 12px 16px;
+            min-height: 150px;
+            max-height: 260px;
+            overflow: auto;
+            border: 1px dashed var(--zjq-line);
+            border-radius: 4px;
+            background: #faf8f3;
+            font-size: 12.5px;
+            font-family: Consolas, Monaco, monospace;
+        }
+
+        .zjq_log p {
+            margin: 0 0 3px;
+        }
+
+        .zjq_log .zjq_log-start { color: var(--zjq-teal); font-weight: 700; }
+        .zjq_log .zjq_log-begin { color: var(--zjq-ink); font-weight: 700; }
+        .zjq_log .zjq_log-done { color: #3f9d63; }
+        .zjq_log .zjq_log-merge { color: var(--zjq-orange-dark); font-weight: 700; }
+        .zjq_log .zjq_log-final { color: var(--zjq-orange); font-weight: 700; }
+
+        .zjq_total {
+            margin-top: 10px;
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_total strong {
+            color: var(--zjq-orange-dark);
+            font-family: Consolas, Monaco, monospace;
+        }
+
+        /* ===== 代码 ===== */
+        pre.zjq_code {
+            margin: 0;
+            padding: 16px 18px;
+            border-radius: 6px;
+            background: var(--zjq-ink);
+            color: #d5e3df;
+            font-size: 12.5px;
+            line-height: 1.75;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        .zjq_code .zjq_kw { color: #ff9d76; }
+        .zjq_code .zjq_fn { color: #7fd8d3; }
+        .zjq_code .zjq_str { color: #8ee6a0; }
+        .zjq_code .zjq_cmt { color: #6f8280; }
+
+        .zjq_footer {
+            margin-top: 44px;
+            padding: 22px 0 4px;
+            border-top: 1px solid var(--zjq-line);
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_footer a {
+            color: var(--zjq-teal);
+            text-decoration: none;
+        }
+
+        .zjq_footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="zjq_shell">
+        <nav class="zjq_top">
+            <a class="zjq_back" href="index.html">← 返回作品集首页</a>
+            <span class="zjq_badge">17-6 / ASYNC</span>
+        </nav>
+
+        <header class="zjq_header">
+            <h1>异步包<span>饺子</span></h1>
+            <p class="zjq_intro">用 Promise 与 async/await 编排一场包饺子流水线：先<strong>买原料</strong>、再<strong>取原料</strong>（串行，前一步完成才能开始下一步）；原料到手后<strong>和面</strong>与<strong>和馅</strong>同时进行（并行，Promise.all 汇合）；两者都完成后<strong>包饺子</strong>、最后<strong>吃饺子</strong>。每一步的耗时用 setTimeout 模拟。</p>
+        </header>
+
+        <!-- 流程演示 -->
+        <section aria-label="包饺子流程">
+            <h2>流程演示</h2>
+            <p class="zjq_section-desc">点击「开始包饺子」运行整条流水线，总耗时约 21 秒；卡片会随流程实时变为「进行中 / 已完成」。</p>
+
+            <div class="zjq_panel">
+                <div class="zjq_row">
+                    <button class="zjq_btn" id="zjq_run_btn" type="button">开始包饺子</button>
+                    <button class="zjq_btn zjq_btn-orange" id="zjq_reset_btn" type="button" disabled>重 置</button>
+                </div>
+
+                <div class="zjq_flow" id="zjq_flow"></div>
+
+                <p class="zjq_total" id="zjq_total">预计总耗时：<strong>21 秒</strong>（串行 8s + 并行取最长 5s + 串行 8s）</p>
+
+                <div class="zjq_log" id="zjq_log"><p>日志会按时间顺序显示在这里。</p></div>
+            </div>
+        </section>
+
+        <!-- 核心代码 -->
+        <section aria-label="核心代码">
+            <h2>核心代码</h2>
+            <p class="zjq_section-desc">await 让串行步骤依次执行；Promise.all 把并行的两个 Promise 打包，全部完成才放行。</p>
+
+            <div class="zjq_panel">
+<pre class="zjq_code"><span class="zjq_cmt">// 封装 setTimeout 为 Promise：ms 毫秒后自动 resolve</span>
+<span class="zjq_kw">function</span> <span class="zjq_fn">wait</span>(ms) {
+  <span class="zjq_kw">return new</span> <span class="zjq_fn">Promise</span>(resolve <span class="zjq_kw">=&gt;</span> <span class="zjq_fn">setTimeout</span>(resolve, ms));
+}
+
+<span class="zjq_kw">async function</span> <span class="zjq_fn">makeDumplings</span>() {
+  <span class="zjq_kw">await</span> <span class="zjq_fn">step</span>(<span class="zjq_str">'buy'</span>, 6000);          <span class="zjq_cmt">// 1. 买原料（6s，串行）</span>
+  <span class="zjq_kw">await</span> <span class="zjq_fn">step</span>(<span class="zjq_str">'take'</span>, 2000);         <span class="zjq_cmt">// 2. 取原料（2s，串行）</span>
+  <span class="zjq_kw">await</span> Promise.<span class="zjq_fn">all</span>([              <span class="zjq_cmt">// 3. 和面、和馅（并行）</span>
+    <span class="zjq_fn">step</span>(<span class="zjq_str">'dough'</span>, 4000),
+    <span class="zjq_fn">step</span>(<span class="zjq_str">'filling'</span>, 5000)
+  ]);                              <span class="zjq_cmt">// 两个都完成才继续</span>
+  <span class="zjq_kw">await</span> <span class="zjq_fn">step</span>(<span class="zjq_str">'wrap'</span>, 5000);         <span class="zjq_cmt">// 4. 包饺子（5s）</span>
+  <span class="zjq_kw">await</span> <span class="zjq_fn">step</span>(<span class="zjq_str">'eat'</span>, 3000);          <span class="zjq_cmt">// 5. 吃饺子（3s）</span>
+}</pre>
+            </div>
+        </section>
+
+        <footer class="zjq_footer">
+            张钧乔 · 《高级网页设计》课堂实践 · <a href="index.html">返回首页</a>
+        </footer>
+    </div>
+
+    <script>
+        // 姓名：张钧乔 日期：2026-11-02 功能名称：Promise与async/await异步流程演示——包饺子（串行、并行、汇总）
+        function zjq_escapeHtml(zjq_text) {
+            return String(zjq_text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        /* ================= 流程步骤定义 ================= */
+
+        var zjq_steps = [
+            { key: 'buy', no: '1', name: '买原料', time: 6000, label: '6 秒' },
+            { key: 'take', no: '2', name: '取原料', time: 2000, label: '2 秒' },
+            { key: 'dough', no: '3a', name: '和面', time: 4000, label: '4 秒' },
+            { key: 'filling', no: '3b', name: '和馅', time: 5000, label: '5 秒' },
+            { key: 'wrap', no: '4', name: '包饺子', time: 5000, label: '5 秒' },
+            { key: 'eat', no: '5', name: '吃饺子', time: 3000, label: '3 秒' }
+        ];
+
+        var zjq_stepEls = {};
+
+        function zjq_makeStepEl(zjq_s) {
+            var zjq_el = document.createElement('div');
+            zjq_el.className = 'zjq_step';
+            zjq_el.id = 'zjq_step_' + zjq_s.key;
+            zjq_el.innerHTML =
+                '<span class="zjq_step-no">' + zjq_s.no + '</span>' +
+                '<div class="zjq_step-name">' + zjq_s.name + '</div>' +
+                '<div class="zjq_step-time">约 ' + zjq_s.label + '</div>' +
+                '<div class="zjq_step-status">等待中</div>' +
+                '<div class="zjq_step-bar"><i></i></div>';
+            return zjq_el;
+        }
+
+        (function zjq_buildFlow() {
+            var zjq_flow = document.getElementById('zjq_flow');
+            // 买原料 → 取原料 → [和面 ‖ 和馅] → 包饺子 → 吃饺子
+            zjq_flow.appendChild(zjq_makeStepEl(zjq_steps[0]));
+            zjq_flow.insertAdjacentHTML('beforeend', '<span class="zjq_arrow">→</span>');
+            zjq_flow.appendChild(zjq_makeStepEl(zjq_steps[1]));
+            zjq_flow.insertAdjacentHTML('beforeend', '<span class="zjq_arrow">→</span>');
+
+            var zjq_par = document.createElement('div');
+            zjq_par.className = 'zjq_parallel';
+            zjq_par.innerHTML = '<div class="zjq_parallel-label">Promise.all 并行</div>';
+            var zjq_parRow = document.createElement('div');
+            zjq_parRow.className = 'zjq_parallel-row';
+            zjq_parRow.appendChild(zjq_makeStepEl(zjq_steps[2]));
+            zjq_parRow.appendChild(zjq_makeStepEl(zjq_steps[3]));
+            zjq_par.appendChild(zjq_parRow);
+            zjq_flow.appendChild(zjq_par);
+            zjq_flow.insertAdjacentHTML('beforeend', '<span class="zjq_arrow">→</span>');
+
+            zjq_flow.appendChild(zjq_makeStepEl(zjq_steps[4]));
+            zjq_flow.insertAdjacentHTML('beforeend', '<span class="zjq_arrow">→</span>');
+            zjq_flow.appendChild(zjq_makeStepEl(zjq_steps[5]));
+
+            for (var zjq_i = 0; zjq_i < zjq_steps.length; zjq_i++) {
+                zjq_stepEls[zjq_steps[zjq_i].key] = document.getElementById('zjq_step_' + zjq_steps[zjq_i].key);
+            }
+        })();
+
+        /* ================= 日志 ================= */
+
+        var zjq_logEl = document.getElementById('zjq_log');
+
+        function zjq_log(zjq_html, zjq_cls) {
+            var zjq_p = document.createElement('p');
+            if (zjq_cls) { zjq_p.className = zjq_cls; }
+            var zjq_t = new Date();
+            var zjq_ts = ('0' + zjq_t.getMinutes()).slice(-2) + ':' + ('0' + zjq_t.getSeconds()).slice(-2) + '.' +
+                ('00' + zjq_t.getMilliseconds()).slice(-3);
+            zjq_p.innerHTML = '[' + zjq_ts + '] ' + zjq_html;
+            zjq_logEl.appendChild(zjq_p);
+            zjq_logEl.scrollTop = zjq_logEl.scrollHeight;
+        }
+
+        /* ================= 步骤状态控制 ================= */
+
+        function zjq_setStatus(zjq_key, zjq_text) {
+            zjq_stepEls[zjq_key].querySelector('.zjq_step-status').textContent = zjq_text;
+        }
+
+        function zjq_setState(zjq_key, zjq_state) {
+            var zjq_el = zjq_stepEls[zjq_key];
+            zjq_el.classList.remove('zjq_step-active', 'zjq_step-done');
+            if (zjq_state) { zjq_el.classList.add('zjq_step-' + zjq_state); }
+        }
+
+        // 把 setTimeout 封装成 Promise，并在进度条上可视化倒计时
+        function zjq_wait(zjq_ms) {
+            return new Promise(function (zjq_resolve) {
+                setTimeout(zjq_resolve, zjq_ms);
+            });
+        }
+
+        function zjq_runStep(zjq_s) {
+            return new Promise(function (zjq_resolve) {
+                var zjq_el = zjq_stepEls[zjq_s.key];
+                var zjq_bar = zjq_el.querySelector('.zjq_step-bar i');
+                var zjq_start = performance.now();
+
+                zjq_setState(zjq_s.key, 'active');
+                zjq_setStatus(zjq_s.key, '进行中…');
+                zjq_log(zjq_escapeHtml(zjq_s.name) + ' 开始（约 ' + zjq_s.label + '）', 'zjq_log-begin');
+
+                var zjq_tick = setInterval(function () {
+                    var zjq_pct = Math.min(100, (performance.now() - zjq_start) / zjq_s.time * 100);
+                    zjq_bar.style.width = zjq_pct + '%';
+                }, 100);
+
+                setTimeout(function () {
+                    clearInterval(zjq_tick);
+                    zjq_bar.style.width = '100%';
+                    zjq_setState(zjq_s.key, 'done');
+                    zjq_setStatus(zjq_s.key, '已完成 ✓');
+                    zjq_log(zjq_escapeHtml(zjq_s.name) + ' 完成（用时 ' + zjq_s.label + '）', 'zjq_log-done');
+                    zjq_resolve(zjq_s.key);
+                }, zjq_s.time);
+            });
+        }
+
+        /* ================= async/await 主流程 ================= */
+
+        var zjq_runBtn = document.getElementById('zjq_run_btn');
+        var zjq_resetBtn = document.getElementById('zjq_reset_btn');
+        var zjq_totalEl = document.getElementById('zjq_total');
+        var zjq_startTime = 0;
+
+        async function zjq_makeDumplings() {
+            zjq_log('饺子流水线启动 ——', 'zjq_log-start');
+            zjq_startTime = performance.now();
+
+            // 1-2. 串行：买原料 → 取原料
+            await zjq_runStep(zjq_steps[0]);
+            await zjq_runStep(zjq_steps[1]);
+
+            // 3. 并行：和面 ∥ 和馅，Promise.all 等待两者都完成
+            zjq_log('原料就绪，和面与和馅同时开始 ——', 'zjq_log-merge');
+            await Promise.all([
+                zjq_runStep(zjq_steps[2]),
+                zjq_runStep(zjq_steps[3])
+            ]);
+            zjq_log('Promise.all 汇合：和面、和馅都完成了', 'zjq_log-merge');
+
+            // 4-5. 串行：包饺子 → 吃饺子
+            await zjq_runStep(zjq_steps[4]);
+            await zjq_runStep(zjq_steps[5]);
+
+            var zjq_cost = ((performance.now() - zjq_startTime) / 1000).toFixed(1);
+            zjq_log('饺子吃完，全流程结束！总耗时 ' + zjq_cost + ' 秒（串行执行需 25 秒，并行省了 4 秒）', 'zjq_log-final');
+            zjq_totalEl.innerHTML = '本次实际总耗时：<strong>' + zjq_cost + ' 秒</strong>　·　若和面、和馅改为串行则需 <strong>25 秒</strong>';
+            zjq_runBtn.disabled = true;
+            zjq_resetBtn.disabled = false;
+        }
+
+        zjq_runBtn.addEventListener('click', function () {
+            zjq_runBtn.disabled = true;
+            zjq_makeDumplings();
+        });
+
+        zjq_resetBtn.addEventListener('click', function () {
+            for (var zjq_i = 0; zjq_i < zjq_steps.length; zjq_i++) {
+                var zjq_s = zjq_steps[zjq_i];
+                zjq_setState(zjq_s.key, null);
+                zjq_setStatus(zjq_s.key, '等待中');
+                zjq_stepEls[zjq_s.key].querySelector('.zjq_step-bar i').style.width = '0';
+            }
+            zjq_logEl.innerHTML = '<p>日志会按时间顺序显示在这里。</p>';
+            zjq_totalEl.innerHTML = '预计总耗时：<strong>21 秒</strong>（串行 8s + 并行取最长 5s + 串行 8s）';
+            zjq_resetBtn.disabled = true;
+            zjq_runBtn.disabled = false;
+        });
+    </script>
+</body>
+</html>

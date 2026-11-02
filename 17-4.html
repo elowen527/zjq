@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<!-- 姓名：张钧乔，建立时间：2026-11-02 16:00:00，使用的大模型：GLM-5.3，功能名称：远程接口测试工具——支持GET/POST/PUT/PATCH/DELETE并展示响应数据与错误信息 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="远程数据接口测试工具：支持 GET、POST、PUT、PATCH、DELETE 请求，展示状态码、耗时与响应数据，错误时给出提示">
+    <title>接口测试工具 | 张钧乔</title>
+    <style>
+        :root {
+            --zjq-ink: #182230;
+            --zjq-muted: #667085;
+            --zjq-white: #ffffff;
+            --zjq-orange: #e9693f;
+            --zjq-orange-dark: #b8472d;
+            --zjq-teal: #277b78;
+            --zjq-line: #d9d5cb;
+            --zjq-shadow: 0 14px 36px rgba(31, 48, 36, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--zjq-ink);
+            background:
+                radial-gradient(circle at 88% 4%, rgba(233, 105, 63, 0.10), transparent 24rem),
+                linear-gradient(135deg, #f4f0e8 0%, #edf3ee 55%, #fffaf2 100%);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            line-height: 1.7;
+        }
+
+        code, pre {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+        }
+
+        .zjq_shell {
+            width: min(980px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 28px 0 44px;
+        }
+
+        .zjq_top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .zjq_back {
+            color: var(--zjq-muted);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .zjq_back:hover {
+            color: var(--zjq-orange);
+        }
+
+        .zjq_badge {
+            color: var(--zjq-orange);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .zjq_header {
+            padding: 34px 0 6px;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(30px, 4.5vw, 44px);
+        }
+
+        h1 span {
+            color: var(--zjq-teal);
+        }
+
+        .zjq_intro {
+            margin: 8px 0 0;
+            max-width: 720px;
+            color: var(--zjq-muted);
+            font-size: 14px;
+        }
+
+        .zjq_panel {
+            margin-top: 20px;
+            padding: 20px 22px;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid var(--zjq-line);
+            border-radius: 8px;
+            box-shadow: 0 8px 22px rgba(31, 48, 36, 0.08);
+        }
+
+        .zjq_request-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .zjq_method {
+            padding: 10px 12px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 4px;
+            background: #faf8f3;
+            color: var(--zjq-ink);
+            font-family: Consolas, Monaco, monospace;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .zjq_method:focus {
+            outline: none;
+            border-color: var(--zjq-teal);
+        }
+
+        .zjq_url {
+            flex: 1;
+            min-width: 260px;
+            padding: 10px 12px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 4px;
+            background: #faf8f3;
+            color: var(--zjq-ink);
+            font-family: Consolas, Monaco, monospace;
+            font-size: 13.5px;
+        }
+
+        .zjq_url:focus {
+            outline: none;
+            border-color: var(--zjq-teal);
+        }
+
+        .zjq_btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 4px;
+            background: var(--zjq-teal);
+            color: var(--zjq-white);
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .zjq_btn:hover {
+            background: #1d5f5c;
+        }
+
+        .zjq_btn:disabled {
+            background: #a8b5b2;
+            cursor: not-allowed;
+        }
+
+        .zjq_presets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .zjq_preset {
+            padding: 5px 12px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 999px;
+            background: var(--zjq-white);
+            color: var(--zjq-ink);
+            font-size: 12.5px;
+            cursor: pointer;
+            transition: border-color 150ms ease, color 150ms ease;
+        }
+
+        .zjq_preset:hover {
+            border-color: var(--zjq-teal);
+            color: var(--zjq-teal);
+        }
+
+        .zjq_preset code {
+            font-size: 12px;
+            color: var(--zjq-teal);
+            font-weight: 700;
+            margin-right: 4px;
+        }
+
+        .zjq_body-wrap {
+            margin-top: 14px;
+        }
+
+        .zjq_body-wrap[hidden] {
+            display: none;
+        }
+
+        .zjq_body-label {
+            margin-bottom: 6px;
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_textarea {
+            width: 100%;
+            min-height: 96px;
+            padding: 12px 14px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 4px;
+            background: #faf8f3;
+            color: var(--zjq-ink);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            resize: vertical;
+        }
+
+        .zjq_textarea:focus {
+            outline: none;
+            border-color: var(--zjq-teal);
+        }
+
+        .zjq_textarea.zjq_ta-error {
+            border-color: var(--zjq-orange);
+            background: #fdf0eb;
+            animation: zjq_shake 320ms ease;
+        }
+
+        @keyframes zjq_shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* ===== 响应区 ===== */
+        .zjq_res-head {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .zjq_code {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 14px;
+            border-radius: 999px;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 13.5px;
+            font-weight: 700;
+            background: #eef5f3;
+            color: var(--zjq-teal);
+        }
+
+        .zjq_code.zjq_code-err {
+            background: #fdeee7;
+            color: var(--zjq-orange-dark);
+        }
+
+        .zjq_code.zjq_code-wait {
+            background: #faf8f3;
+            color: var(--zjq-muted);
+        }
+
+        .zjq_dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .zjq_dot.zjq_dot-pulse {
+            animation: zjq_pulse 800ms ease-in-out infinite;
+        }
+
+        @keyframes zjq_pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.35; transform: scale(0.7); }
+        }
+
+        .zjq_res-meta {
+            color: var(--zjq-muted);
+            font-size: 12.5px;
+        }
+
+        .zjq_res-view {
+            min-height: 240px;
+            max-height: 460px;
+            margin-top: 12px;
+            padding: 14px 16px;
+            border-radius: 4px;
+            background: var(--zjq-ink);
+            color: #d5e3df;
+            font-size: 12.5px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-word;
+            overflow: auto;
+        }
+
+        .zjq_res-view.zjq_res-error {
+            background: #4a2417;
+            color: #ffd9c9;
+        }
+
+        .zjq_footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--zjq-line);
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_footer a {
+            color: var(--zjq-teal);
+            text-decoration: none;
+        }
+
+        .zjq_footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="zjq_shell">
+        <nav class="zjq_top">
+            <a class="zjq_back" href="index.html">← 返回作品集首页</a>
+            <span class="zjq_badge">17-4 / API</span>
+        </nav>
+
+        <header class="zjq_header">
+            <h1>接口<span>测试工具</span></h1>
+            <p class="zjq_intro">选择请求方法、填写接口地址即可发送请求：GET 查询数据，POST 新建数据，PUT/PATCH 修改，DELETE 删除。响应的状态码、耗时与数据会显示在下方；请求失败时给出错误提示。示例接口为 JSONPlaceholder（免费假数据接口，支持跨域）。</p>
+        </header>
+
+        <!-- 请求区 -->
+        <section class="zjq_panel">
+            <div class="zjq_request-row">
+                <select class="zjq_method" id="zjq_method">
+                    <option value="GET" selected>GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="PATCH">PATCH</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+                <input class="zjq_url" id="zjq_url" type="text" value="https://jsonplaceholder.typicode.com/posts" spellcheck="false">
+                <button class="zjq_btn" id="zjq_send_btn" type="button">发 送</button>
+            </div>
+
+            <div class="zjq_presets">
+                <button class="zjq_preset" type="button" data-m="GET" data-u="https://jsonplaceholder.typicode.com/posts"><code>GET</code>全部文章（100 条）</button>
+                <button class="zjq_preset" type="button" data-m="GET" data-u="https://jsonplaceholder.typicode.com/posts/1"><code>GET</code>单篇文章</button>
+                <button class="zjq_preset" type="button" data-m="GET" data-u="https://jsonplaceholder.typicode.com/posts/1/comments"><code>GET</code>文章评论</button>
+                <button class="zjq_preset" type="button" data-m="GET" data-u="https://jsonplaceholder.typicode.com/posts/9999"><code>GET</code>不存在的资源（404）</button>
+                <button class="zjq_preset" type="button" data-m="POST" data-u="https://jsonplaceholder.typicode.com/posts"><code>POST</code>新建文章</button>
+                <button class="zjq_preset" type="button" data-m="PUT" data-u="https://jsonplaceholder.typicode.com/posts/1"><code>PUT</code>修改文章</button>
+                <button class="zjq_preset" type="button" data-m="PATCH" data-u="https://jsonplaceholder.typicode.com/posts/1"><code>PATCH</code>部分修改</button>
+                <button class="zjq_preset" type="button" data-m="DELETE" data-u="https://jsonplaceholder.typicode.com/posts/1"><code>DELETE</code>删除文章</button>
+            </div>
+
+            <div class="zjq_body-wrap" id="zjq_body_wrap" hidden>
+                <p class="zjq_body-label">请求体（JSON），将随请求发送：</p>
+                <textarea class="zjq_textarea" id="zjq_body_input" spellcheck="false">{
+  "title": "张钧乔的测试文章",
+  "body": "这是通过 17-4 接口测试工具发出的 POST 请求。",
+  "userId": 1
+}</textarea>
+            </div>
+        </section>
+
+        <!-- 响应区 -->
+        <section class="zjq_panel">
+            <div class="zjq_res-head">
+                <span class="zjq_code zjq_code-wait" id="zjq_code"><span class="zjq_dot" id="zjq_dot"></span>待发送</span>
+                <span class="zjq_res-meta" id="zjq_res_meta"></span>
+            </div>
+            <pre class="zjq_res-view" id="zjq_res_view">点击「发送」或选择一个示例接口开始测试。</pre>
+        </section>
+
+        <footer class="zjq_footer">
+            张钧乔 · 《高级网页设计》课堂实践 · <a href="index.html">返回首页</a>
+        </footer>
+    </div>
+
+    <script>
+        // 姓名：张钧乔 日期：2026-11-02 功能名称：远程接口测试工具——支持GET/POST/PUT/PATCH/DELETE并展示响应数据与错误信息
+        var zjq_methodEl = document.getElementById('zjq_method');
+        var zjq_urlEl = document.getElementById('zjq_url');
+        var zjq_sendBtn = document.getElementById('zjq_send_btn');
+        var zjq_bodyWrap = document.getElementById('zjq_body_wrap');
+        var zjq_bodyInput = document.getElementById('zjq_body_input');
+        var zjq_codeEl = document.getElementById('zjq_code');
+        var zjq_dotEl = document.getElementById('zjq_dot');
+        var zjq_metaEl = document.getElementById('zjq_res_meta');
+        var zjq_viewEl = document.getElementById('zjq_res_view');
+
+        var zjq_defaultBody = zjq_bodyInput.value;
+
+        // 有请求体的方法显示请求体输入框
+        function zjq_toggleBody() {
+            var zjq_m = zjq_methodEl.value;
+            zjq_bodyWrap.hidden = (zjq_m === 'GET' || zjq_m === 'DELETE');
+        }
+        zjq_methodEl.addEventListener('change', zjq_toggleBody);
+
+        // 示例接口快捷填充
+        document.querySelectorAll('.zjq_preset').forEach(function (zjq_p) {
+            zjq_p.addEventListener('click', function () {
+                zjq_methodEl.value = zjq_p.getAttribute('data-m');
+                zjq_urlEl.value = zjq_p.getAttribute('data-u');
+                if (zjq_p.getAttribute('data-m') !== 'GET') {
+                    zjq_bodyInput.value = zjq_defaultBody;
+                }
+                zjq_toggleBody();
+            });
+        });
+
+        function zjq_setCode(zjq_text, zjq_cls, zjq_pulse) {
+            zjq_codeEl.className = 'zjq_code' + (zjq_cls ? ' ' + zjq_cls : '');
+            zjq_dotEl.className = 'zjq_dot' + (zjq_pulse ? ' zjq_dot-pulse' : '');
+            zjq_codeEl.innerHTML = '<span class="zjq_dot' + (zjq_pulse ? ' zjq_dot-pulse' : '') + '"></span>' + zjq_text;
+        }
+
+        function zjq_formatBody(zjq_text) {
+            // 尝试把响应文本美化成 JSON；失败则原样显示
+            try {
+                return JSON.stringify(JSON.parse(zjq_text), null, 2);
+            } catch (zjq_e) {
+                return zjq_text;
+            }
+        }
+
+        function zjq_send() {
+            var zjq_method = zjq_methodEl.value;
+            var zjq_url = zjq_urlEl.value.trim();
+            var zjq_needBody = (zjq_method === 'POST' || zjq_method === 'PUT' || zjq_method === 'PATCH');
+
+            if (!zjq_url) {
+                zjq_setCode('地址为空', 'zjq_code-err', false);
+                zjq_metaEl.textContent = '';
+                zjq_viewEl.textContent = '请先填写接口地址。';
+                zjq_viewEl.classList.add('zjq_res-error');
+                return;
+            }
+
+            // 校验请求体是否为合法 JSON
+            var zjq_body = null;
+            if (zjq_needBody) {
+                try {
+                    zjq_body = JSON.stringify(JSON.parse(zjq_bodyInput.value));
+                    zjq_bodyInput.classList.remove('zjq_ta-error');
+                } catch (zjq_e) {
+                    zjq_bodyInput.classList.remove('zjq_ta-error');
+                    void zjq_bodyInput.offsetWidth;
+                    zjq_bodyInput.classList.add('zjq_ta-error');
+                    zjq_setCode('请求体错误', 'zjq_code-err', false);
+                    zjq_metaEl.textContent = '';
+                    zjq_viewEl.textContent = '请求体不是合法的 JSON：\n' + zjq_e.message + '\n\n提示：键和字符串值都要用双引号，不能有多余的逗号。';
+                    zjq_viewEl.classList.add('zjq_res-error');
+                    return;
+                }
+            }
+
+            var zjq_options = {
+                method: zjq_method,
+                headers: { 'Content-Type': 'application/json; charset=UTF-8' }
+            };
+            if (zjq_needBody) { zjq_options.body = zjq_body; }
+
+            zjq_sendBtn.disabled = true;
+            zjq_setCode('请求中…', 'zjq_code-wait', true);
+            zjq_metaEl.textContent = zjq_method + ' ' + zjq_url;
+            zjq_viewEl.classList.remove('zjq_res-error');
+            zjq_viewEl.textContent = '正在连接 ' + zjq_url + ' …';
+
+            var zjq_start = performance.now();
+
+            fetch(zjq_url, zjq_options)
+                .then(function (zjq_res) {
+                    var zjq_cost = Math.round(performance.now() - zjq_start);
+                    var zjq_ok = zjq_res.ok;
+                    zjq_setCode('HTTP ' + zjq_res.status + ' ' + zjq_res.statusText, zjq_ok ? '' : 'zjq_code-err', false);
+                    zjq_metaEl.textContent = zjq_method + ' ' + zjq_url + '　·　耗时 ' + zjq_cost + ' ms　·　' +
+                        (zjq_ok ? '请求成功' : '服务器返回错误状态码');
+                    return zjq_res.text().then(function (zjq_text) {
+                        return { ok: zjq_ok, text: zjq_text };
+                    });
+                })
+                .then(function (zjq_result) {
+                    var zjq_out = zjq_formatBody(zjq_result.text);
+                    if (!zjq_result.ok) {
+                        zjq_viewEl.classList.add('zjq_res-error');
+                        zjq_out = '// 服务器返回了错误状态码，响应内容如下：\n\n' + zjq_out;
+                    }
+                    zjq_viewEl.textContent = zjq_out || '// 响应为空（如 DELETE 请求通常只返回空对象）';
+                })
+                .catch(function (zjq_err) {
+                    var zjq_cost = Math.round(performance.now() - zjq_start);
+                    zjq_setCode('请求失败', 'zjq_code-err', false);
+                    zjq_metaEl.textContent = zjq_method + ' ' + zjq_url + '　·　' + zjq_cost + ' ms 后中断';
+                    zjq_viewEl.classList.add('zjq_res-error');
+                    zjq_viewEl.textContent = '网络错误：' + zjq_err.message + '\n\n' +
+                        '常见原因：\n' +
+                        '1. 断网或接口服务器无响应\n' +
+                        '2. 接口地址拼写错误（协议、域名、路径）\n' +
+                        '3. 该接口不允许跨域访问（CORS 限制）';
+                })
+                .finally(function () {
+                    zjq_sendBtn.disabled = false;
+                });
+        }
+
+        zjq_sendBtn.addEventListener('click', zjq_send);
+        zjq_urlEl.addEventListener('keydown', function (zjq_event) {
+            if (zjq_event.key === 'Enter') { zjq_send(); }
+        });
+    </script>
+</body>
+</html>

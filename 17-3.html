@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<!-- 姓名：张钧乔，建立时间：2026-11-02 14:10:00，使用的大模型：GLM-5.3，功能名称：商品列表页——fetch获取DummyJSON商品数据并以卡片展示 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="通过 fetch 从 DummyJSON 获取 8 个商品数据，以卡片网格展示，点击进入商品详情页">
+    <title>商品列表 | 张钧乔</title>
+    <style>
+        :root {
+            --zjq-ink: #182230;
+            --zjq-muted: #667085;
+            --zjq-white: #ffffff;
+            --zjq-orange: #e9693f;
+            --zjq-orange-dark: #b8472d;
+            --zjq-teal: #277b78;
+            --zjq-line: #d9d5cb;
+            --zjq-shadow: 0 14px 36px rgba(31, 48, 36, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--zjq-ink);
+            background:
+                radial-gradient(circle at 88% 4%, rgba(233, 105, 63, 0.10), transparent 24rem),
+                linear-gradient(135deg, #f4f0e8 0%, #edf3ee 55%, #fffaf2 100%);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            line-height: 1.7;
+        }
+
+        code {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+        }
+
+        .zjq_shell {
+            width: min(1080px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 28px 0 44px;
+        }
+
+        .zjq_top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .zjq_back {
+            color: var(--zjq-muted);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .zjq_back:hover {
+            color: var(--zjq-orange);
+        }
+
+        .zjq_badge {
+            color: var(--zjq-orange);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .zjq_header {
+            padding: 34px 0 6px;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(30px, 4.5vw, 44px);
+        }
+
+        h1 span {
+            color: var(--zjq-teal);
+        }
+
+        .zjq_api {
+            margin: 8px 0 0;
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .zjq_card {
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid var(--zjq-line);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 8px 22px rgba(31, 48, 36, 0.08);
+            text-decoration: none;
+            color: inherit;
+            transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+            animation: zjq_fadein 420ms ease both;
+        }
+
+        .zjq_card:hover {
+            border-color: #9fd0cd;
+            box-shadow: var(--zjq-shadow);
+            transform: translateY(-4px);
+        }
+
+        @keyframes zjq_fadein {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .zjq_thumb {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #f3f1ea;
+        }
+
+        .zjq_thumb img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .zjq_discount {
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: var(--zjq-orange);
+            color: #fff;
+            font-size: 11.5px;
+            font-weight: 700;
+        }
+
+        .zjq_body {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            gap: 2px;
+            padding: 12px 14px 14px;
+        }
+
+        .zjq_cat {
+            color: var(--zjq-teal);
+            font-size: 11.5px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .zjq_title {
+            margin: 0;
+            font-size: 14px;
+            line-height: 1.45;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .zjq_meta {
+            margin-top: auto;
+            padding-top: 8px;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .zjq_price {
+            color: var(--zjq-orange-dark);
+            font-family: Consolas, Monaco, monospace;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .zjq_star {
+            color: #e0a52c;
+            font-size: 12.5px;
+            white-space: nowrap;
+        }
+
+        .zjq_skeleton {
+            aspect-ratio: 1 / 1.55;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #eeeae2 25%, #f6f3ec 50%, #eeeae2 75%);
+            background-size: 200% 100%;
+            animation: zjq_shimmer 1.2s infinite linear;
+        }
+
+        @keyframes zjq_shimmer {
+            from { background-position: 200% 0; }
+            to { background-position: -200% 0; }
+        }
+
+        .zjq_status {
+            margin-top: 20px;
+            padding: 12px 16px;
+            border: 1px dashed var(--zjq-line);
+            border-radius: 4px;
+            background: #faf8f3;
+            font-size: 13.5px;
+        }
+
+        .zjq_status.zjq_status-err {
+            border-color: var(--zjq-orange);
+            background: #fdf0eb;
+            color: var(--zjq-orange-dark);
+        }
+
+        .zjq_footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--zjq-line);
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_footer a {
+            color: var(--zjq-teal);
+            text-decoration: none;
+        }
+
+        .zjq_footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 960px) {
+            .zjq_grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 520px) {
+            .zjq_grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="zjq_shell">
+        <nav class="zjq_top">
+            <a class="zjq_back" href="index.html">← 返回作品集首页</a>
+            <span class="zjq_badge">17-3 / LIST</span>
+        </nav>
+
+        <header class="zjq_header">
+            <h1>商品<span>列表</span></h1>
+            <p class="zjq_api">数据来源：<code>https://dummyjson.com/products?limit=8</code>　·　点击卡片查看详情</p>
+        </header>
+
+        <div class="zjq_grid" id="zjq_grid"></div>
+        <div class="zjq_status" id="zjq_status" hidden></div>
+
+        <footer class="zjq_footer">
+            张钧乔 · 《高级网页设计》课堂实践 · <a href="index.html">返回首页</a>
+        </footer>
+    </div>
+
+    <script>
+        // 姓名：张钧乔 日期：2026-11-02 功能名称：商品列表页——fetch获取DummyJSON商品数据并以卡片展示
+        var zjq_api = 'https://dummyjson.com/products?limit=8';
+        var zjq_grid = document.getElementById('zjq_grid');
+        var zjq_status = document.getElementById('zjq_status');
+
+        function zjq_renderSkeleton() {
+            zjq_grid.innerHTML = '';
+            for (var zjq_i = 0; zjq_i < 8; zjq_i++) {
+                var zjq_skel = document.createElement('div');
+                zjq_skel.className = 'zjq_skeleton';
+                zjq_grid.appendChild(zjq_skel);
+            }
+        }
+
+        function zjq_renderList(zjq_products) {
+            zjq_grid.innerHTML = '';
+            for (var zjq_i = 0; zjq_i < zjq_products.length; zjq_i++) {
+                var zjq_p = zjq_products[zjq_i];
+
+                var zjq_card = document.createElement('a');
+                zjq_card.className = 'zjq_card';
+                zjq_card.href = '17-3-detail.html?id=' + zjq_p.id;
+                zjq_card.style.animationDelay = (zjq_i * 60) + 'ms';
+
+                var zjq_thumb = document.createElement('div');
+                zjq_thumb.className = 'zjq_thumb';
+                var zjq_img = document.createElement('img');
+                zjq_img.src = zjq_p.thumbnail;
+                zjq_img.alt = zjq_p.title;
+                zjq_img.loading = 'lazy';
+                zjq_thumb.appendChild(zjq_img);
+                var zjq_discount = document.createElement('span');
+                zjq_discount.className = 'zjq_discount';
+                zjq_discount.textContent = '-' + zjq_p.discountPercentage.toFixed(1) + '%';
+                zjq_thumb.appendChild(zjq_discount);
+
+                var zjq_body = document.createElement('div');
+                zjq_body.className = 'zjq_body';
+                var zjq_cat = document.createElement('span');
+                zjq_cat.className = 'zjq_cat';
+                zjq_cat.textContent = zjq_p.category;
+                var zjq_title = document.createElement('h3');
+                zjq_title.className = 'zjq_title';
+                zjq_title.textContent = zjq_p.title;
+                var zjq_meta = document.createElement('div');
+                zjq_meta.className = 'zjq_meta';
+                var zjq_price = document.createElement('span');
+                zjq_price.className = 'zjq_price';
+                zjq_price.textContent = '$' + zjq_p.price;
+                var zjq_star = document.createElement('span');
+                zjq_star.className = 'zjq_star';
+                zjq_star.textContent = '★ ' + zjq_p.rating;
+                zjq_meta.appendChild(zjq_price);
+                zjq_meta.appendChild(zjq_star);
+                zjq_body.appendChild(zjq_cat);
+                zjq_body.appendChild(zjq_title);
+                zjq_body.appendChild(zjq_meta);
+
+                zjq_card.appendChild(zjq_thumb);
+                zjq_card.appendChild(zjq_body);
+                zjq_grid.appendChild(zjq_card);
+            }
+        }
+
+        function zjq_showStatus(zjq_text, zjq_isError) {
+            zjq_status.hidden = false;
+            zjq_status.textContent = zjq_text;
+            zjq_status.classList.toggle('zjq_status-err', !!zjq_isError);
+        }
+
+        function zjq_load() {
+            zjq_status.hidden = true;
+            zjq_renderSkeleton();
+
+            fetch(zjq_api)
+                .then(function (zjq_res) {
+                    if (!zjq_res.ok) {
+                        throw new Error('HTTP ' + zjq_res.status);
+                    }
+                    return zjq_res.json();
+                })
+                .then(function (zjq_data) {
+                    if (!Array.isArray(zjq_data.products)) {
+                        throw new Error('接口返回数据异常');
+                    }
+                    zjq_renderList(zjq_data.products);
+                })
+                .catch(function (zjq_err) {
+                    zjq_grid.innerHTML = '';
+                    zjq_showStatus('加载失败：' + zjq_err.message + '，请检查网络后刷新重试。', true);
+                });
+        }
+
+        zjq_load();
+    </script>
+</body>
+</html>

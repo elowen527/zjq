@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<!-- 姓名：张钧乔，建立时间：2026-11-02 17:30:00，使用的大模型：GLM-5.3，功能名称：JavaScript定时器演示——setTimeout一次性定时器与setInterval重复定时器 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="JavaScript 两种定时器演示：setTimeout 一次性延时执行与 setInterval 周期性重复执行，配套 clearTimeout / clearInterval 取消操作">
+    <title>JavaScript 定时器 | 张钧乔</title>
+    <style>
+        :root {
+            --zjq-ink: #182230;
+            --zjq-muted: #667085;
+            --zjq-white: #ffffff;
+            --zjq-orange: #e9693f;
+            --zjq-orange-dark: #b8472d;
+            --zjq-teal: #277b78;
+            --zjq-line: #d9d5cb;
+            --zjq-shadow: 0 14px 36px rgba(31, 48, 36, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--zjq-ink);
+            background:
+                radial-gradient(circle at 88% 4%, rgba(233, 105, 63, 0.10), transparent 24rem),
+                linear-gradient(135deg, #f4f0e8 0%, #edf3ee 55%, #fffaf2 100%);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            line-height: 1.7;
+        }
+
+        code, pre {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+        }
+
+        .zjq_shell {
+            width: min(1080px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 28px 0 44px;
+        }
+
+        .zjq_top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .zjq_back {
+            color: var(--zjq-muted);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .zjq_back:hover {
+            color: var(--zjq-orange);
+        }
+
+        .zjq_badge {
+            color: var(--zjq-orange);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .zjq_header {
+            padding: 40px 0 8px;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(34px, 5vw, 54px);
+            line-height: 1.15;
+        }
+
+        h1 span {
+            color: var(--zjq-teal);
+        }
+
+        .zjq_intro {
+            max-width: 740px;
+            margin: 14px 0 0;
+            color: var(--zjq-muted);
+            font-size: 16px;
+        }
+
+        h2 {
+            margin: 44px 0 6px;
+            font-size: 24px;
+        }
+
+        .zjq_section-desc {
+            margin: 0 0 18px;
+            color: var(--zjq-muted);
+            font-size: 14px;
+        }
+
+        .zjq_panel {
+            padding: 20px 22px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid var(--zjq-line);
+            border-radius: 6px;
+            box-shadow: 0 8px 22px rgba(31, 48, 36, 0.06);
+        }
+
+        .zjq_panel h3 {
+            margin: 0 0 4px;
+            font-size: 17px;
+        }
+
+        .zjq_panel > p {
+            margin: 0 0 14px;
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .zjq_row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .zjq_btn {
+            padding: 9px 18px;
+            border: none;
+            border-radius: 4px;
+            background: var(--zjq-teal);
+            color: var(--zjq-white);
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .zjq_btn:hover {
+            background: #1d5f5c;
+        }
+
+        .zjq_btn.zjq_btn-orange {
+            background: var(--zjq-orange);
+        }
+
+        .zjq_btn.zjq_btn-orange:hover {
+            background: var(--zjq-orange-dark);
+        }
+
+        .zjq_btn:disabled {
+            background: #b8c2bd;
+            cursor: not-allowed;
+        }
+
+        .zjq_btn.zjq_btn-ghost {
+            background: var(--zjq-white);
+            border: 1px solid var(--zjq-line);
+            color: var(--zjq-ink);
+        }
+
+        .zjq_btn.zjq_btn-ghost:hover {
+            border-color: var(--zjq-teal);
+            color: var(--zjq-teal);
+        }
+
+        pre.zjq_code {
+            margin: 0 0 14px;
+            padding: 12px 14px;
+            border-radius: 4px;
+            background: var(--zjq-ink);
+            color: #d5e3df;
+            font-size: 12.5px;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre;
+        }
+
+        /* ===== 闹钟进度条 ===== */
+        .zjq_bar {
+            position: relative;
+            height: 26px;
+            border-radius: 999px;
+            background: #ece9e0;
+            overflow: hidden;
+        }
+
+        .zjq_bar-fill {
+            width: 0;
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #35a09b, var(--zjq-teal));
+            transition: width 100ms linear;
+        }
+
+        .zjq_bar-label {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-items: center;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--zjq-ink);
+        }
+
+        .zjq_bar.zjq_bar-done .zjq_bar-fill {
+            background: linear-gradient(90deg, #f28a63, var(--zjq-orange));
+        }
+
+        .zjq_log {
+            margin-top: 12px;
+            padding: 10px 14px;
+            min-height: 96px;
+            max-height: 160px;
+            overflow: auto;
+            border: 1px dashed var(--zjq-line);
+            border-radius: 4px;
+            background: #faf8f3;
+            font-size: 12.5px;
+            font-family: Consolas, Monaco, monospace;
+        }
+
+        .zjq_log p {
+            margin: 0 0 2px;
+        }
+
+        .zjq_log .zjq_hit {
+            color: var(--zjq-orange-dark);
+            font-weight: 700;
+        }
+
+        .zjq_log .zjq_cancel {
+            color: var(--zjq-muted);
+        }
+
+        /* ===== 数字时钟 ===== */
+        .zjq_clock {
+            display: inline-block;
+            padding: 14px 26px;
+            border-radius: 8px;
+            background: var(--zjq-ink);
+            color: #7fd8d3;
+            font-family: Consolas, Monaco, monospace;
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .zjq_clock.zjq_clock-off {
+            color: #5c6f6c;
+        }
+
+        /* ===== 秒表 ===== */
+        .zjq_watch {
+            font-family: Consolas, Monaco, monospace;
+            font-size: 38px;
+            font-weight: 700;
+            color: var(--zjq-ink);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .zjq_watch em {
+            font-style: normal;
+            color: var(--zjq-orange);
+        }
+
+        /* ===== 对比表 ===== */
+        .zjq_table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        .zjq_table th {
+            padding: 10px 14px;
+            background: #eef5f3;
+            border-bottom: 2px solid var(--zjq-teal);
+            color: var(--zjq-teal);
+            font-size: 13.5px;
+            text-align: left;
+        }
+
+        .zjq_table td {
+            padding: 9px 14px;
+            border-bottom: 1px solid #eee9df;
+            font-size: 13.5px;
+        }
+
+        .zjq_table td:first-child {
+            color: var(--zjq-teal);
+            font-weight: 700;
+            font-family: Consolas, Monaco, monospace;
+            white-space: nowrap;
+        }
+
+        .zjq_table tr:hover td {
+            background: #faf8f3;
+        }
+
+        .zjq_note {
+            margin-top: 14px;
+            padding: 10px 14px;
+            border: 1px dashed var(--zjq-line);
+            border-radius: 4px;
+            background: #faf8f3;
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_note strong {
+            color: var(--zjq-orange-dark);
+        }
+
+        .zjq_footer {
+            margin-top: 44px;
+            padding: 22px 0 4px;
+            border-top: 1px solid var(--zjq-line);
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_footer a {
+            color: var(--zjq-teal);
+            text-decoration: none;
+        }
+
+        .zjq_footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 860px) {
+            .zjq_grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="zjq_shell">
+        <nav class="zjq_top">
+            <a class="zjq_back" href="index.html">← 返回作品集首页</a>
+            <span class="zjq_badge">17-5 / TIMER</span>
+        </nav>
+
+        <header class="zjq_header">
+            <h1>JavaScript <span>两种定时器</span></h1>
+            <p class="zjq_intro">setTimeout 是"闹钟"——到点只响一次；setInterval 是"闹钟"——每隔一段固定时间反复响。它们都返回一个编号 ID，配对的 clearTimeout / clearInterval 用这个 ID 取消定时。本页用三组可交互演示展示它们的区别。</p>
+        </header>
+
+        <!-- setTimeout -->
+        <section aria-label="setTimeout">
+            <h2>一、setTimeout：只响一次的闹钟</h2>
+            <p class="zjq_section-desc">延迟指定毫秒后执行一次回调。在回调执行前，可以随时用 clearTimeout 取消——下面在进度条走完前点「取消」试试。</p>
+
+            <div class="zjq_panel">
+                <pre class="zjq_code">var zjq_timerId = setTimeout(function () {
+    console.log('时间到！');
+}, 5000);
+// clearTimeout(zjq_timerId) 可在执行前取消</pre>
+
+                <div class="zjq_bar" id="zjq_bar">
+                    <div class="zjq_bar-fill" id="zjq_bar_fill"></div>
+                    <div class="zjq_bar-label" id="zjq_bar_label">点击「开始计时」启动 5 秒定时器</div>
+                </div>
+
+                <div class="zjq_row" style="margin-top:14px">
+                    <button class="zjq_btn" id="zjq_timeout_start" type="button">开始计时</button>
+                    <button class="zjq_btn zjq_btn-orange" id="zjq_timeout_cancel" type="button" disabled>取消（clearTimeout）</button>
+                </div>
+
+                <div class="zjq_log" id="zjq_timeout_log"><p>执行日志会显示在这里。</p></div>
+            </div>
+        </section>
+
+        <!-- setInterval -->
+        <section aria-label="setInterval">
+            <h2>二、setInterval：反复响的闹钟</h2>
+            <p class="zjq_section-desc">每隔指定毫秒执行一次回调，直到 clearInterval 为止。数字时钟每秒刷新一次，秒表每 50 毫秒刷新一次。</p>
+
+            <div class="zjq_grid-2">
+                <div class="zjq_panel">
+                    <h3>数字时钟（每 1000ms 一次）</h3>
+                    <p>setInterval 每秒读取一次当前时间并更新显示。</p>
+                    <div><span class="zjq_clock zjq_clock-off" id="zjq_clock">--:--:--</span></div>
+                    <div class="zjq_row" style="margin-top:14px">
+                        <button class="zjq_btn" id="zjq_clock_start" type="button">启动时钟</button>
+                        <button class="zjq_btn zjq_btn-orange" id="zjq_clock_stop" type="button" disabled>停止（clearInterval）</button>
+                    </div>
+                </div>
+
+                <div class="zjq_panel">
+                    <h3>秒表（每 50ms 一次）</h3>
+                    <p>间隔越短刷新越频繁，但最细精度受浏览器限制（约 4ms 以上）。</p>
+                    <div><span class="zjq_watch" id="zjq_watch">00:00<em>.0</em></span></div>
+                    <div class="zjq_row" style="margin-top:14px">
+                        <button class="zjq_btn" id="zjq_watch_start" type="button">启动秒表</button>
+                        <button class="zjq_btn zjq_btn-orange" id="zjq_watch_stop" type="button" disabled>停止</button>
+                        <button class="zjq_btn zjq_btn-ghost" id="zjq_watch_reset" type="button">归零</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 对比 -->
+        <section aria-label="两种定时器对比">
+            <h2>三、两种定时器对比</h2>
+            <p class="zjq_section-desc">核心区别：执行次数。一个「到点只执行一次」，一个「按周期反复执行」。</p>
+
+            <div class="zjq_panel">
+                <table class="zjq_table">
+                    <thead>
+                        <tr><th>方法</th><th>执行方式</th><th>返回值</th><th>取消方法</th><th>典型用途</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>setTimeout(fn, ms)</td><td>延迟 ms 毫秒后执行 <strong>1 次</strong></td><td>定时器 ID（数字）</td><td>clearTimeout(id)</td><td>延迟提示、防抖、动画收尾</td></tr>
+                        <tr><td>setInterval(fn, ms)</td><td>每过 ms 毫秒执行 <strong>1 次，反复执行</strong></td><td>定时器 ID（数字）</td><td>clearInterval(id)</td><td>时钟、轮播、轮询刷新</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="zjq_note">
+                    <strong>两个注意点：</strong>① 回调由浏览器事件循环调度，实际延迟 ≥ 设定值（页面繁忙时更久）；② setInterval 若回调耗时超过间隔会造成堆积，可用「setTimeout 递归模拟」替代：每次回调结尾再安排下一个 setTimeout。
+                </div>
+            </div>
+        </section>
+
+        <footer class="zjq_footer">
+            张钧乔 · 《高级网页设计》课堂实践 · <a href="index.html">返回首页</a>
+        </footer>
+    </div>
+
+    <script>
+        // 姓名：张钧乔 日期：2026-11-02 功能名称：JavaScript定时器演示——setTimeout一次性定时器与setInterval重复定时器
+
+        /* ================= 一、setTimeout：5 秒闹钟 ================= */
+
+        var zjq_alarmId = null;
+        var zjq_alarmTickId = null;
+        var zjq_barEl = document.getElementById('zjq_bar');
+        var zjq_barFill = document.getElementById('zjq_bar_fill');
+        var zjq_barLabel = document.getElementById('zjq_bar_label');
+        var zjq_timeoutLog = document.getElementById('zjq_timeout_log');
+        var zjq_startBtn = document.getElementById('zjq_timeout_start');
+        var zjq_cancelBtn = document.getElementById('zjq_timeout_cancel');
+
+        function zjq_logLine(zjq_html, zjq_cls) {
+            var zjq_p = document.createElement('p');
+            if (zjq_cls) { zjq_p.className = zjq_cls; }
+            var zjq_t = new Date();
+            var zjq_ts = ('0' + zjq_t.getMinutes()).slice(-2) + ':' + ('0' + zjq_t.getSeconds()).slice(-2) + '.' +
+                ('00' + zjq_t.getMilliseconds()).slice(-3);
+            zjq_p.innerHTML = '[' + zjq_ts + '] ' + zjq_html;
+            zjq_timeoutLog.appendChild(zjq_p);
+            zjq_timeoutLog.scrollTop = zjq_timeoutLog.scrollHeight;
+        }
+
+        function zjq_resetBar() {
+            zjq_barFill.style.width = '0';
+            zjq_barEl.classList.remove('zjq_bar-done');
+            zjq_barLabel.textContent = '点击「开始计时」启动 5 秒定时器';
+        }
+
+        zjq_startBtn.addEventListener('click', function () {
+            if (zjq_alarmId !== null) { return; }
+
+            zjq_startBtn.disabled = true;
+            zjq_cancelBtn.disabled = false;
+            zjq_barEl.classList.remove('zjq_bar-done');
+            zjq_logLine('setTimeout 已启动，ID = ' + '（5 秒后触发）');
+
+            var zjq_start = performance.now();
+            // 每 100ms 更新一次进度条显示（仅用于可视化，不影响 setTimeout 本身）
+            zjq_alarmTickId = setInterval(function () {
+                var zjq_pct = Math.min(100, (performance.now() - zjq_start) / 50);
+                zjq_barFill.style.width = zjq_pct + '%';
+                zjq_barLabel.textContent = '剩余约 ' + Math.max(0, (5000 - (performance.now() - zjq_start)) / 1000).toFixed(1) + ' 秒';
+            }, 100);
+
+            zjq_alarmId = setTimeout(function () {
+                clearInterval(zjq_alarmTickId);
+                zjq_barFill.style.width = '100%';
+                zjq_barEl.classList.add('zjq_bar-done');
+                zjq_barLabel.textContent = '⏰ 时间到！回调函数已执行';
+                zjq_logLine("回调执行：console.log('时间到！') —— 距启动恰好 5 秒左右", 'zjq_hit');
+                zjq_alarmId = null;
+                zjq_startBtn.disabled = false;
+                zjq_cancelBtn.disabled = true;
+            }, 5000);
+        });
+
+        zjq_cancelBtn.addEventListener('click', function () {
+            if (zjq_alarmId === null) { return; }
+            clearTimeout(zjq_alarmId);
+            clearInterval(zjq_alarmTickId);
+            zjq_logLine('clearTimeout(' + ') 已取消，回调不会执行', 'zjq_cancel');
+            zjq_barLabel.textContent = '已取消，回调函数永远不会执行';
+            zjq_alarmId = null;
+            zjq_startBtn.disabled = false;
+            zjq_cancelBtn.disabled = true;
+            setTimeout(zjq_resetBar, 1200);
+        });
+
+        /* ================= 二、setInterval：数字时钟 ================= */
+
+        var zjq_clockId = null;
+        var zjq_clockEl = document.getElementById('zjq_clock');
+        var zjq_clockStart = document.getElementById('zjq_clock_start');
+        var zjq_clockStop = document.getElementById('zjq_clock_stop');
+
+        function zjq_nowText() {
+            var zjq_t = new Date();
+            return ('0' + zjq_t.getHours()).slice(-2) + ':' + ('0' + zjq_t.getMinutes()).slice(-2) + ':' + ('0' + zjq_t.getSeconds()).slice(-2);
+        }
+
+        zjq_clockStart.addEventListener('click', function () {
+            if (zjq_clockId !== null) { return; }
+            zjq_clockEl.classList.remove('zjq_clock-off');
+            zjq_clockEl.textContent = zjq_nowText();
+            zjq_clockId = setInterval(function () {
+                zjq_clockEl.textContent = zjq_nowText();
+            }, 1000);
+            zjq_clockStart.disabled = true;
+            zjq_clockStop.disabled = false;
+        });
+
+        zjq_clockStop.addEventListener('click', function () {
+            if (zjq_clockId === null) { return; }
+            clearInterval(zjq_clockId);
+            zjq_clockId = null;
+            zjq_clockEl.classList.add('zjq_clock-off');
+            zjq_clockStart.disabled = false;
+            zjq_clockStop.disabled = true;
+        });
+
+        /* ================= 三、setInterval：秒表 ================= */
+
+        var zjq_watchId = null;
+        var zjq_watchMs = 0;
+        var zjq_watchEl = document.getElementById('zjq_watch');
+        var zjq_watchStart = document.getElementById('zjq_watch_start');
+        var zjq_watchStop = document.getElementById('zjq_watch_stop');
+        var zjq_watchReset = document.getElementById('zjq_watch_reset');
+
+        function zjq_watchText() {
+            var zjq_s = Math.floor(zjq_watchMs / 1000);
+            var zjq_m = Math.floor(zjq_s / 60);
+            var zjq_tenth = Math.floor((zjq_watchMs % 1000) / 100);
+            var zjq_mm = ('0' + zjq_m).slice(-2);
+            var zjq_ss = ('0' + (zjq_s % 60)).slice(-2);
+            return zjq_mm + ':' + zjq_ss + '<em>.' + zjq_tenth + '</em>';
+        }
+
+        zjq_watchStart.addEventListener('click', function () {
+            if (zjq_watchId !== null) { return; }
+            var zjq_last = performance.now();
+            zjq_watchId = setInterval(function () {
+                var zjq_now = performance.now();
+                zjq_watchMs += zjq_now - zjq_last;
+                zjq_last = zjq_now;
+                zjq_watchEl.innerHTML = zjq_watchText();
+            }, 50);
+            zjq_watchStart.disabled = true;
+            zjq_watchStop.disabled = false;
+            zjq_watchReset.disabled = true;
+        });
+
+        zjq_watchStop.addEventListener('click', function () {
+            if (zjq_watchId === null) { return; }
+            clearInterval(zjq_watchId);
+            zjq_watchId = null;
+            zjq_watchStart.disabled = false;
+            zjq_watchStop.disabled = true;
+            zjq_watchReset.disabled = false;
+        });
+
+        zjq_watchReset.addEventListener('click', function () {
+            zjq_watchMs = 0;
+            zjq_watchEl.innerHTML = zjq_watchText();
+            zjq_watchReset.disabled = true;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<!-- 姓名：张钧乔，建立时间：2026-11-02 10:20:00，使用的大模型：GLM-5.3，功能名称：JSON数据格式交互演示——语法类型、序列化与格式化校验 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="JSON 数据格式演示：六种值类型可视化解剖、JSON.stringify 与 JSON.parse 互转、格式化校验器与用 JSON 数据渲染成绩单表格">
+    <title>JSON 数据格式 | 张钧乔</title>
+    <style>
+        :root {
+            --zjq-ink: #182230;
+            --zjq-muted: #667085;
+            --zjq-white: #ffffff;
+            --zjq-orange: #e9693f;
+            --zjq-orange-dark: #b8472d;
+            --zjq-teal: #277b78;
+            --zjq-line: #d9d5cb;
+            --zjq-shadow: 0 14px 36px rgba(31, 48, 36, 0.12);
+            --zjq-string: #2e7d32;
+            --zjq-number: #b8472d;
+            --zjq-bool: #6a4fb6;
+            --zjq-null: #9499a0;
+            --zjq-key: #277b78;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            color: var(--zjq-ink);
+            background:
+                radial-gradient(circle at 88% 4%, rgba(233, 105, 63, 0.10), transparent 24rem),
+                linear-gradient(135deg, #f4f0e8 0%, #edf3ee 55%, #fffaf2 100%);
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            line-height: 1.7;
+        }
+
+        code, pre {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+        }
+
+        .zjq_shell {
+            width: min(1080px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 28px 0 44px;
+        }
+
+        .zjq_top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .zjq_back {
+            color: var(--zjq-muted);
+            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .zjq_back:hover {
+            color: var(--zjq-orange);
+        }
+
+        .zjq_badge {
+            color: var(--zjq-orange);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .zjq_header {
+            padding: 40px 0 8px;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(34px, 5vw, 54px);
+            line-height: 1.15;
+        }
+
+        h1 span {
+            color: var(--zjq-teal);
+        }
+
+        .zjq_intro {
+            max-width: 740px;
+            margin: 14px 0 0;
+            color: var(--zjq-muted);
+            font-size: 16px;
+        }
+
+        h2 {
+            margin: 44px 0 6px;
+            font-size: 24px;
+        }
+
+        .zjq_section-desc {
+            margin: 0 0 18px;
+            color: var(--zjq-muted);
+            font-size: 14px;
+        }
+
+        .zjq_panel {
+            padding: 20px 22px;
+            background: rgba(255, 255, 255, 0.88);
+            border: 1px solid var(--zjq-line);
+            border-radius: 6px;
+            box-shadow: 0 8px 22px rgba(31, 48, 36, 0.06);
+        }
+
+        .zjq_panel h3 {
+            margin: 0 0 4px;
+            font-size: 17px;
+        }
+
+        .zjq_panel > p {
+            margin: 0 0 14px;
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .zjq_btn {
+            padding: 9px 18px;
+            border: none;
+            border-radius: 4px;
+            background: var(--zjq-teal);
+            color: var(--zjq-white);
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .zjq_btn:hover {
+            background: #1d5f5c;
+        }
+
+        .zjq_btn.zjq_btn-orange {
+            background: var(--zjq-orange);
+        }
+
+        .zjq_btn.zjq_btn-orange:hover {
+            background: var(--zjq-orange-dark);
+        }
+
+        .zjq_grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        /* ===== JSON 解剖图 ===== */
+        .zjq_anatomy {
+            padding: 16px 18px;
+            border-radius: 4px;
+            background: var(--zjq-ink);
+            color: #d5e3df;
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 14px;
+            line-height: 2;
+            white-space: pre-wrap;
+        }
+
+        .zjq_token {
+            padding: 2px 6px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 150ms ease, box-shadow 150ms ease;
+        }
+
+        .zjq_token:hover {
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4);
+        }
+
+        .zjq_token.zjq_tok-string { color: #8ee6a0; }
+        .zjq_token.zjq_tok-number { color: #ffb08f; }
+        .zjq_token.zjq_tok-bool   { color: #c3b2ff; }
+        .zjq_token.zjq_tok-null   { color: #9499a0; }
+        .zjq_token.zjq_tok-key    { color: #7fd8d3; }
+        .zjq_token.zjq_tok-brace  { color: #d5e3df; }
+
+        .zjq_token.zjq_tok-active {
+            background: var(--zjq-orange);
+            color: #fff;
+        }
+
+        .zjq_type-legend {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .zjq_type-card {
+            padding: 10px 12px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 5px;
+            background: #faf8f3;
+            font-size: 12.5px;
+            transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+        }
+
+        .zjq_type-card.zjq_type-hit {
+            border-color: var(--zjq-orange);
+            box-shadow: 0 6px 16px rgba(233, 105, 63, 0.22);
+            transform: translateY(-3px);
+        }
+
+        .zjq_type-name {
+            display: inline-block;
+            min-width: 64px;
+            font-family: Consolas, Monaco, monospace;
+            font-weight: 700;
+        }
+
+        .zjq_type-card.zjq_t-string .zjq_type-name { color: var(--zjq-string); }
+        .zjq_type-card.zjq_t-number .zjq_type-name { color: var(--zjq-number); }
+        .zjq_type-card.zjq_t-bool   .zjq_type-name { color: var(--zjq-bool); }
+        .zjq_type-card.zjq_t-null   .zjq_type-name { color: var(--zjq-null); }
+        .zjq_type-card.zjq_t-key    .zjq_type-name { color: var(--zjq-key); }
+        .zjq_type-card.zjq_t-brace  .zjq_type-name { color: var(--zjq-ink); }
+
+        .zjq_result {
+            margin-top: 12px;
+            padding: 10px 14px;
+            border: 1px dashed var(--zjq-line);
+            border-radius: 4px;
+            background: #faf8f3;
+            font-size: 13.5px;
+        }
+
+        .zjq_result strong {
+            color: var(--zjq-orange-dark);
+        }
+
+        /* ===== 互转演示 ===== */
+        .zjq_codebox {
+            min-height: 210px;
+            margin: 0;
+            padding: 14px 16px;
+            border-radius: 4px;
+            background: var(--zjq-ink);
+            color: #d5e3df;
+            font-size: 12.5px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .zjq_textarea {
+            width: 100%;
+            min-height: 210px;
+            padding: 14px 16px;
+            border: 1px solid var(--zjq-line);
+            border-radius: 4px;
+            background: #faf8f3;
+            color: var(--zjq-ink);
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            font-size: 12.5px;
+            line-height: 1.7;
+            resize: vertical;
+        }
+
+        .zjq_textarea:focus {
+            outline: none;
+            border-color: var(--zjq-teal);
+        }
+
+        .zjq_textarea.zjq_ta-error {
+            border-color: var(--zjq-orange);
+            background: #fdf0eb;
+            animation: zjq_shake 320ms ease;
+        }
+
+        @keyframes zjq_shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* ===== 成绩单表格 ===== */
+        .zjq_table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        .zjq_table th {
+            padding: 8px 12px;
+            background: #eef5f3;
+            border-bottom: 2px solid var(--zjq-teal);
+            font-size: 13px;
+            color: var(--zjq-teal);
+            text-align: left;
+        }
+
+        .zjq_table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #eee9df;
+            font-size: 13px;
+        }
+
+        .zjq_table tr:hover td {
+            background: #faf8f3;
+        }
+
+        .zjq_table .zjq_score-high {
+            color: var(--zjq-teal);
+            font-weight: 700;
+        }
+
+        .zjq_table .zjq_score-low {
+            color: var(--zjq-orange);
+            font-weight: 700;
+        }
+
+        .zjq_footer {
+            margin-top: 44px;
+            padding: 22px 0 4px;
+            border-top: 1px solid var(--zjq-line);
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_footer a {
+            color: var(--zjq-teal);
+            text-decoration: none;
+        }
+
+        .zjq_footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 860px) {
+            .zjq_grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .zjq_type-legend {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="zjq_shell">
+        <nav class="zjq_top">
+            <a class="zjq_back" href="index.html">← 返回作品集首页</a>
+            <span class="zjq_badge">17-1 / JSON</span>
+        </nav>
+
+        <header class="zjq_header">
+            <h1>JSON <span>数据格式</span></h1>
+            <p class="zjq_intro">JSON（JavaScript Object Notation）是轻量的数据交换格式：键必须用双引号，值只有六种类型。本页从语法解剖、对象与字符串互转、格式化校验到用 JSON 渲染表格，把 JSON 一次讲透。</p>
+        </header>
+
+        <!-- 语法解剖 -->
+        <section aria-label="JSON 语法解剖">
+            <h2>一、JSON 解剖图：点击看类型</h2>
+            <p class="zjq_section-desc">JSON 只有六种值类型。点击下面代码中任意一部分，右下角会高亮对应类型的说明。</p>
+
+            <div class="zjq_grid-2">
+                <div class="zjq_anatomy" id="zjq_anatomy"></div>
+                <div class="zjq_panel">
+                    <h3>六种类型对照</h3>
+                    <p>键（key）永远是字符串，且必须用双引号包裹。</p>
+                    <div class="zjq_type-legend" id="zjq_legend">
+                        <div class="zjq_type-card zjq_t-key" data-type="key"><span class="zjq_type-name">键 key</span><br>"name"、"age"</div>
+                        <div class="zjq_type-card zjq_t-string" data-type="string"><span class="zjq_type-name">字符串</span><br>"张钧乔"</div>
+                        <div class="zjq_type-card zjq_t-number" data-type="number"><span class="zjq_type-name">数字</span><br>21、95.5</div>
+                        <div class="zjq_type-card zjq_t-bool" data-type="bool"><span class="zjq_type-name">布尔</span><br>true / false</div>
+                        <div class="zjq_type-card zjq_t-null" data-type="null"><span class="zjq_type-name">空值</span><br>null</div>
+                        <div class="zjq_type-card zjq_t-brace" data-type="brace"><span class="zjq_type-name">结构</span><br>对象 {} 与数组 []</div>
+                    </div>
+                    <div class="zjq_result" id="zjq_anatomy_result">点击左侧代码中的任意部分开始探索。</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 互转演示 -->
+        <section aria-label="对象与JSON互转">
+            <h2>二、JSON.stringify 与 JSON.parse：对象 ⇄ 字符串</h2>
+            <p class="zjq_section-desc">stringify 把 JS 对象序列化成 JSON 字符串（常用于传输/存储），parse 把 JSON 字符串解析回 JS 对象（常用于接收数据）。</p>
+
+            <div class="zjq_grid-2">
+                <div class="zjq_panel">
+                    <h3>JS 对象（内存中）</h3>
+                    <p>可以直接访问属性，如 student.name。</p>
+                    <pre class="zjq_codebox" id="zjq_obj_view"></pre>
+                    <div class="zjq_row" style="margin-top:12px">
+                        <button class="zjq_btn" id="zjq_stringify_btn" type="button">JSON.stringify(student)</button>
+                        <button class="zjq_btn zjq_btn-ghost" id="zjq_access_btn" type="button" style="background:#fff;border:1px solid var(--zjq-line);color:var(--zjq-ink)">访问 student.hobby</button>
+                    </div>
+                </div>
+                <div class="zjq_panel">
+                    <h3>JSON 字符串（可传输）</h3>
+                    <p>本质是一段文本，用引号包裹才能在网络上传输。</p>
+                    <pre class="zjq_codebox" id="zjq_json_view">点击左侧「JSON.stringify」查看序列化结果。</pre>
+                    <div class="zjq_result" id="zjq_convert_result">观察对象变成字符串后，属性访问会发生什么变化。</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 格式化校验 -->
+        <section aria-label="JSON 格式化校验器">
+            <h2>三、迷你格式化校验器</h2>
+            <p class="zjq_section-desc">把 JSON 文本粘贴进输入框，点击「格式化」：合法则美化缩进，非法则用红框抖动提示错误原因。注意 JSON 不允许单引号、注释和末尾逗号。</p>
+
+            <div class="zjq_grid-2">
+                <div class="zjq_panel">
+                    <h3>输入 JSON 文本</h3>
+                    <textarea class="zjq_textarea" id="zjq_json_input" spellcheck="false">{"课程":"高级网页设计","周次":17,"已交作业":true,"练习":["16-1","16-5"],"备注":null}</textarea>
+                    <div class="zjq_row" style="margin-top:12px">
+                        <button class="zjq_btn" id="zjq_format_btn" type="button">格 式 化</button>
+                        <button class="zjq_btn zjq_btn-orange" id="zjq_bad_btn" type="button">填入一段非法 JSON</button>
+                    </div>
+                </div>
+                <div class="zjq_panel">
+                    <h3>格式化结果</h3>
+                    <pre class="zjq_codebox" id="zjq_format_out">等待输入……</pre>
+                    <div class="zjq_result" id="zjq_format_msg">点击「格式化」校验上面的文本。</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 实战渲染 -->
+        <section aria-label="用JSON渲染表格">
+            <h2>四、实战：用 JSON 数据渲染成绩单</h2>
+            <p class="zjq_section-desc">真实开发中最常见的流程：从服务器拿到 JSON 数组 → JSON.parse 解析 → 遍历渲染成表格。成绩 ≥90 绿色，&lt;60 橙色。</p>
+
+            <div class="zjq_panel">
+                <div class="zjq_row">
+                    <button class="zjq_btn" id="zjq_load_btn" type="button">模拟接收 JSON 并渲染</button>
+                    <span style="color:var(--zjq-muted);font-size:12.5px" id="zjq_raw_len"></span>
+                </div>
+                <table class="zjq_table" id="zjq_score_table"></table>
+            </div>
+        </section>
+
+        <footer class="zjq_footer">
+            张钧乔 · 《高级网页设计》课堂实践 · <a href="index.html">返回首页</a>
+        </footer>
+    </div>
+
+    <script>
+        // 姓名：张钧乔 日期：2026-11-02 功能名称：JSON数据格式交互演示——语法类型、序列化与格式化校验
+        function zjq_escapeHtml(zjq_text) {
+            return String(zjq_text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        /* ================= 一、JSON 解剖图 ================= */
+
+        // 用数组描述示例 JSON 的每个片段：文本 + 类型
+        var zjq_fragments = [
+            { text: '{\n', type: 'brace' },
+            { text: '  "name"', type: 'key' }, { text: ': ', type: 'brace' },
+            { text: '"张钧乔"', type: 'string' }, { text: ',\n', type: 'brace' },
+            { text: '  "age"', type: 'key' }, { text: ': ', type: 'brace' },
+            { text: '21', type: 'number' }, { text: ',\n', type: 'brace' },
+            { text: '  "isStudent"', type: 'key' }, { text: ': ', type: 'brace' },
+            { text: 'true', type: 'bool' }, { text: ',\n', type: 'brace' },
+            { text: '  "phone"', type: 'key' }, { text: ': ', type: 'brace' },
+            { text: 'null', type: 'null' }, { text: ',\n', type: 'brace' },
+            { text: '  "hobbies"', type: 'key' }, { text: ': [\n', type: 'brace' },
+            { text: '    "写网页"', type: 'string' }, { text: ',\n', type: 'brace' },
+            { text: '    "打球"', type: 'string' }, { text: '\n', type: 'brace' },
+            { text: '  ]', type: 'brace' }, { text: ',\n', type: 'brace' },
+            { text: '  "contact"', type: 'key' }, { text: ': {\n', type: 'brace' },
+            { text: '    "email"', type: 'key' }, { text: ': ', type: 'brace' },
+            { text: '"zjq@example.com"', type: 'string' }, { text: '\n', type: 'brace' },
+            { text: '  }\n', type: 'brace' },
+            { text: '}', type: 'brace' }
+        ];
+
+        var zjq_typeInfo = {
+            key:    '键永远是<strong>双引号字符串</strong>，JS 对象的键可以不加引号，但 JSON 必须加。',
+            string: '<strong>字符串</strong>必须用双引号，单引号在 JSON 中不合法。',
+            number: '<strong>数字</strong>不需要引号，支持整数和小数，但不支持 NaN / Infinity。',
+            bool:   '<strong>布尔值</strong>只有 true 和 false 两个，全部小写。',
+            null:   '<strong>null</strong> 表示空值，注意 JSON 里没有 undefined。',
+            brace:  '<strong>结构</strong>：{} 是对象（键值对集合），[] 是数组（有序列表），两者可任意嵌套。'
+        };
+
+        (function () {
+            var zjq_html = '';
+            for (var zjq_i = 0; zjq_i < zjq_fragments.length; zjq_i++) {
+                var zjq_f = zjq_fragments[zjq_i];
+                zjq_html += '<span class="zjq_token zjq_tok-' + zjq_f.type + '" data-type="' + zjq_f.type + '" data-idx="' + zjq_i + '">' +
+                    zjq_escapeHtml(zjq_f.text) + '</span>';
+            }
+            document.getElementById('zjq_anatomy').innerHTML = zjq_html;
+        })();
+
+        document.getElementById('zjq_anatomy').addEventListener('click', function (zjq_event) {
+            var zjq_tok = zjq_event.target.closest('.zjq_token');
+            if (!zjq_tok) { return; }
+
+            document.querySelectorAll('.zjq_token.zjq_tok-active').forEach(function (zjq_t) {
+                zjq_t.classList.remove('zjq_tok-active');
+            });
+            zjq_tok.classList.add('zjq_tok-active');
+
+            var zjq_type = zjq_tok.getAttribute('data-type');
+            document.querySelectorAll('.zjq_type-card').forEach(function (zjq_c) {
+                zjq_c.classList.toggle('zjq_type-hit', zjq_c.getAttribute('data-type') === zjq_type);
+            });
+
+            document.getElementById('zjq_anatomy_result').innerHTML =
+                '你点击的是 <code>' + zjq_escapeHtml(zjq_tok.textContent.trim()) + '</code><br>' + zjq_typeInfo[zjq_type];
+        });
+
+        /* ================= 二、stringify / parse 互转 ================= */
+
+        var zjq_student = {
+            name: '张钧乔',
+            age: 21,
+            isStudent: true,
+            hobby: '写网页'
+        };
+
+        document.getElementById('zjq_obj_view').textContent =
+            'var student = {\n  name: "张钧乔",\n  age: 21,\n  isStudent: true,\n  hobby: "写网页"\n};';
+
+        document.getElementById('zjq_stringify_btn').addEventListener('click', function () {
+            var zjq_json = JSON.stringify(zjq_student, null, 2);
+            document.getElementById('zjq_json_view').textContent = zjq_json;
+            document.getElementById('zjq_convert_result').innerHTML =
+                'stringify 后的类型是 <strong>' + typeof zjq_json + '</strong>（字符串），长度 ' + zjq_json.length +
+                ' 字符；缩进参数 2 表示美化输出。';
+        });
+
+        document.getElementById('zjq_access_btn').addEventListener('click', function () {
+            var zjq_json = document.getElementById('zjq_json_view').textContent;
+            var zjq_msg;
+            if (zjq_json.indexOf('{') !== 0) {
+                zjq_msg = '还没序列化：先点击「JSON.stringify(student)」。';
+            } else {
+                zjq_msg = 'student.hobby → <strong>"写网页"</strong>（对象可以直接访问）<br>' +
+                    'JSON 字符串(studentText).hobby → <strong>undefined</strong>（字符串没有属性！）<br>' +
+                    '必须先 JSON.parse：parse 后再访问 → <strong>"写网页"</strong>';
+            }
+            document.getElementById('zjq_convert_result').innerHTML = zjq_msg;
+        });
+
+        /* ================= 三、格式化校验器 ================= */
+
+        document.getElementById('zjq_format_btn').addEventListener('click', function () {
+            var zjq_input = document.getElementById('zjq_json_input');
+            var zjq_out = document.getElementById('zjq_format_out');
+            var zjq_msg = document.getElementById('zjq_format_msg');
+
+            try {
+                var zjq_data = JSON.parse(zjq_input.value);
+                zjq_input.classList.remove('zjq_ta-error');
+                zjq_out.textContent = JSON.stringify(zjq_data, null, 2);
+                zjq_msg.innerHTML = '✓ 校验通过！这是一个合法的 <strong>' +
+                    (Array.isArray(zjq_data) ? 'JSON 数组' : 'JSON 对象') + '</strong>，顶层共有 ' +
+                    Object.keys(zjq_data).length + ' 个键。';
+            } catch (zjq_err) {
+                zjq_input.classList.remove('zjq_ta-error');
+                void zjq_input.offsetWidth;
+                zjq_input.classList.add('zjq_ta-error');
+                zjq_out.textContent = '// 校验失败';
+                zjq_msg.innerHTML = '✗ 解析出错：<strong>' + zjq_escapeHtml(zjq_err.message) + '</strong><br>' +
+                    '常见原因：使用了单引号、键没加双引号、有注释或末尾多了逗号。';
+            }
+        });
+
+        document.getElementById('zjq_bad_btn').addEventListener('click', function () {
+            document.getElementById('zjq_json_input').value =
+                "{\n  // 这行注释不合法\n  'name': '张钧乔',\n  'age': 21,\n}";
+            document.getElementById('zjq_format_msg').innerHTML = '已填入一段典型非法 JSON，点击「格式化」看报错。';
+        });
+
+        /* ================= 四、JSON 渲染成绩单 ================= */
+
+        var zjq_studentsJson = '[{"name":"张钧乔","no":"20240101","course":"高级网页设计","score":95},{"name":"王小明","no":"20240102","course":"高级网页设计","score":88},{"name":"李小红","no":"20240103","course":"高级网页设计","score":59},{"name":"赵小刚","no":"20240104","course":"高级网页设计","score":76},{"name":"孙小丽","no":"20240105","course":"高级网页设计","score":92}]';
+
+        document.getElementById('zjq_load_btn').addEventListener('click', function () {
+            var zjq_arr = JSON.parse(zjq_studentsJson);
+            document.getElementById('zjq_raw_len').textContent =
+                '收到的原始文本长度：' + zjq_studentsJson.length + ' 字符，解析出 ' + zjq_arr.length + ' 条记录';
+
+            var zjq_html = '<thead><tr><th>姓名</th><th>学号</th><th>课程</th><th>成绩</th></tr></thead><tbody>';
+            for (var zjq_i = 0; zjq_i < zjq_arr.length; zjq_i++) {
+                var zjq_s = zjq_arr[zjq_i];
+                var zjq_cls = zjq_s.score >= 90 ? ' zjq_score-high' : (zjq_s.score < 60 ? ' zjq_score-low' : '');
+                zjq_html += '<tr><td>' + zjq_escapeHtml(zjq_s.name) + '</td><td>' + zjq_escapeHtml(zjq_s.no) +
+                    '</td><td>' + zjq_escapeHtml(zjq_s.course) + '</td><td><span class="' + zjq_cls.trim() + '">' +
+                    zjq_s.score + '</span></td></tr>';
+            }
+            zjq_html += '</tbody>';
+            document.getElementById('zjq_score_table').innerHTML = zjq_html;
+        });
+    </script>
+</body>
+</html>
