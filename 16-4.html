@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<!-- 姓名：张钧乔，建立时间：2026-10-29 14:25:55，使用的大模型：DeepSeek-V4.1-Flash，功能名称：仿 B 站首页布局——频道导航、双十一课程轮播与视频卡片网格 -->
+<!-- 姓名：张钧乔，建立时间：2026-11-03 11:20:00，使用的大模型：GLM-5.3，功能名称：仿大麦网首页——顶部搜索导航、演出轮播大图、分类图标栏与演出卡片网格 -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="仿 bilibili 首页布局练习：频道导航、双十一课程轮播图与视频推荐卡片网格，纯原生 HTML/CSS 实现">
-    <title>哔哩哔哩首页布局 | 张钧乔</title>
-    <link rel="stylesheet" href="font/zjq-icon.css">
+    <meta name="description" content="仿大麦网首页布局练习：演出轮播横幅、分类图标导航与演唱会/话剧歌剧演出卡片网格，纯原生 HTML/CSS 实现">
+    <title>大麦网首页 | 张钧乔</title>
+    <link rel="stylesheet" href="font/iconfont.css">
     <style>
         :root {
-            --zjq-ink: #18191c;
-            --zjq-sub: #61666d;
-            --zjq-muted: #9499a0;
-            --zjq-pill: #f6f7f8;
-            --zjq-pink: #fb7299;
-            --zjq-pink-deep: #e83c86;
-            --zjq-line: #e3e5e7;
+            --zjq-ink: #2b2b33;
+            --zjq-sub: #666a73;
+            --zjq-muted: #9b9fa8;
+            --zjq-pink: #ff2e6b;
+            --zjq-pink-deep: #f01d5e;
+            --zjq-yellow: #f5c518;
+            --zjq-line: #e8e8ee;
         }
 
         * {
@@ -24,7 +24,7 @@
 
         body {
             margin: 0;
-            background: #ffffff;
+            background: #f5f6f8;
             color: var(--zjq-ink);
             font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", sans-serif;
             font-size: 14px;
@@ -36,600 +36,770 @@
             text-decoration: none;
         }
 
-        .zjq_page {
-            width: min(1024px, 100%);
-            margin: 0 auto;
-            padding: 6px 24px 0;
+        button {
+            font-family: inherit;
         }
 
-        /* ===== 顶部频道导航 ===== */
+        .zjq_page {
+            width: min(1060px, 100%);
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ===== 顶部导航 ===== */
+        .zjq_header {
+            background: #fff;
+            border-bottom: 1px solid var(--zjq-line);
+        }
+
         .zjq_top {
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 20px;
-            padding: 8px 0 14px;
-        }
-
-        .zjq_channels {
-            display: flex;
-            align-items: flex-start;
-            gap: 20px;
-        }
-
-        .zjq_home-grid {
-            display: grid;
-            grid-template-columns: auto auto;
-            justify-items: center;
             align-items: center;
-            column-gap: 40px;
-            row-gap: 7px;
+            gap: 18px;
+            height: 62px;
         }
 
-        .zjq_avatar-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            overflow: hidden;
-            background: #eee;
-        }
-
-        .zjq_avatar-btn img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .zjq_flame-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ffffff;
-            font-size: 19px;
-            background: radial-gradient(circle at 35% 25%, #ff9f7d, #ff5c39 70%);
-            box-shadow: 0 3px 8px rgba(255, 92, 57, 0.35);
-        }
-
-        .zjq_mini-tab {
-            font-size: 12px;
-            color: var(--zjq-sub);
-            white-space: nowrap;
-        }
-
-        .zjq_mini-tab.zjq_mini-on {
-            color: var(--zjq-pink-deep);
-            font-weight: 700;
-        }
-
-        .zjq_channel-rows {
+        .zjq_logo {
             display: flex;
             flex-direction: column;
-            gap: 9px;
+            line-height: 1.1;
         }
 
-        .zjq_channel-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 9px;
+        .zjq_logo b {
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--zjq-pink);
+            font-family: "Microsoft YaHei", sans-serif;
+            letter-spacing: 2px;
         }
 
-        .zjq_channel {
+        .zjq_logo span {
+            font-size: 11px;
+            color: var(--zjq-pink);
+            opacity: .85;
+        }
+
+        .zjq_city {
             display: flex;
             align-items: center;
             gap: 3px;
-            padding: 6px 14px;
-            border-radius: 4px;
-            background: var(--zjq-pill);
-            color: var(--zjq-ink);
-            font-size: 12.5px;
-            white-space: nowrap;
-            transition: background 150ms ease, color 150ms ease;
-        }
-
-        .zjq_channel:hover {
-            background: #fdeef3;
-            color: var(--zjq-pink-deep);
-        }
-
-        .zjq_channel .zjq_i {
-            font-size: 11px;
-            color: var(--zjq-muted);
-        }
-
-        .zjq_quick {
-            display: grid;
-            grid-template-columns: repeat(3, auto);
-            gap: 9px 16px;
-            padding-top: 6px;
-            font-size: 12px;
             color: var(--zjq-sub);
-        }
-
-        .zjq_quick a {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            white-space: nowrap;
-        }
-
-        .zjq_quick a:hover {
-            color: var(--zjq-pink-deep);
-        }
-
-        .zjq_quick .zjq_i {
-            font-size: 12px;
-            color: var(--zjq-pink);
-        }
-
-        /* ===== 主体：轮播 + 卡片 ===== */
-        .zjq_main {
-            display: grid;
-            grid-template-columns: 537fr 425fr;
-            gap: 14px;
-            align-items: start;
-        }
-
-        .zjq_banner {
-            position: relative;
-            aspect-ratio: 537 / 290;
-            border-radius: 6px;
-            overflow: hidden;
-            background: #ff7ab5 url("img/16-4/banner.jpg") center / cover no-repeat;
+            font-size: 13.5px;
             cursor: pointer;
         }
 
-        .zjq_banner-veil {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(100deg,
-                rgba(255, 122, 170, 0.55) 0%,
-                rgba(255, 175, 205, 0.20) 48%,
-                rgba(255, 130, 175, 0.30) 100%);
+        .zjq_city .iconfont {
+            font-size: 12px;
         }
 
-        .zjq_banner-body {
-            position: absolute;
-            inset: 0;
+        .zjq_city:hover {
+            color: var(--zjq-pink);
+        }
+
+        .zjq_nav {
             display: flex;
-            flex-direction: column;
-            padding: 14px 20px 12px;
-            overflow: hidden;
+            gap: 18px;
+            font-size: 15px;
+            font-weight: 700;
         }
 
-        .zjq_brand {
+        .zjq_nav a.on,
+        .zjq_nav a:hover {
+            color: var(--zjq-pink);
+        }
+
+        .zjq_search {
+            flex: 1;
+            display: flex;
+            margin-left: 14px;
+            border: 2px solid var(--zjq-pink);
+            border-radius: 22px;
+            overflow: hidden;
+            height: 40px;
+            max-width: 430px;
+            background: #fff;
+        }
+
+        .zjq_search-btn-icon {
+            display: grid;
+            place-items: center;
+            width: 44px;
+            position: relative;
+        }
+
+        /* CSS 绘制放大镜（图标库中无搜索图标） */
+        .zjq_magnifier {
+            position: relative;
+            width: 15px;
+            height: 15px;
+            border: 2px solid #9b9fa8;
+            border-radius: 50%;
+        }
+
+        .zjq_magnifier::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            bottom: -5px;
+            width: 7px;
+            height: 2px;
+            background: #9b9fa8;
+            border-radius: 1px;
+            transform: rotate(45deg);
+        }
+
+        .zjq_search input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 13.5px;
+            color: var(--zjq-ink);
+        }
+
+        .zjq_search input::placeholder {
+            color: #b3b7bf;
+        }
+
+        .zjq_search button {
+            border: none;
+            background: var(--zjq-pink);
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            padding: 0 26px;
+            cursor: pointer;
+        }
+
+        .zjq_search button:hover {
+            background: var(--zjq-pink-deep);
+        }
+
+        .zjq_top-acts {
+            display: flex;
+            gap: 18px;
+            margin-left: auto;
+        }
+
+        .zjq_top-act {
             display: flex;
             align-items: center;
             gap: 5px;
-            font-size: 14px;
-            font-weight: 700;
-            color: #e2347c;
-            letter-spacing: 0.5px;
+            color: var(--zjq-sub);
+            font-size: 13.5px;
+            cursor: pointer;
         }
 
-        .zjq_brand-mark {
-            display: inline-grid;
-            place-items: center;
-            width: 20px;
-            height: 16px;
-            border-radius: 4px;
-            background: #ffffff;
-            color: #e2347c;
-            font-size: 10px;
-            font-weight: 900;
-            letter-spacing: -1px;
+        .zjq_top-act .iconfont {
+            font-size: 20px;
         }
 
-        .zjq_hero-title {
-            margin: 8px 0 0;
-            font-size: clamp(24px, 4.4vw, 44px);
-            line-height: 1.14;
-            font-weight: 900;
-            letter-spacing: 1px;
+        .zjq_top-act:hover {
+            color: var(--zjq-pink);
         }
 
-        .zjq_hero-title .zjq_t1 {
-            display: block;
-            color: #e63f88;
-            text-shadow: 2px 2px 0 #ffffff, 4px 4px 0 rgba(219, 37, 116, 0.22);
-        }
-
-        .zjq_hero-title .zjq_t2 {
-            display: block;
-            margin-left: 42px;
-            color: #ffe14d;
-            text-shadow: 2px 2px 0 #e63f88, 4px 5px 0 rgba(255, 255, 255, 0.55);
-        }
-
-        .zjq_hero-white {
-            align-self: flex-start;
+        /* ===== 轮播大图 ===== */
+        .zjq_banner {
+            position: relative;
             margin-top: 12px;
-            padding: 3px 14px;
-            border-radius: 4px;
-            background: linear-gradient(90deg, #f52b74, #ff5f9e);
-            color: #ffffff;
-            font-size: clamp(14px, 1.65vw, 17px);
+            border-radius: 6px;
+            overflow: hidden;
+            height: 268px;
+            background: #101018;
+        }
+
+        .zjq_slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 700ms ease;
+        }
+
+        .zjq_slide.on {
+            opacity: 1;
+        }
+
+        .zjq_slide::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(6, 8, 14, 0.86) 0%, rgba(6, 8, 14, 0.62) 42%, rgba(6, 8, 14, 0.05) 75%);
+        }
+
+        .zjq_slide-text {
+            position: absolute;
+            left: 44px;
+            top: 34px;
+            color: #fff;
+            max-width: 560px;
+        }
+
+        .zjq_slide-en {
+            font-family: Consolas, monospace;
+            font-size: 15px;
+            letter-spacing: 10px;
+            color: #cfd6e4;
+        }
+
+        .zjq_slide-title {
+            margin: 8px 0 4px;
+            font-size: 27px;
             font-weight: 800;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(219, 37, 116, 0.28);
+            color: var(--zjq-yellow);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, .55);
         }
 
-        .zjq_hero-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 7px;
-            margin-top: 9px;
-        }
-
-        .zjq_hero-tag {
-            padding: 2px 9px;
-            border-radius: 3px;
-            background: rgba(255, 255, 255, 0.82);
-            color: #d8357c;
-            font-size: 11.5px;
+        .zjq_slide-sub {
+            font-size: 14px;
+            letter-spacing: 5px;
+            color: #e8c96a;
             font-weight: 700;
         }
 
-        .zjq_hero-foot {
+        .zjq_slide-info {
             display: flex;
             align-items: flex-end;
-            justify-content: space-between;
-            gap: 12px;
-            margin-top: auto;
-            padding-top: 10px;
+            gap: 26px;
+            margin-top: 26px;
         }
 
-        .zjq_hero-caption {
-            color: #ffffff;
-            font-size: 13px;
-            text-shadow: 0 1px 4px rgba(199, 40, 106, 0.55);
+        .zjq_slide-date {
+            font-family: Consolas, monospace;
+            font-size: 40px;
+            font-weight: 700;
+            line-height: 1;
         }
+
+        .zjq_slide-where {
+            font-size: 13px;
+            line-height: 1.9;
+            color: #e7e9f0;
+        }
+
+        .zjq_slide-where b {
+            font-size: 15px;
+        }
+
+        .zjq_slide-price {
+            font-size: 12px;
+            color: #e7e9f0;
+            line-height: 1.9;
+        }
+
+        .zjq_slide-price b {
+            display: block;
+            font-family: Consolas, monospace;
+            font-size: 17px;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+
+        .zjq_arr {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 3;
+            width: 34px;
+            height: 60px;
+            border: none;
+            background: rgba(255, 255, 255, .14);
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .zjq_arr:hover {
+            background: rgba(255, 255, 255, .3);
+        }
+
+        .zjq_arr-prev { left: 0; border-radius: 0 6px 6px 0; }
+        .zjq_arr-next { right: 0; border-radius: 6px 0 0 6px; }
 
         .zjq_dots {
-            display: flex;
-            gap: 7px;
-            margin-top: 8px;
-        }
-
-        .zjq_dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.65);
-        }
-
-        .zjq_dot.zjq_dot-on {
-            background: #ffffff;
-            border-color: #ffffff;
-            transform: scale(1.1);
-        }
-
-        .zjq_hero-arrows {
+            position: absolute;
+            right: 18px;
+            bottom: 14px;
+            z-index: 3;
             display: flex;
             gap: 8px;
         }
 
-        .zjq_arrow {
-            display: grid;
-            place-items: center;
-            width: 26px;
-            height: 26px;
+        .zjq_dots i {
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.55);
-            color: #ffffff;
-            font-size: 15px;
-            line-height: 1;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
-            transition: background 150ms ease;
+            background: rgba(255, 255, 255, .45);
+            cursor: pointer;
         }
 
-        .zjq_arrow:hover {
-            background: #ffffff;
-            color: var(--zjq-pink-deep);
+        .zjq_dots i.on {
+            background: #fff;
         }
 
-        /* ===== 视频卡片 ===== */
-        .zjq_cards {
+        /* ===== 分类图标栏 ===== */
+        .zjq_cats {
+            display: flex;
+            background: #fff;
+            border-radius: 6px;
+            margin-top: 12px;
+            padding: 16px 10px 12px;
+        }
+
+        .zjq_cat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--zjq-ink);
+            font-size: 13.5px;
+            padding: 4px 0;
+            border-radius: 6px;
+            transition: color 150ms ease, transform 150ms ease;
+        }
+
+        .zjq_cat .iconfont {
+            font-size: 27px;
+            color: #33363e;
+            transition: color 150ms ease;
+        }
+
+        .zjq_cat:hover {
+            color: var(--zjq-pink);
+            transform: translateY(-2px);
+        }
+
+        .zjq_cat:hover .iconfont {
+            color: var(--zjq-pink);
+        }
+
+        /* ===== 演出板块 ===== */
+        .zjq_sec {
+            background: #fff;
+            border-radius: 6px;
+            margin-top: 14px;
+            padding: 20px 22px 22px;
+        }
+
+        .zjq_sec-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .zjq_sec-head h2 {
+            margin: 0;
+            font-size: 21px;
+        }
+
+        .zjq_sec-head a {
+            color: var(--zjq-muted);
+            font-size: 13px;
+        }
+
+        .zjq_sec-head a:hover {
+            color: var(--zjq-pink);
+        }
+
+        .zjq_sec-body {
+            display: flex;
+            gap: 18px;
+        }
+
+        /* 左侧大图卡片 */
+        .zjq_big {
+            width: 246px;
+            flex: none;
+        }
+
+        .zjq_big img {
+            display: block;
+            width: 100%;
+            height: 322px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .zjq_big h3 {
+            margin: 10px 0 4px;
+            font-size: 15.5px;
+            line-height: 1.4;
+        }
+
+        .zjq_big .zjq_price {
+            font-size: 18px;
+        }
+
+        .zjq_big .zjq_when {
+            font-size: 12px;
+        }
+
+        /* 右侧小卡片网格 */
+        .zjq_grid {
+            flex: 1;
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px 12px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px 18px;
         }
 
         .zjq_card {
-            display: block;
-        }
-
-        .zjq_thumb {
-            position: relative;
-            aspect-ratio: 209 / 145;
-            border-radius: 6px;
-            overflow: hidden;
-            background: #eceff1;
-        }
-
-        .zjq_thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: transform 300ms ease;
-        }
-
-        .zjq_card:hover .zjq_thumb img {
-            transform: scale(1.04);
-        }
-
-        .zjq_dur {
-            position: absolute;
-            right: 6px;
-            bottom: 6px;
-            padding: 1px 5px;
-            border-radius: 3px;
-            background: rgba(0, 0, 0, 0.6);
-            color: #ffffff;
-            font-size: 11px;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .zjq_stats {
-            position: absolute;
-            left: 8px;
-            bottom: 6px;
             display: flex;
-            align-items: center;
-            gap: 11px;
-            color: #ffffff;
-            font-size: 11.5px;
-            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+            gap: 10px;
         }
 
-        .zjq_stat {
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
+        .zjq_card img {
+            width: 92px;
+            height: 122px;
+            object-fit: cover;
+            border-radius: 5px;
+            flex: none;
         }
 
-        .zjq_stat .zjq_i {
-            font-size: 11px;
+        .zjq_card-info {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
         }
 
-        .zjq_cover-text {
-            position: absolute;
-            left: 9px;
-            top: 12px;
-            font-size: clamp(13px, 1.55vw, 17px);
-            font-weight: 900;
-            line-height: 1.25;
-            color: #ffffff;
-            letter-spacing: 1px;
-            text-shadow: 2px 2px 0 #e0568c, 0 0 10px rgba(255, 255, 255, 0.75);
-            transform: rotate(-2deg);
-            transform-origin: left top;
-        }
-
-        .zjq_cover-text small {
-            display: block;
-            font-size: 0.72em;
-            margin-top: 4px;
-        }
-
-        .zjq_card-title {
-            margin: 7px 2px 3px;
+        .zjq_card-info h4 {
+            margin: 0 0 6px;
             font-size: 13.5px;
-            font-weight: 600;
             line-height: 1.45;
-            color: var(--zjq-ink);
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
-        .zjq_card:hover .zjq_card-title {
-            color: var(--zjq-pink-deep);
+        .zjq_card:hover h4 {
+            color: var(--zjq-pink);
         }
 
-        .zjq_card-meta {
-            margin: 0 2px;
-            color: var(--zjq-muted);
+        .zjq_card-venue,
+        .zjq_card-date {
+            color: var(--zjq-sub);
             font-size: 12px;
+            line-height: 1.7;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        /* ===== 页脚 ===== */
-        .zjq_footer {
-            margin-top: 26px;
-            padding: 14px 0 18px;
-            border-top: 1px solid var(--zjq-line);
-            color: var(--zjq-muted);
+        .zjq_price {
+            margin-top: auto;
+            color: var(--zjq-pink);
+            font-weight: 800;
+            font-size: 15px;
+        }
+
+        .zjq_price small {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--zjq-pink);
+        }
+
+        .zjq_when {
+            color: var(--zjq-sub);
             font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* ===== 右侧悬浮栏 ===== */
+        .zjq_float {
+            position: fixed;
+            right: 14px;
+            top: 46%;
+            width: 62px;
+            background: #fff;
+            border: 1px solid var(--zjq-line);
+            border-radius: 8px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+            overflow: hidden;
+            z-index: 9;
+        }
+
+        .zjq_float-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 10px 0;
+            font-size: 12px;
+            color: var(--zjq-sub);
+            cursor: pointer;
+        }
+
+        .zjq_float-item b {
+            color: var(--zjq-pink);
+            font-size: 14px;
+        }
+
+        .zjq_float-item .iconfont {
+            font-size: 20px;
+        }
+
+        .zjq_float-item:hover {
+            color: var(--zjq-pink);
+        }
+
+        .zjq_float-div {
+            height: 1px;
+            background: var(--zjq-line);
+        }
+
+        #zjq_toTop {
+            display: none;
+        }
+
+        #zjq_toTop.show {
+            display: flex;
+        }
+
+        .zjq_footer {
+            text-align: center;
+            color: var(--zjq-muted);
+            font-size: 12.5px;
+            padding: 26px 0 30px;
         }
 
         .zjq_footer a {
-            color: var(--zjq-pink-deep);
+            color: var(--zjq-pink);
         }
 
         @media (max-width: 900px) {
-            .zjq_main {
-                grid-template-columns: 1fr;
-            }
-
-            .zjq_top {
+            .zjq_sec-body {
                 flex-direction: column;
-                gap: 12px;
             }
 
-            .zjq_quick {
-                padding-top: 0;
-            }
-        }
-
-        @media (max-width: 620px) {
-            .zjq_cards {
-                grid-template-columns: 1fr;
+            .zjq_grid {
+                grid-template-columns: repeat(2, 1fr);
             }
 
-            .zjq_home-grid {
-                column-gap: 24px;
+            .zjq_cats {
+                flex-wrap: wrap;
+            }
+
+            .zjq_cat {
+                width: 20%;
+                flex: none;
             }
         }
     </style>
 </head>
 <body>
-    <div class="zjq_page">
-        <!-- 顶部：头像、热门入口、频道导航、快捷入口 -->
-        <div class="zjq_top">
-            <div class="zjq_channels">
-                <div class="zjq_home-grid">
-                    <a class="zjq_avatar-btn" href="#zjq_works" aria-label="个人中心">
-                        <img src="img/16-4/avatar.jpg" alt="用户头像">
-                    </a>
-                    <a class="zjq_flame-btn" href="#zjq_works" aria-label="热门榜单">
-                        <span class="zjq_i zjq_i-flame"></span>
-                    </a>
-                    <a class="zjq_mini-tab" href="#zjq_works">动态</a>
-                    <a class="zjq_mini-tab zjq_mini-on" href="#zjq_works">热门</a>
-                </div>
-
-                <div class="zjq_channel-rows">
-                    <div class="zjq_channel-row">
-                        <a class="zjq_channel" href="#">番剧</a>
-                        <a class="zjq_channel" href="#">国创</a>
-                        <a class="zjq_channel" href="#">综艺</a>
-                        <a class="zjq_channel" href="#">动画</a>
-                        <a class="zjq_channel" href="#">鬼畜</a>
-                        <a class="zjq_channel" href="#">舞蹈</a>
-                        <a class="zjq_channel" href="#">娱乐</a>
-                        <a class="zjq_channel" href="#">科技数码</a>
-                        <a class="zjq_channel" href="#">美食</a>
-                    </div>
-                    <div class="zjq_channel-row">
-                        <a class="zjq_channel" href="#">电影</a>
-                        <a class="zjq_channel" href="#">电视剧</a>
-                        <a class="zjq_channel" href="#">纪录片</a>
-                        <a class="zjq_channel" href="#">游戏</a>
-                        <a class="zjq_channel" href="#">音乐</a>
-                        <a class="zjq_channel" href="#">影视</a>
-                        <a class="zjq_channel" href="#">知识</a>
-                        <a class="zjq_channel" href="#">资讯</a>
-                        <a class="zjq_channel" href="#">更多<span class="zjq_i zjq_i-chevron"></span></a>
-                    </div>
-                </div>
+    <!-- 顶部导航 -->
+    <header class="zjq_header">
+        <div class="zjq_page zjq_top">
+            <a class="zjq_logo" href="#"><b>大麦</b><span>买票上大麦</span></a>
+            <span class="zjq_city"><span class="iconfont icon-ic_home"></span>北京<span class="iconfont icon-xiangxia"></span></span>
+            <nav class="zjq_nav">
+                <a class="on" href="#">首页</a>
+                <a href="#">分类</a>
+            </nav>
+            <div class="zjq_search">
+                <span class="zjq_search-btn-icon"><i class="zjq_magnifier"></i></span>
+                <input type="text" placeholder="搜索明星、演出、体育赛事">
+                <button type="button">搜索</button>
             </div>
-
-            <div class="zjq_quick">
-                <a href="#"><span class="zjq_i zjq_i-column"></span>专栏</a>
-                <a href="#"><span class="zjq_i zjq_i-flag"></span>活动</a>
-                <a href="#"><span class="zjq_i zjq_i-community"></span>社区中心</a>
-                <a href="#"><span class="zjq_i zjq_i-live"></span>直播</a>
-                <a href="#"><span class="zjq_i zjq_i-course"></span>课堂</a>
-                <a href="#"><span class="zjq_i zjq_i-song"></span>新歌热榜</a>
+            <div class="zjq_top-acts">
+                <span class="zjq_top-act"><span class="iconfont icon-ic_up"></span>登录</span>
+                <span class="zjq_top-act"><span class="iconfont icon-ic_upload"></span>下载</span>
             </div>
         </div>
+    </header>
 
-        <!-- 主体：左轮播 + 右卡片 -->
-        <div class="zjq_main">
-            <a class="zjq_banner" href="#" aria-label="双十一 B 站来请课">
-                <span class="zjq_banner-veil"></span>
-                <div class="zjq_banner-body">
-                    <div class="zjq_brand"><span class="zjq_brand-mark">tv</span>bilibili 课堂</div>
-                    <h1 class="zjq_hero-title">
-                        <span class="zjq_t1">双十一B站来</span>
-                        <span class="zjq_t2">“请课”</span>
-                    </h1>
-                    <span class="zjq_hero-white">正版好课囤一波</span>
-                    <div class="zjq_hero-tags">
-                        <span class="zjq_hero-tag">11.11 学习节专场</span>
-                        <span class="zjq_hero-tag">好课限时特惠</span>
-                    </div>
-                    <div class="zjq_hero-foot">
-                        <div>
-                            <div class="zjq_hero-caption">双十一B站来“请课” 正版好课囤一波</div>
-                            <div class="zjq_dots">
-                                <span class="zjq_dot zjq_dot-on"></span>
-                                <span class="zjq_dot"></span>
-                                <span class="zjq_dot"></span>
-                                <span class="zjq_dot"></span>
-                                <span class="zjq_dot"></span>
-                                <span class="zjq_dot"></span>
-                            </div>
-                        </div>
-                        <div class="zjq_hero-arrows">
-                            <span class="zjq_arrow">‹</span>
-                            <span class="zjq_arrow">›</span>
-                        </div>
+    <main class="zjq_page">
+        <!-- 轮播大图 -->
+        <div class="zjq_banner" id="zjq_banner">
+            <div class="zjq_slide on" style="background-image:url('img/16-4/banner-scorpions.png')">
+                <div class="zjq_slide-text">
+                    <div class="zjq_slide-en">COMING HOME 2026</div>
+                    <h2 class="zjq_slide-title">蝎子乐队 60 周年世界巡回演唱会中国站</h2>
+                    <div class="zjq_slide-sub">OVER 60 YEARS OF SCORPIONS</div>
+                    <div class="zjq_slide-info">
+                        <div class="zjq_slide-date">11 / 21</div>
+                        <div class="zjq_slide-where"><b>&lt;六&gt; SAT 20:00</b><br>北京站 <span class="iconfont icon-ic_home" style="font-size:12px"></span> 国家速滑馆</div>
+                        <div class="zjq_slide-price">票价：TICKETS<b>380 / 680 / 980 / 1280 / 1580</b></div>
                     </div>
                 </div>
-            </a>
-
-            <div class="zjq_cards">
-                <a class="zjq_card" href="#">
-                    <div class="zjq_thumb">
-                        <img src="img/16-4/v1.jpg" alt="Desire4 四人围坐聊天">
-                        <div class="zjq_stats">
-                            <span class="zjq_stat"><span class="zjq_i zjq_i-play"></span>3346</span>
-                            <span class="zjq_stat"><span class="zjq_i zjq_i-comment"></span>4</span>
-                        </div>
-                        <span class="zjq_dur">32:42</span>
-                    </div>
-                    <div class="zjq_card-title">Desire4《D1课堂》今天是周六，周钟没有响！10.24日</div>
-                    <p class="zjq_card-meta">只分享快乐的财神爷 · 10月24日</p>
-                </a>
-
-                <a class="zjq_card" href="#">
-                    <div class="zjq_thumb">
-                        <img src="img/16-4/v2.jpg" alt="一家三口与熟睡的宝宝">
-                        <div class="zjq_stats">
-                            <span class="zjq_stat"><span class="zjq_i zjq_i-play"></span>2.1万</span>
-                            <span class="zjq_stat"><span class="zjq_i zjq_i-comment"></span>4</span>
-                        </div>
-                        <span class="zjq_dur">32:42</span>
-                    </div>
-                    <div class="zjq_card-title">「我们这一家」妈妈的警告书/妈妈不想让人看/妈妈在百货公司</div>
-                    <p class="zjq_card-meta">小野春菜 · 10月24日</p>
-                </a>
-
-                <a class="zjq_card" href="#">
-                    <div class="zjq_thumb">
-                        <img src="img/16-4/v3.jpg" alt="演唱会舞台上的歌手">
-                        <div class="zjq_stats">
-                            <span class="zjq_stat"><span class="zjq_i zjq_i-play"></span>6139</span>
-                            <span class="zjq_stat"><span class="zjq_i zjq_i-comment"></span>126</span>
-                        </div>
-                        <span class="zjq_dur">09:10</span>
-                    </div>
-                    <div class="zjq_card-title">【王源巡演】王源宇宙超级无敌大</div>
-                    <p class="zjq_card-meta">王源工作室 · 10月24日</p>
-                </a>
-
-                <a class="zjq_card" href="#">
-                    <div class="zjq_thumb">
-                        <img src="img/16-4/v4.jpg" alt="女生在书桌前使用笔记本电脑">
-                        <div class="zjq_cover-text">
-                            低精力女生能做的事
-                            <small>搞钱小众赛道</small>
-                        </div>
-                        <div class="zjq_stats">
-                            <span class="zjq_stat"><span class="zjq_i zjq_i-play"></span>38.38万</span>
-                            <span class="zjq_stat"><span class="zjq_i zjq_i-comment"></span>48</span>
-                        </div>
-                        <span class="zjq_dur">12:05</span>
-                    </div>
-                    <div class="zjq_card-title">我总出一套特适合大连大学生的邪</div>
-                    <p class="zjq_card-meta">小鹿的日常 · 10月24日</p>
-                </a>
             </div>
+            <div class="zjq_slide" style="background-image:url('img/16-4/p-shange.png')">
+                <div class="zjq_slide-text">
+                    <div class="zjq_slide-en">FOLK MUSIC TOUR 2026</div>
+                    <h2 class="zjq_slide-title">山歌万里音乐会巡演计划 · 北京站</h2>
+                    <div class="zjq_slide-sub">SING ACROSS THE MOUNTAINS</div>
+                    <div class="zjq_slide-info">
+                        <div class="zjq_slide-date">11 / 14</div>
+                        <div class="zjq_slide-where"><b>周四 19:00</b><br>北京 <span class="iconfont icon-ic_home" style="font-size:12px"></span> 华熙生物 · 洞百赢 ECM 中心</div>
+                        <div class="zjq_slide-price">票价：TICKETS<b>280 / 380 / 580</b></div>
+                    </div>
+                </div>
+            </div>
+            <button class="zjq_arr zjq_arr-prev" type="button" aria-label="上一张">&#10094;</button>
+            <button class="zjq_arr zjq_arr-next" type="button" aria-label="下一张">&#10095;</button>
+            <div class="zjq_dots" id="zjq_dots"></div>
         </div>
+
+        <!-- 分类图标栏 -->
+        <nav class="zjq_cats">
+            <a class="zjq_cat" href="#"><span class="iconfont icon-shouting"></span>演唱会</a>
+            <a class="zjq_cat" href="#"><span class="iconfont icon-ic_video"></span>话剧歌剧</a>
+            <a class="zjq_cat" href="#"><span class="iconfont icon-dianzan"></span>体育</a>
+            <a class="zjq_cat" href="#"><span class="iconfont icon-ic_interest"></span>儿童亲子</a>
+            <a class="zjq_cat" href="#"><span class="iconfont icon-huaban"></span>展览休闲</a>
+            <a class="zjq_cat" href="#"><span class="iconfont icon-ic_playlist"></span>音乐会</a>
+            <a class="zjq_cat" href="#"><span class="iconfont icon-pinglun"></span>曲艺杂坛</a>
+            <a class="zjq_cat" href="#"><span class="iconfont icon-ic_channel"></span>舞蹈芭蕾</a>
+            <a class="zjq_cat" href="#"><span class="iconfont icon-ic_class1"></span>二次元</a>
+            <a class="zjq_cat" href="#"><span class="iconfont icon-tianjia"></span>音乐节</a>
+        </nav>
+
+        <!-- 演唱会板块 -->
+        <section class="zjq_sec">
+            <div class="zjq_sec-head">
+                <h2>演唱会</h2>
+                <a href="#">查看全部</a>
+            </div>
+            <div class="zjq_sec-body">
+                <a class="zjq_big" href="#">
+                    <img src="img/16-4/p-shange.png" alt="山歌万里">
+                    <h3>山歌万里音乐会巡演计划-北京</h3>
+                    <p class="zjq_price">¥280<small> 起</small></p>
+                    <p class="zjq_when">2026.11.14 19:00 北京 · 华熙生物·洞百赢ECM中心</p>
+                </a>
+                <div class="zjq_grid" id="zjq_concert_grid"></div>
+            </div>
+        </section>
+
+        <!-- 话剧歌剧板块 -->
+        <section class="zjq_sec">
+            <div class="zjq_sec-head">
+                <h2>话剧歌剧</h2>
+                <a href="#">查看全部</a>
+            </div>
+            <div class="zjq_sec-body">
+                <a class="zjq_big" href="#">
+                    <img src="img/16-4/d-deling-big.png" alt="德龄与慈禧">
+                    <h3>话剧《德龄与慈禧》-北京站</h3>
+                    <p class="zjq_price">¥180<small> 起</small></p>
+                    <p class="zjq_when">2026.11.27-11.29 北京 · 保利剧院</p>
+                </a>
+                <div class="zjq_grid" id="zjq_drama_grid"></div>
+            </div>
+        </section>
 
         <footer class="zjq_footer">
-            张钧乔 · 《高级网页设计》课堂实践 · 仿 bilibili 首页布局练习 · <a href="index.html">返回作品集首页</a>
+            张钧乔 · 《高级网页设计》课堂实践 · <a href="index.html">返回作品集首页</a>
         </footer>
-    </div>
+    </main>
+
+    <!-- 右侧悬浮栏 -->
+    <aside class="zjq_float">
+        <div class="zjq_float-item"><b>大麦</b>APP下载</div>
+        <div class="zjq_float-div"></div>
+        <div class="zjq_float-item" id="zjq_toTop"><span class="iconfont icon-xiangshang"></span>回到顶部</div>
+    </aside>
+
+    <script>
+        // 姓名：张钧乔 日期：2026-11-03 功能名称：仿大麦网首页——轮播、演出卡片渲染与回到顶部
+        function zjq_escapeHtml(zjq_text) {
+            return String(zjq_text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        /* ================= 轮播 ================= */
+
+        var zjq_slides = document.querySelectorAll('.zjq_slide');
+        var zjq_dotsBox = document.getElementById('zjq_dots');
+        var zjq_cur = 0;
+        var zjq_timer = null;
+
+        for (var zjq_i = 0; zjq_i < zjq_slides.length; zjq_i++) {
+            var zjq_dot = document.createElement('i');
+            zjq_dot.setAttribute('data-idx', zjq_i);
+            if (zjq_i === 0) { zjq_dot.className = 'on'; }
+            zjq_dotsBox.appendChild(zjq_dot);
+        }
+
+        function zjq_go(zjq_idx) {
+            zjq_cur = (zjq_idx + zjq_slides.length) % zjq_slides.length;
+            for (var zjq_i = 0; zjq_i < zjq_slides.length; zjq_i++) {
+                zjq_slides[zjq_i].classList.toggle('on', zjq_i === zjq_cur);
+            }
+            document.querySelectorAll('.zjq_dots i').forEach(function (zjq_d, zjq_i) {
+                zjq_d.classList.toggle('on', zjq_i === zjq_cur);
+            });
+        }
+
+        function zjq_auto() {
+            clearInterval(zjq_timer);
+            zjq_timer = setInterval(function () { zjq_go(zjq_cur + 1); }, 5000);
+        }
+
+        document.querySelector('.zjq_arr-prev').addEventListener('click', function () { zjq_go(zjq_cur - 1); zjq_auto(); });
+        document.querySelector('.zjq_arr-next').addEventListener('click', function () { zjq_go(zjq_cur + 1); zjq_auto(); });
+        zjq_dotsBox.addEventListener('click', function (zjq_e) {
+            var zjq_t = zjq_e.target.closest('i');
+            if (zjq_t) { zjq_go(Number(zjq_t.getAttribute('data-idx'))); zjq_auto(); }
+        });
+        zjq_auto();
+
+        /* ================= 演出卡片渲染 ================= */
+
+        var zjq_concerts = [
+            { img: 'p-luhu.png', title: '2026陆虎「像你这样的朋友3.0」巡演-北京站', venue: '华熙生物·洞百赢ECM中心', date: '2026.11.21 周六 19:00', price: 399 },
+            { img: 'p-perigee.png', title: '斯斯与帆2026「近地点」演唱会北京站', venue: '东三LIVE游园', date: '2026.11.21 周六 19:30', price: 258 },
+            { img: 'p-fuhao.png', title: '付豪《当故事 到后来》巡回演唱会特别场', venue: '北京LIVERSE音宇艺术中心', date: '2026.11.14 周六 19:30', price: 388 },
+            { img: 'p-huazhou.png', title: '【惊喜加场】2026花粥「顺水推舟」巡回演唱会-北京站', venue: '东三LIVE游园', date: '2026.11.15 周日 18:30', price: 158 },
+            { img: 'p-ice.png', title: 'ICE杨长青2026“长青”Tour 北京站', venue: '柒号RMFE·北京798店', date: '2026.11.06 周五 20:00', price: 288 },
+            { img: 'p-xingguang.png', title: '星光柒集「巢Rap Fiesta」', venue: '星光2号馆', date: '2026.11.14 周六', price: 299 }
+        ];
+
+        var zjq_dramas = [
+            { img: 'd-kala.png', title: '话剧《卡拉马佐夫兄弟》（俄语演出，中文字幕）', venue: '首都剧场', date: '2026.11.12-11.15', price: 180 },
+            { img: 'd-xianzheng.png', title: '音乐剧《仙症》', venue: '二七剧场', date: '2026.11.27-11.29', price: 100 },
+            { img: 'd-gongdeng.png', title: '何赛平作品 话剧《德龄与慈禧》', venue: '（通州区）北京艺术中心·戏剧场', date: '2026.12.03-12.06', price: 280 },
+            { img: 'd-xilou.png', title: '老舍经典话剧《茶馆》纪念版', venue: '首都剧场', date: '2026.12.10-12.14', price: 120 },
+            { img: 'd-mubu.png', title: '开心麻花爆笑舞台剧《旋转卡门》', venue: '民族文化宫大剧院', date: '2026.11.20-11.22', price: 150 },
+            { img: 'd-juyuan.png', title: '中国国家话剧院经典话剧《四世同堂》', venue: '国家话剧院剧场', date: '2026.12.05-12.07', price: 200 }
+        ];
+
+        function zjq_cardHtml(zjq_item) {
+            return '<a class="zjq_card" href="#">' +
+                '<img src="img/16-4/' + zjq_item.img + '" alt="' + zjq_escapeHtml(zjq_item.title) + '">' +
+                '<div class="zjq_card-info">' +
+                '<h4>' + zjq_escapeHtml(zjq_item.title) + '</h4>' +
+                '<span class="zjq_card-venue">' + zjq_escapeHtml(zjq_item.venue) + '</span>' +
+                '<span class="zjq_card-date">' + zjq_escapeHtml(zjq_item.date) + '</span>' +
+                '<span class="zjq_price">¥' + zjq_item.price + '<small> 起</small></span>' +
+                '</div></a>';
+        }
+
+        function zjq_renderGrid(zjq_id, zjq_list) {
+            var zjq_html = '';
+            for (var zjq_i = 0; zjq_i < zjq_list.length; zjq_i++) {
+                zjq_html += zjq_cardHtml(zjq_list[zjq_i]);
+            }
+            document.getElementById(zjq_id).innerHTML = zjq_html;
+        }
+
+        zjq_renderGrid('zjq_concert_grid', zjq_concerts);
+        zjq_renderGrid('zjq_drama_grid', zjq_dramas);
+
+        /* ================= 回到顶部 ================= */
+
+        var zjq_toTop = document.getElementById('zjq_toTop');
+        window.addEventListener('scroll', function () {
+            zjq_toTop.classList.toggle('show', window.scrollY > 300);
+        });
+        zjq_toTop.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
 </body>
 </html>
