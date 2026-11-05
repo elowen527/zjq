@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<!-- 姓名：张钧乔，建立时间：2026-11-05 14:42:52，使用的大模型：GLM-5.3-Flash，功能名称：ECharts 数据可视化大屏（三列布局 · 中国地图销售监控） -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECharts 数据大屏 · 智慧电商运营监控</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            min-width: 960px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px 12px;
+            background:
+                radial-gradient(circle at 50% 0%, #12224d 0%, #0a1128 55%),
+                #0a1128;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            color: #cfe8ff;
+            overflow: hidden;
+        }
+
+        .zjq_header {
+            height: 52px;
+            flex: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 18px;
+            border: 1px solid #1f3b73;
+            border-radius: 10px;
+            background: linear-gradient(90deg, rgba(31, 111, 214, 0.25), rgba(10, 17, 40, 0.4));
+        }
+
+        .zjq_header h1 {
+            font-size: 20px;
+            letter-spacing: 4px;
+            background: linear-gradient(90deg, #7fd7ff, #ffffff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .zjq_clock {
+            font-size: 13px;
+            color: #6fb7e8;
+            letter-spacing: 1px;
+        }
+
+        .zjq_grid {
+            flex: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 1fr 1.55fr 1fr;
+            gap: 10px;
+        }
+
+        .zjq_col {
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .zjq_panel {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #1f3b73;
+            border-radius: 10px;
+            background: rgba(16, 30, 64, 0.55);
+            overflow: hidden;
+        }
+
+        .zjq_panel-title {
+            flex: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 12px 7px;
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: #9fd8ff;
+        }
+
+        .zjq_panel-title::before {
+            content: "";
+            width: 4px;
+            height: 14px;
+            border-radius: 2px;
+            background: linear-gradient(180deg, #00d4ff, #1f6fd6);
+        }
+
+        .zjq_chart {
+            flex: 1;
+            min-height: 0;
+        }
+
+        .zjq_map-panel {
+            flex: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <header class="zjq_header">
+        <h1>智慧电商运营监控大屏</h1>
+        <span class="zjq_clock" id="zjq_clock"></span>
+    </header>
+
+    <div class="zjq_grid">
+        <!-- 左列 -->
+        <div class="zjq_col">
+            <div class="zjq_panel">
+                <div class="zjq_panel-title">区域销售 TOP5</div>
+                <div id="zjq_region_chart" class="zjq_chart"></div>
+            </div>
+            <div class="zjq_panel">
+                <div class="zjq_panel-title">渠道能力雷达</div>
+                <div id="zjq_radar_chart" class="zjq_chart"></div>
+            </div>
+        </div>
+
+        <!-- 中列 -->
+        <div class="zjq_col">
+            <div class="zjq_panel zjq_map-panel">
+                <div class="zjq_panel-title">全国销售分布与物流流向</div>
+                <div id="zjq_map_chart" class="zjq_chart"></div>
+            </div>
+            <div class="zjq_panel">
+                <div class="zjq_panel-title">24 小时订单趋势</div>
+                <div id="zjq_trend_chart" class="zjq_chart"></div>
+            </div>
+        </div>
+
+        <!-- 右列 -->
+        <div class="zjq_col">
+            <div class="zjq_panel">
+                <div class="zjq_panel-title">品类销售占比</div>
+                <div id="zjq_pie_chart" class="zjq_chart"></div>
+            </div>
+            <div class="zjq_panel">
+                <div class="zjq_panel-title">月度目标完成率</div>
+                <div id="zjq_gauge_chart" class="zjq_chart"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="cdn/echarts.min.js"></script>
+    <script src="data/china.js"></script>
+    <script>
+        (function () {
+            /* 注册本地中国地图 GeoJSON */
+            echarts.registerMap('zjq_china', window.zjq_chinaGeo);
+
+            /* 统一深色配置 */
+            var zjq_axisStyle = {
+                axisLine: { lineStyle: { color: '#2a5ca8' } },
+                axisLabel: { color: '#8fb8e8', fontSize: 11 },
+                splitLine: { lineStyle: { color: 'rgba(42, 92, 168, 0.35)' } }
+            };
+
+            /* ---------- 左上：区域销售 TOP5（横向条形） ---------- */
+            var zjq_regionChart = echarts.init(document.getElementById('zjq_region_chart'));
+            zjq_regionChart.setOption({
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                grid: { left: 70, right: 40, top: 16, bottom: 24 },
+                xAxis: { type: 'value', splitLine: zjq_axisStyle.splitLine, axisLabel: zjq_axisStyle.axisLabel },
+                yAxis: {
+                    type: 'category',
+                    data: ['华中', '西南', '华北', '华南', '华东'],
+                    axisLine: zjq_axisStyle.axisLine,
+                    axisLabel: { color: '#cfe8ff', fontSize: 12 }
+                },
+                series: [{
+                    type: 'bar',
+                    barWidth: 14,
+                    data: [842, 1053, 1568, 2136, 2964],
+                    label: { show: true, position: 'right', color: '#7fd7ff', fontSize: 11 },
+                    itemStyle: {
+                        borderRadius: [0, 7, 7, 0],
+                        color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                            { offset: 0, color: '#1f6fd6' },
+                            { offset: 1, color: '#00e5ff' }
+                        ])
+                    }
+                }]
+            });
+
+            /* ---------- 左下：渠道能力雷达 ---------- */
+            var zjq_radarChart = echarts.init(document.getElementById('zjq_radar_chart'));
+            zjq_radarChart.setOption({
+                tooltip: {},
+                legend: {
+                    bottom: 6,
+                    textStyle: { color: '#8fb8e8', fontSize: 11 },
+                    itemWidth: 12, itemHeight: 8
+                },
+                radar: {
+                    radius: '58%',
+                    indicator: [
+                        { name: 'App', max: 100 },
+                        { name: '小程序', max: 100 },
+                        { name: 'PC 端', max: 100 },
+                        { name: '电话', max: 100 },
+                        { name: '门店', max: 100 }
+                    ],
+                    axisName: { color: '#cfe8ff', fontSize: 12 },
+                    splitLine: { lineStyle: { color: 'rgba(42, 92, 168, 0.5)' } },
+                    splitArea: { areaStyle: { color: ['rgba(31,111,214,0.05)', 'rgba(31,111,214,0.12)'] } },
+                    axisLine: { lineStyle: { color: 'rgba(42, 92, 168, 0.6)' } }
+                },
+                series: [{
+                    type: 'radar',
+                    data: [
+                        {
+                            name: '本月',
+                            value: [92, 88, 64, 45, 71],
+                            areaStyle: { color: 'rgba(0, 229, 255, 0.25)' },
+                            lineStyle: { color: '#00e5ff' },
+                            itemStyle: { color: '#00e5ff' }
+                        },
+                        {
+                            name: '上月',
+                            value: [84, 76, 69, 52, 66],
+                            areaStyle: { color: 'rgba(255, 126, 182, 0.18)' },
+                            lineStyle: { color: '#ff7eb6' },
+                            itemStyle: { color: '#ff7eb6' }
+                        }
+                    ]
+                }]
+            });
+
+            /* ---------- 中上：中国地图（销售分布 + 物流流向） ---------- */
+            var zjq_mapChart = echarts.init(document.getElementById('zjq_map_chart'));
+            var zjq_cities = [
+                { name: '北京', coord: [116.4, 39.9], value: 2860 },
+                { name: '上海', coord: [121.47, 31.23], value: 3320 },
+                { name: '广州', coord: [113.26, 23.13], value: 2450 },
+                { name: '深圳', coord: [114.06, 22.55], value: 2610 },
+                { name: '杭州', coord: [120.15, 30.28], value: 1980 },
+                { name: '成都', coord: [104.07, 30.57], value: 1760 },
+                { name: '武汉', coord: [114.3, 30.59], value: 1520 },
+                { name: '西安', coord: [108.94, 34.34], value: 1210 },
+                { name: '重庆', coord: [106.55, 29.56], value: 1390 },
+                { name: '沈阳', coord: [123.43, 41.8], value: 960 }
+            ];
+            var zjq_hub = zjq_cities[2]; /* 华南中心仓：广州 */
+            var zjq_lines = zjq_cities.slice(1).map(function (zjq_c) {
+                return { coords: [zjq_hub.coord, zjq_c.coord] };
+            });
+
+            zjq_mapChart.setOption({
+                tooltip: {
+                    trigger: 'item',
+                    backgroundColor: 'rgba(10, 20, 45, 0.9)',
+                    borderColor: '#1f6fd6',
+                    textStyle: { color: '#cfe8ff', fontSize: 12 },
+                    formatter: function (zjq_p) {
+                        if (zjq_p.seriesType === 'effectScatter') {
+                            return zjq_p.name + '：' + zjq_p.value[2] + ' 万元';
+                        }
+                        return zjq_p.name;
+                    }
+                },
+                geo: {
+                    map: 'zjq_china',
+                    roam: true,
+                    zoom: 1.15,
+                    top: 14,
+                    bottom: 10,
+                    itemStyle: {
+                        areaColor: '#12305e',
+                        borderColor: '#2a5ca8',
+                        borderWidth: 1
+                    },
+                    emphasis: {
+                        label: { show: true, color: '#ffffff', fontSize: 11 },
+                        itemStyle: { areaColor: '#1f6fd6' }
+                    }
+                },
+                series: [
+                    {
+                        name: '城市销售',
+                        type: 'effectScatter',
+                        coordinateSystem: 'geo',
+                        data: zjq_cities.map(function (zjq_c) {
+                            return { name: zjq_c.name, value: zjq_c.coord.concat(zjq_c.value) };
+                        }),
+                        symbolSize: function (zjq_val) { return 5 + zjq_val[2] / 300; },
+                        rippleEffect: { brushType: 'stroke', scale: 3.2 },
+                        label: {
+                            show: true,
+                            position: 'right',
+                            color: '#9fd8ff',
+                            fontSize: 10,
+                            formatter: '{b}'
+                        },
+                        itemStyle: { color: '#ffd166', shadowBlur: 8, shadowColor: '#ffd166' }
+                    },
+                    {
+                        name: '物流流向',
+                        type: 'lines',
+                        coordinateSystem: 'geo',
+                        zlevel: 2,
+                        effect: { show: true, period: 4.5, trailLength: 0.35, symbol: 'arrow', symbolSize: 5, color: '#7fd7ff' },
+                        lineStyle: { color: 'rgba(0, 229, 255, 0.35)', width: 1, curveness: 0.25 },
+                        data: zjq_lines
+                    }
+                ]
+            });
+
+            /* ---------- 中下：24 小时订单趋势 ---------- */
+            var zjq_trendChart = echarts.init(document.getElementById('zjq_trend_chart'));
+            var zjq_hours = [];
+            for (var zjq_h = 0; zjq_h < 24; zjq_h++) {
+                zjq_hours.push(zjq_h + '时');
+            }
+            zjq_trendChart.setOption({
+                tooltip: { trigger: 'axis' },
+                grid: { left: 44, right: 20, top: 24, bottom: 26 },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: zjq_hours,
+                    axisLine: zjq_axisStyle.axisLine,
+                    axisLabel: { color: '#8fb8e8', fontSize: 10, interval: 2 }
+                },
+                yAxis: { type: 'value', axisLabel: zjq_axisStyle.axisLabel, splitLine: zjq_axisStyle.splitLine },
+                series: [{
+                    name: '订单量',
+                    type: 'line',
+                    smooth: true,
+                    showSymbol: false,
+                    data: [320, 210, 150, 110, 90, 130, 340, 720, 980, 1120, 1240, 1310,
+                           1180, 1090, 1210, 1350, 1490, 1720, 2050, 2380, 2140, 1760, 1180, 640],
+                    lineStyle: { color: '#00e5ff', width: 2 },
+                    itemStyle: { color: '#00e5ff' },
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                            { offset: 0, color: 'rgba(0, 229, 255, 0.45)' },
+                            { offset: 1, color: 'rgba(0, 229, 255, 0.02)' }
+                        ])
+                    },
+                    markPoint: {
+                        data: [{ type: 'max', name: '峰值' }],
+                        itemStyle: { color: '#ffd166' },
+                        label: { color: '#0a1128', fontSize: 10 }
+                    }
+                }]
+            });
+
+            /* ---------- 右上：品类销售占比（环形图） ---------- */
+            var zjq_pieChart = echarts.init(document.getElementById('zjq_pie_chart'));
+            zjq_pieChart.setOption({
+                tooltip: { trigger: 'item', formatter: '{b}：{c} 万元（{d}%）' },
+                legend: {
+                    bottom: 8,
+                    textStyle: { color: '#8fb8e8', fontSize: 11 },
+                    itemWidth: 12, itemHeight: 8
+                },
+                series: [{
+                    type: 'pie',
+                    radius: ['42%', '68%'],
+                    center: ['50%', '44%'],
+                    avoidLabelOverlap: true,
+                    itemStyle: { borderColor: '#0a1128', borderWidth: 2 },
+                    label: { color: '#cfe8ff', fontSize: 11, formatter: '{b}\n{d}%' },
+                    labelLine: { lineStyle: { color: '#2a5ca8' } },
+                    data: [
+                        { name: '数码电器', value: 3260, itemStyle: { color: '#00e5ff' } },
+                        { name: '服饰鞋包', value: 2740, itemStyle: { color: '#7aa2ff' } },
+                        { name: '家居生活', value: 1890, itemStyle: { color: '#9d7aff' } },
+                        { name: '美妆个护', value: 1560, itemStyle: { color: '#ff7eb6' } },
+                        { name: '食品生鲜', value: 1180, itemStyle: { color: '#ffd166' } }
+                    ]
+                }]
+            });
+
+            /* ---------- 右下：月度目标完成率（仪表盘） ---------- */
+            var zjq_gaugeChart = echarts.init(document.getElementById('zjq_gauge_chart'));
+            zjq_gaugeChart.setOption({
+                series: [{
+                    type: 'gauge',
+                    radius: '82%',
+                    center: ['50%', '58%'],
+                    startAngle: 210,
+                    endAngle: -30,
+                    min: 0,
+                    max: 100,
+                    progress: {
+                        show: true,
+                        width: 14,
+                        itemStyle: {
+                            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                                { offset: 0, color: '#1f6fd6' },
+                                { offset: 1, color: '#00e5ff' }
+                            ])
+                        }
+                    },
+                    axisLine: { lineStyle: { width: 14, color: [[1, 'rgba(42, 92, 168, 0.35)']] } },
+                    axisTick: { show: false },
+                    splitLine: { length: 6, lineStyle: { color: '#2a5ca8' } },
+                    axisLabel: { color: '#8fb8e8', fontSize: 10, distance: 20 },
+                    pointer: { itemStyle: { color: '#ffd166' }, width: 4 },
+                    anchor: { show: true, size: 10, itemStyle: { color: '#ffd166' } },
+                    title: { color: '#8fb8e8', fontSize: 12, offsetCenter: [0, '42%'] },
+                    detail: {
+                        valueAnimation: true,
+                        fontSize: 30,
+                        fontWeight: 'bold',
+                        color: '#ffffff',
+                        offsetCenter: [0, '18%'],
+                        formatter: '{value}%'
+                    },
+                    data: [{ value: 87, name: '月度目标完成率' }]
+                }]
+            });
+
+            /* ---------- 顶栏时钟 ---------- */
+            var zjq_clockEl = document.getElementById('zjq_clock');
+            function zjq_tick() {
+                var zjq_now = new Date();
+                var zjq_pad = function (zjq_n) { return (zjq_n < 10 ? '0' : '') + zjq_n; };
+                zjq_clockEl.textContent =
+                    zjq_now.getFullYear() + '-' + zjq_pad(zjq_now.getMonth() + 1) + '-' + zjq_pad(zjq_now.getDate()) +
+                    '  ' + zjq_pad(zjq_now.getHours()) + ':' + zjq_pad(zjq_now.getMinutes()) + ':' + zjq_pad(zjq_now.getSeconds());
+            }
+            zjq_tick();
+            setInterval(zjq_tick, 1000);
+
+            /* ---------- 窗口缩放自适应 ---------- */
+            window.addEventListener('resize', function () {
+                zjq_regionChart.resize();
+                zjq_radarChart.resize();
+                zjq_mapChart.resize();
+                zjq_trendChart.resize();
+                zjq_pieChart.resize();
+                zjq_gaugeChart.resize();
+            });
+        })();
+    </script>
+</body>
+</html>

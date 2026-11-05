@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<!-- 姓名：张钧乔，建立时间：2026-11-05 14:35:54，使用的大模型：GLM-5.3-Flash，功能名称：Three.js 3D 图形演示（彩色旋转立方体 + 金属环面纽结） -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js 3D 图形演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 28px 16px;
+            background: #10141f;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .zjq_head {
+            text-align: center;
+        }
+
+        .zjq_head h1 {
+            font-size: 22px;
+            color: #e6edf3;
+            letter-spacing: 2px;
+        }
+
+        .zjq_head p {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #8b949e;
+            letter-spacing: 1px;
+        }
+
+        .zjq_stage-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
+            width: min(1020px, 96vw);
+        }
+
+        .zjq_scene-card {
+            flex: 1 1 440px;
+            max-width: 500px;
+            background: #161d2e;
+            border: 1px solid rgba(122, 162, 255, 0.25);
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+        }
+
+        .zjq_scene-tag {
+            display: inline-block;
+            padding: 3px 12px;
+            margin-bottom: 8px;
+            border-radius: 999px;
+            background: rgba(122, 162, 255, 0.12);
+            color: #a5c2ff;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .zjq_scene {
+            width: 100%;
+            height: 320px;
+            border-radius: 8px;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        .zjq_scene:active {
+            cursor: grabbing;
+        }
+
+        .zjq_scene-tip {
+            margin-top: 8px;
+            text-align: center;
+            font-size: 12px;
+            color: #7d8aa0;
+        }
+    </style>
+</head>
+<body>
+    <div class="zjq_head">
+        <h1>Three.js 3D 图形演示</h1>
+        <p>three.min.js 已本地化至 cdn 目录 · 拖拽旋转 · 滚轮缩放</p>
+    </div>
+
+    <div class="zjq_stage-row">
+        <div class="zjq_scene-card">
+            <span class="zjq_scene-tag">图一 · 彩色旋转立方体</span>
+            <div id="zjq_cube_scene" class="zjq_scene"></div>
+            <p class="zjq_scene-tip">六面独立配色 + 发光描边 · 拖拽旋转 / 滚轮缩放</p>
+        </div>
+        <div class="zjq_scene-card">
+            <span class="zjq_scene-tag">图二 · 金属环面纽结</span>
+            <div id="zjq_knot_scene" class="zjq_scene"></div>
+            <p class="zjq_scene-tip">高精度 TorusKnot + 三光源 · 拖拽旋转 / 滚轮缩放</p>
+        </div>
+    </div>
+
+    <script src="cdn/three.min.js"></script>
+    <script>
+        (function () {
+            /* 通用场景构建器：场景 / 相机 / 渲染器 / 灯光 / 交互 一套配齐 */
+            function zjq_buildScene(zjq_container, zjq_bg) {
+                var zjq_width = zjq_container.clientWidth;
+                var zjq_height = zjq_container.clientHeight;
+
+                var zjq_scene = new THREE.Scene();
+                zjq_scene.background = new THREE.Color(zjq_bg);
+
+                var zjq_camera = new THREE.PerspectiveCamera(45, zjq_width / zjq_height, 0.1, 100);
+                zjq_camera.position.set(0, 0, 6);
+
+                var zjq_renderer = new THREE.WebGLRenderer({ antialias: true });
+                zjq_renderer.setPixelRatio(window.devicePixelRatio || 1);
+                zjq_renderer.setSize(zjq_width, zjq_height);
+                zjq_container.appendChild(zjq_renderer.domElement);
+
+                return { scene: zjq_scene, camera: zjq_camera, renderer: zjq_renderer, container: zjq_container };
+            }
+
+            /* 自定义交互：拖拽旋转目标物体，滚轮缩放相机距离 */
+            function zjq_bindInteraction(zjq_view, zjq_target) {
+                var zjq_dragging = false;
+                var zjq_lastX = 0, zjq_lastY = 0;
+                var zjq_dist = 6;
+
+                var zjq_el = zjq_view.renderer.domElement;
+
+                zjq_el.addEventListener('pointerdown', function (zjq_e) {
+                    zjq_dragging = true;
+                    zjq_lastX = zjq_e.clientX;
+                    zjq_lastY = zjq_e.clientY;
+                });
+                window.addEventListener('pointerup', function () { zjq_dragging = false; });
+                window.addEventListener('pointermove', function (zjq_e) {
+                    if (!zjq_dragging) return;
+                    var zjq_dx = zjq_e.clientX - zjq_lastX;
+                    var zjq_dy = zjq_e.clientY - zjq_lastY;
+                    zjq_lastX = zjq_e.clientX;
+                    zjq_lastY = zjq_e.clientY;
+                    zjq_target.rotation.y += zjq_dx * 0.01;
+                    zjq_target.rotation.x += zjq_dy * 0.01;
+                });
+                zjq_el.addEventListener('wheel', function (zjq_e) {
+                    zjq_e.preventDefault();
+                    zjq_dist = Math.min(12, Math.max(3.5, zjq_dist + zjq_e.deltaY * 0.004));
+                    zjq_view.camera.position.setLength(zjq_dist);
+                }, { passive: false });
+            }
+
+            function zjq_fitResize(zjq_view) {
+                var zjq_w = zjq_view.container.clientWidth;
+                var zjq_h = zjq_view.container.clientHeight;
+                zjq_view.camera.aspect = zjq_w / zjq_h;
+                zjq_view.camera.updateProjectionMatrix();
+                zjq_view.renderer.setSize(zjq_w, zjq_h);
+            }
+
+            /* ---------- 图一：彩色旋转立方体 ---------- */
+            var zjq_cubeView = zjq_buildScene(document.getElementById('zjq_cube_scene'), 0x1a2440);
+            var zjq_faceColors = [0xe45858, 0x58b1e4, 0x7fd77f, 0xe4d158, 0xb07fe0, 0xe08a58];
+            var zjq_cubeMats = zjq_faceColors.map(function (zjq_c) {
+                return new THREE.MeshStandardMaterial({ color: zjq_c, roughness: 0.35, metalness: 0.15 });
+            });
+            var zjq_cube = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), zjq_cubeMats);
+            zjq_cubeView.scene.add(zjq_cube);
+
+            /* 发光描边 */
+            var zjq_edges = new THREE.LineSegments(
+                new THREE.EdgesGeometry(zjq_cube.geometry),
+                new THREE.LineBasicMaterial({ color: 0xffffff })
+            );
+            zjq_cube.add(zjq_edges);
+
+            zjq_cubeView.scene.add(new THREE.AmbientLight(0xffffff, 0.45));
+            var zjq_cubeLight = new THREE.DirectionalLight(0xffffff, 1.1);
+            zjq_cubeLight.position.set(3, 4, 5);
+            zjq_cubeView.scene.add(zjq_cubeLight);
+
+            zjq_bindInteraction(zjq_cubeView, zjq_cube);
+
+            /* ---------- 图二：金属环面纽结 ---------- */
+            var zjq_knotView = zjq_buildScene(document.getElementById('zjq_knot_scene'), 0x141a2a);
+            var zjq_knot = new THREE.Mesh(
+                new THREE.TorusKnotGeometry(1.15, 0.38, 220, 36),
+                new THREE.MeshStandardMaterial({
+                    color: 0x7aa2ff,
+                    metalness: 0.85,
+                    roughness: 0.18
+                })
+            );
+            zjq_knotView.scene.add(zjq_knot);
+
+            zjq_knotView.scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+            var zjq_knotLights = [
+                { c: 0xffffff, i: 1.2, p: [4, 4, 5] },
+                { c: 0xff7eb6, i: 0.8, p: [-5, -2, 3] },
+                { c: 0x5eead4, i: 0.7, p: [0, 5, -4] }
+            ];
+            zjq_knotLights.forEach(function (zjq_l) {
+                var zjq_light = new THREE.PointLight(zjq_l.c, zjq_l.i);
+                zjq_light.position.set(zjq_l.p[0], zjq_l.p[1], zjq_l.p[2]);
+                zjq_knotView.scene.add(zjq_light);
+            });
+
+            zjq_bindInteraction(zjq_knotView, zjq_knot);
+
+            /* ---------- 动画循环 ---------- */
+            (function zjq_animate() {
+                requestAnimationFrame(zjq_animate);
+
+                /* 持续自转，拖拽会在其基础上叠加旋转 */
+                zjq_cube.rotation.y += 0.008;
+                zjq_knot.rotation.y += 0.006;
+                zjq_knot.rotation.x += 0.003;
+
+                zjq_cubeView.renderer.render(zjq_cubeView.scene, zjq_cubeView.camera);
+                zjq_knotView.renderer.render(zjq_knotView.scene, zjq_knotView.camera);
+            })();
+
+            window.addEventListener('resize', function () {
+                zjq_fitResize(zjq_cubeView);
+                zjq_fitResize(zjq_knotView);
+            });
+        })();
+    </script>
+</body>
+</html>

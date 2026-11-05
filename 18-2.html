@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<!-- 姓名：张钧乔，建立时间：2026-11-05 13:40:16，使用的大模型：GLM-5.3-Flash，功能名称：Canvas 电商全站系统架构图 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas 电商系统架构图</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 24px 12px;
+            background: #0d1117;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .zjq_head {
+            color: #e6edf3;
+            text-align: center;
+        }
+
+        .zjq_head h1 {
+            font-size: 22px;
+            letter-spacing: 3px;
+        }
+
+        .zjq_head p {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #8b949e;
+            letter-spacing: 1px;
+        }
+
+        .zjq_stage {
+            position: relative;
+            width: min(1080px, 96vw);
+        }
+
+        .zjq_canvas {
+            display: block;
+            width: 100%;
+            border-radius: 14px;
+            background: linear-gradient(180deg, #101828 0%, #0d1526 100%);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .zjq_toolbar {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .zjq_btn {
+            padding: 8px 20px;
+            border: 1px solid rgba(88, 166, 255, 0.5);
+            border-radius: 999px;
+            background: rgba(88, 166, 255, 0.1);
+            color: #a5d6ff;
+            font-size: 13px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .zjq_btn:hover {
+            background: rgba(88, 166, 255, 0.25);
+        }
+
+        .zjq_legend {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #8b949e;
+        }
+
+        .zjq_legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .zjq_dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="zjq_head">
+        <h1>电商系统全站架构图</h1>
+        <p>Canvas 绘制 · 悬停节点查看说明 · 数据流实时流动</p>
+    </div>
+
+    <div class="zjq_stage">
+        <canvas id="zjq_canvas" class="zjq_canvas"></canvas>
+    </div>
+
+    <div class="zjq_toolbar">
+        <button class="zjq_btn" id="zjq_flow">暂停 / 播放数据流</button>
+        <div class="zjq_legend">
+            <span><i class="zjq_dot" style="background:#58a6ff"></i>请求流</span>
+            <span><i class="zjq_dot" style="background:#3fb950"></i>响应流</span>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var canvas = document.getElementById('zjq_canvas');
+            var ctx = canvas.getContext('2d');
+
+            var DESIGN_W = 1080;   /* 逻辑画布宽度，坐标系固定，缩放自适应 */
+            var DESIGN_H = 640;
+
+            /* ============ 架构节点定义（分层） ============ */
+            var LAYERS = [
+                {
+                    name: '用户层', color: '#8b949e', y: 30, h: 90,
+                    boxes: [
+                        { id: 'pc', text: 'PC 浏览器', desc: '桌面端商城' },
+                        { id: 'h5', text: '移动 H5', desc: '手机浏览器' },
+                        { id: 'app', text: '原生 App', desc: 'iOS / Android' },
+                        { id: 'mini', text: '小程序', desc: '微信 / 支付宝' }
+                    ]
+                },
+                {
+                    name: '接入层', color: '#d29922', y: 170, h: 90,
+                    boxes: [
+                        { id: 'cdn', text: 'CDN 加速', desc: '静态资源分发' },
+                        { id: 'gw', text: 'API 网关', desc: '鉴权 / 限流 / 路由' },
+                        { id: 'lb', text: '负载均衡', desc: 'Nginx 集群' }
+                    ]
+                },
+                {
+                    name: '业务服务层（微服务）', color: '#58a6ff', y: 310, h: 130,
+                    boxes: [
+                        { id: 'user', text: '用户服务', desc: '注册 / 登录 / 会员' },
+                        { id: 'goods', text: '商品服务', desc: '商品 / 分类 / 详情' },
+                        { id: 'order', text: '订单服务', desc: '下单 / 履约 / 售后' },
+                        { id: 'pay', text: '支付服务', desc: '收银台 / 对账' },
+                        { id: 'search', text: '搜索服务', desc: '关键词 / 推荐' },
+                        { id: 'mkt', text: '营销服务', desc: '优惠券 / 秒杀' }
+                    ]
+                },
+                {
+                    name: '中间件层', color: '#bc8cff', y: 490, h: 60,
+                    boxes: [
+                        { id: 'mq', text: '消息队列 RocketMQ', desc: '削峰 / 解耦' },
+                        { id: 'reg', text: '注册中心 Nacos', desc: '服务发现与配置' }
+                    ]
+                },
+                {
+                    name: '数据层', color: '#3fb950', y: 500, h: 0, /* 由下方自定义 */
+                    boxes: []
+                }
+            ];
+
+            /* 数据层单独定义：与中间件层并排展示 */
+            var DB_LAYER = {
+                name: '数据层', color: '#3fb950', x: 60, y: 500, w: 620, h: 110,
+                boxes: [
+                    { id: 'mysql', text: 'MySQL 主从', desc: '订单 / 商品数据' },
+                    { id: 'redis', text: 'Redis 缓存', desc: '热点 / 库存 / 会话' },
+                    { id: 'es', text: 'Elasticsearch', desc: '商品索引' },
+                    { id: 'oss', text: 'OSS 对象存储', desc: '图片 / 视频文件' }
+                ]
+            };
+
+            var MID_LAYER = {
+                name: '中间件层', color: '#bc8cff', x: 720, y: 500, w: 300, h: 110,
+                boxes: [
+                    { id: 'mq', text: '消息队列 RocketMQ', desc: '削峰填谷 / 异步解耦' },
+                    { id: 'reg', text: '注册中心 Nacos', desc: '服务发现与配置管理' }
+                ]
+            };
+
+            /* 用 LAYERS 前四层替换为含坐标信息的结构 */
+            LAYERS.length = 4;
+            LAYERS.push(DB_LAYER, MID_LAYER);
+
+            /* ============ 数据流路径（请求蓝 / 响应绿） ============ */
+            var FLOWS = [
+                { from: 'pc', to: 'lb', color: '#58a6ff' },
+                { from: 'app', to: 'gw', color: '#58a6ff' },
+                { from: 'h5', to: 'gw', color: '#58a6ff' },
+                { from: 'mini', to: 'lb', color: '#58a6ff' },
+                { from: 'gw', to: 'goods', color: '#58a6ff' },
+                { from: 'gw', to: 'order', color: '#58a6ff' },
+                { from: 'gw', to: 'search', color: '#58a6ff' },
+                { from: 'order', to: 'pay', color: '#58a6ff' },
+                { from: 'goods', to: 'redis', color: '#58a6ff' },
+                { from: 'order', to: 'mysql', color: '#58a6ff' },
+                { from: 'search', to: 'es', color: '#58a6ff' },
+                { from: 'pay', to: 'mysql', color: '#58a6ff' },
+                { from: 'lb', to: 'pc', color: '#3fb950' },
+                { from: 'gw', to: 'app', color: '#3fb950' },
+                { from: 'goods', to: 'gw', color: '#3fb950' },
+                { from: 'order', to: 'gw', color: '#3fb950' },
+                { from: 'redis', to: 'goods', color: '#3fb950' },
+                { from: 'mysql', to: 'order', color: '#3fb950' }
+            ];
+
+            var boxMap = {};       /* id -> {x,y,w,h,text,desc,layerColor} */
+            var dots = [];         /* 流动粒子 */
+            var flowOn = true;
+            var hoverBox = null;
+            var mouse = { x: -1, y: -1 };
+
+            function layout() {
+                boxMap = {};
+                for (var l = 0; l < LAYERS.length; l++) {
+                    var layer = LAYERS[l];
+                    var n = layer.boxes.length;
+                    var lx = layer.x || 60;
+                    var lw = layer.w || (DESIGN_W - 120);
+                    var cellW = lw / n;
+                    var boxH = layer.h || 60;
+                    var by = layer.y;
+                    for (var b = 0; b < n; b++) {
+                        var item = layer.boxes[b];
+                        var pad = 12;
+                        var box = {
+                            text: item.text,
+                            desc: item.desc,
+                            layerColor: layer.color,
+                            x: lx + b * cellW + pad,
+                            y: by,
+                            w: cellW - pad * 2,
+                            h: boxH
+                        };
+                        boxMap[item.id] = box;
+                    }
+                }
+            }
+
+            function initDots() {
+                dots = [];
+                for (var i = 0; i < FLOWS.length; i++) {
+                    var f = FLOWS[i];
+                    for (var k = 0; k < 2; k++) {
+                        dots.push({
+                            flow: f,
+                            t: Math.random(),      /* 在路径上的进度 0~1 */
+                            speed: 0.004 + Math.random() * 0.004,
+                            size: 2.4
+                        });
+                    }
+                }
+            }
+
+            function roundedRect(x, y, w, h, r) {
+                ctx.beginPath();
+                ctx.moveTo(x + r, y);
+                ctx.arcTo(x + w, y, x + w, y + h, r);
+                ctx.arcTo(x + w, y + h, x, y + h, r);
+                ctx.arcTo(x, y + h, x, y, r);
+                ctx.arcTo(x, y, x + w, y, r);
+                ctx.closePath();
+            }
+
+            function centerOf(id) {
+                var b = boxMap[id];
+                return { x: b.x + b.w / 2, y: b.y + b.h / 2 };
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, DESIGN_W, DESIGN_H);
+
+                /* 各层底板与标题 */
+                for (var l = 0; l < LAYERS.length; l++) {
+                    var layer = LAYERS[l];
+                    var lx = layer.x || 60;
+                    var lw = layer.w || (DESIGN_W - 120);
+                    var ly = layer.y;
+                    var lh = layer.h || 110;
+                    ctx.save();
+                    ctx.globalAlpha = 0.06;
+                    ctx.fillStyle = layer.color;
+                    roundedRect(lx - 14, ly - 10, lw + 28, lh + 20, 10);
+                    ctx.fill();
+                    ctx.restore();
+
+                    ctx.fillStyle = layer.color;
+                    ctx.font = 'bold 14px "Microsoft YaHei", sans-serif';
+                    ctx.textAlign = 'left';
+                    ctx.textBaseline = 'top';
+                    ctx.fillText(layer.name, lx - 8, ly - 26);
+                }
+
+                /* 连线 */
+                ctx.lineWidth = 1.2;
+                for (var i = 0; i < FLOWS.length; i++) {
+                    var f = FLOWS[i];
+                    var a = centerOf(f.from);
+                    var b2 = centerOf(f.to);
+                    ctx.strokeStyle = f.color;
+                    ctx.globalAlpha = 0.18;
+                    ctx.beginPath();
+                    ctx.moveTo(a.x, a.y);
+                    ctx.lineTo(b2.x, b2.y);
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+                }
+
+                /* 节点盒子 */
+                for (var id in boxMap) {
+                    var box = boxMap[id];
+                    var hovered = (hoverBox === id);
+                    ctx.save();
+                    ctx.shadowColor = hovered ? box.layerColor : 'rgba(0,0,0,0.4)';
+                    ctx.shadowBlur = hovered ? 18 : 8;
+                    ctx.fillStyle = hovered ? '#1c2740' : '#161f33';
+                    roundedRect(box.x, box.y, box.w, box.h, 8);
+                    ctx.fill();
+                    ctx.restore();
+
+                    ctx.strokeStyle = box.layerColor;
+                    ctx.globalAlpha = hovered ? 1 : 0.55;
+                    ctx.lineWidth = hovered ? 1.6 : 1;
+                    roundedRect(box.x, box.y, box.w, box.h, 8);
+                    ctx.stroke();
+                    ctx.globalAlpha = 1;
+
+                    ctx.fillStyle = '#e6edf3';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    var fs = box.w > 130 ? 15 : 13;
+                    ctx.font = 'bold ' + fs + 'px "Microsoft YaHei", sans-serif';
+                    ctx.fillText(box.text, box.x + box.w / 2, box.y + (hovered ? box.h / 2 - 12 : box.h / 2));
+
+                    if (hovered && box.desc) {
+                        ctx.fillStyle = box.layerColor;
+                        ctx.font = '11px "Microsoft YaHei", sans-serif';
+                        ctx.fillText(box.desc, box.x + box.w / 2, box.y + box.h / 2 + 12);
+                    }
+                }
+
+                /* 流动粒子 */
+                if (flowOn) {
+                    for (var d = 0; d < dots.length; d++) {
+                        var dot = dots[d];
+                        dot.t += dot.speed;
+                        if (dot.t > 1) dot.t = 0;
+                        var p0 = centerOf(dot.flow.from);
+                        var p1 = centerOf(dot.flow.to);
+                        var px = p0.x + (p1.x - p0.x) * dot.t;
+                        var py = p0.y + (p1.y - p0.y) * dot.t;
+                        var fade = Math.sin(dot.t * Math.PI);   /* 两端淡入淡出 */
+
+                        ctx.beginPath();
+                        ctx.arc(px, py, dot.size, 0, Math.PI * 2);
+                        ctx.fillStyle = dot.flow.color;
+                        ctx.globalAlpha = 0.25 + fade * 0.75;
+                        ctx.shadowColor = dot.flow.color;
+                        ctx.shadowBlur = 8;
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                        ctx.globalAlpha = 1;
+                    }
+                }
+
+                /* 悬停提示框 */
+                if (hoverBox && boxMap[hoverBox]) {
+                    var hb = boxMap[hoverBox];
+                    ctx.fillStyle = 'rgba(230,237,243,0.95)';
+                    ctx.font = '12px "Microsoft YaHei", sans-serif';
+                    var label = hb.text + '：' + hb.desc;
+                    var tw = ctx.measureText(label).width + 20;
+                    var tx = Math.min(Math.max(hb.x + hb.w / 2 - tw / 2, 8), DESIGN_W - tw - 8);
+                    var ty = hb.y - 34 > 8 ? hb.y - 34 : hb.y + hb.h + 8;
+                    roundedRect(tx, ty, tw, 24, 6);
+                    ctx.fill();
+                    ctx.fillStyle = '#0d1117';
+                    ctx.textAlign = 'left';
+                    ctx.fillText(label, tx + 10, ty + 12);
+                }
+            }
+
+            function resize() {
+                var dpr = window.devicePixelRatio || 1;
+                var cssW = canvas.clientWidth || DESIGN_W;
+                var scale = cssW / DESIGN_W;
+                var cssH = DESIGN_H * scale;
+                canvas.style.height = cssH + 'px';
+                canvas.width = cssW * dpr;
+                canvas.height = cssH * dpr;
+                ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
+            }
+
+            canvas.addEventListener('mousemove', function (e) {
+                var rect = canvas.getBoundingClientRect();
+                var scale = rect.width / DESIGN_W;
+                mouse.x = (e.clientX - rect.left) / scale;
+                mouse.y = (e.clientY - rect.top) / scale;
+                hoverBox = null;
+                for (var id in boxMap) {
+                    var b = boxMap[id];
+                    if (mouse.x >= b.x && mouse.x <= b.x + b.w &&
+                        mouse.y >= b.y && mouse.y <= b.y + b.h) {
+                        hoverBox = id;
+                        break;
+                    }
+                }
+                canvas.style.cursor = hoverBox ? 'pointer' : 'default';
+            });
+
+            canvas.addEventListener('mouseleave', function () {
+                hoverBox = null;
+            });
+
+            document.getElementById('zjq_flow').addEventListener('click', function () {
+                flowOn = !flowOn;
+            });
+
+            window.addEventListener('resize', resize);
+
+            layout();
+            initDots();
+            resize();
+            (function loop() {
+                draw();
+                requestAnimationFrame(loop);
+            })();
+        })();
+    </script>
+</body>
+</html>

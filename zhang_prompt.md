@@ -116,3 +116,66 @@
 
 **Prompt:**
 完成16-4.html，使用的图标在font目录里选，图片使用AI生成，完成的网页尽可能的和给定的图片相似
+
+---
+
+## 2026-11-03 19:53:18
+
+**Model:** DeepSeek-V4.1-Flash
+
+**Prompt:**
+帮我根据文档生成项目总结，同时减低AI率，并将总结写进报告里
+
+---
+
+## 2026-11-05 13:40:16
+
+**Model:** GLM-5.3-Flash
+
+**Prompt:**
+完成18-1.html和18-2.html，第一个显示canvas动画，包括文字张钧乔，第二个显示基于canvas的全站系统构架图（电商系统）
+
+---
+
+## 2026-11-05 13:56:45
+
+**Model:** GLM-5.3-Flash
+
+**Prompt:**
+完成18-3.html，其中包括基于知识库智能客服的系统的系统架构图，图的格式为svg，科研方向。
+
+---
+
+## 2026-11-05 14:07:20
+
+**Model:** GLM-5.3-Flash
+
+**Prompt:**
+实现18-4.html，其中包括echarts的两个图：Gradient Stacked Area Chart（渐变堆叠面积图）和 Beijing AQI（北京空气质量指数图），cdn文件下载到cdn目录下。
+
+---
+
+## 2026-11-05 14:24:00
+
+**Model:** GLM-5.3-Flash
+
+**Prompt:**
+实现18-6.html，实现基于mermaid的智能客服系统的流程图和er图，cdn文件下载到cdn目录下
+
+---
+
+## 2026-11-05 14:35:54
+
+**Model:** GLM-5.3-Flash
+
+**Prompt:**
+实现18-7.html，实现基于three.js的两个图标，cdn文件下载到cdn目录下
+
+---
+
+## 2026-11-05 14:42:52
+
+**Model:** GLM-5.3-Flash
+
+**Prompt:**
+实现18-8.html，实现基于three.js或echarts的数据大屏。大屏要求：三列，中间上面是某种地理信息的图。cdn文件下载到cdn目录下

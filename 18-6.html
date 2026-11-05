@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<!-- 姓名：张钧乔，建立时间：2026-11-05 14:24:00，使用的大模型：GLM-5.3-Flash，功能名称：基于 Mermaid 的智能客服系统流程图与 ER 图 -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mermaid 智能客服流程图与 ER 图</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 28px 16px;
+            background: #f2f4f8;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+
+        .zjq_head {
+            text-align: center;
+        }
+
+        .zjq_head h1 {
+            font-size: 22px;
+            color: #1f2d3d;
+            letter-spacing: 2px;
+        }
+
+        .zjq_head p {
+            margin-top: 6px;
+            font-size: 12px;
+            color: #7a8699;
+            letter-spacing: 1px;
+        }
+
+        .zjq_diagram-card {
+            width: min(1020px, 96vw);
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px 18px;
+            box-shadow: 0 8px 24px rgba(31, 45, 61, 0.08);
+            overflow-x: auto;
+        }
+
+        .zjq_diagram-tag {
+            display: inline-block;
+            padding: 3px 12px;
+            margin-bottom: 8px;
+            border-radius: 999px;
+            background: #eef7ff;
+            color: #1f6fb2;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .zjq_mermaid-box {
+            display: flex;
+            justify-content: center;
+        }
+
+        .zjq_mermaid-box svg {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="zjq_head">
+        <h1>基于 Mermaid 的智能客服系统建模</h1>
+        <p>mermaid.min.js 已本地化至 cdn 目录 · 流程图 + ER 图 · 双击本地打开即可渲染</p>
+    </div>
+
+    <div class="zjq_diagram-card">
+        <span class="zjq_diagram-tag">图一 · 智能客服问答处理流程图（Flowchart）</span>
+        <div class="zjq_mermaid-box">
+            <pre class="mermaid">
+flowchart TD
+    A([用户提交问题]) --> B[会话管理<br/>拼接上下文]
+    B --> C[文本预处理<br/>清洗 / 分词 / 归一化]
+    C --> D{意图识别<br/>置信度是否达标?}
+    D -- 高置信 --> E[多路知识检索<br/>向量召回 + FAQ 匹配 + 图谱补全]
+    D -- 低置信 --> M[转人工坐席]
+    E --> F[Prompt 构建<br/>知识片段注入模板]
+    F --> G[大语言模型生成答案]
+    G --> H{答案审核<br/>合规且可信?}
+    H -- 通过 --> I[返回答案给用户]
+    H -- 不通过 --> M
+    I --> J([记录对话日志])
+    M --> K[坐席解答并标注]
+    K --> L[(知识库沉淀<br/>FAQ / 语料更新)]
+    L -. 反哺训练 .-> C
+    J --> L
+
+    style A fill:#e8f4ff,stroke:#1f6fb2
+    style I fill:#e8fff0,stroke:#2e7d4f
+    style M fill:#fff4e5,stroke:#b26a00
+    style L fill:#f3ecff,stroke:#6a4a8c
+            </pre>
+        </div>
+    </div>
+
+    <div class="zjq_diagram-card">
+        <span class="zjq_diagram-tag">图二 · 智能客服核心数据模型 ER 图（Entity Relationship）</span>
+        <div class="zjq_mermaid-box">
+            <pre class="mermaid">
+erDiagram
+    USER ||--o{ SESSION : "发起"
+    SESSION ||--|{ MESSAGE : "包含"
+    MESSAGE }o--|| INTENT : "识别为"
+    INTENT }o--o{ KNOWLEDGE_ITEM : "关联"
+    CATEGORY ||--|{ KNOWLEDGE_ITEM : "归类"
+    SESSION ||--o| TICKET : "升级为"
+    AGENT ||--o{ TICKET : "处理"
+    MESSAGE ||--o| FEEDBACK : "获得"
+
+    USER {
+        int user_id PK
+        string nickname
+        string channel "web/app/api"
+        datetime register_time
+    }
+    SESSION {
+        int session_id PK
+        int user_id FK
+        string status "进行中/已结束"
+        datetime start_time
+    }
+    MESSAGE {
+        int message_id PK
+        int session_id FK
+        string role "user/bot/agent"
+        text content
+        float confidence
+        datetime send_time
+    }
+    INTENT {
+        int intent_id PK
+        string intent_name
+        string scene
+    }
+    CATEGORY {
+        int category_id PK
+        string category_name
+        int parent_id FK
+    }
+    KNOWLEDGE_ITEM {
+        int knowledge_id PK
+        int category_id FK
+        string question
+        text answer
+        datetime update_time
+    }
+    TICKET {
+        int ticket_id PK
+        int session_id FK
+        int agent_id FK
+        string status "待处理/已完成"
+    }
+    AGENT {
+        int agent_id PK
+        string agent_name
+        string skill_group
+    }
+    FEEDBACK {
+        int feedback_id PK
+        int message_id FK
+        string type "点赞/点踩"
+        text remark
+    }
+            </pre>
+        </div>
+    </div>
+
+    <script src="cdn/mermaid.min.js"></script>
+    <script>
+        (function () {
+            /* 本地初始化 Mermaid：file:// 与 http:// 均可渲染 */
+            mermaid.initialize({
+                startOnLoad: true,
+                theme: 'default',
+                securityLevel: 'loose',
+                flowchart: { htmlLabels: true, curve: 'basis' },
+                er: { diagramPadding: 24 }
+            });
+        })();
+    </script>
+</body>
+</html>
